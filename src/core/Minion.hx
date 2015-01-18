@@ -2,16 +2,7 @@
 
 package core;
 
-enum RuleTrigger {
-    OwnTurnStart;
-}
-enum RuleEffect {
-    Scripted(f :Board->Void);
-}
-typedef Rule = { trigger :RuleTrigger, effect :RuleEffect };
-typedef Rules = Array<Rule>;
-
-typedef Point = { x :Int, y :Int };
+import core.Rules;
 
 typedef MinionOptions = { player: Player, id :Int, name :String, attack :Int, life :Int, rules :Rules };
 

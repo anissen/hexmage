@@ -2,13 +2,15 @@
 package core;
 
 import core.Board;
+import core.Actions;
 
 class RuleEngine {
-    static public function get_best_actions_for_player(board :Board, player :Player /* TODO: incl. score strategy */) :Array<Action> {
+    // TODO: Move scoring algorithms elsewhere!
+    static public function get_best_actions_for_player(board :Board, player :Player, scoreStrategy :Board->Player->Int /* TODO: incl. score strategy */) :Array<Action> {
         var bestScore = -1000;
         var bestActions = [];
         var actions = [];
-        for (minion in board.get_minions_for_player(player.id)) {
+        for (minion in board.get_minions_for_player(player)) {
             actions = actions.concat(get_moves_for_minion(board, minion));
             actions = actions.concat(get_attacks_for_minion(board, minion));    
         }
@@ -17,7 +19,7 @@ class RuleEngine {
             board = oldBoard.clone_board();
             // print_board();
             board.simulate_action(action);
-            var score = board.score_board(player);
+            var score = scoreStrategy(board, player);// board.score_board(player);
             // trace('score for doing $action: $score');
             if (score == bestScore) { 
                 bestActions.push(action);

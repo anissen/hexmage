@@ -2,17 +2,10 @@
 package core;
 
 import core.Minion;
+import core.Actions;
 
 typedef Tile = { ?minion :Minion };
 typedef Tiles = Array<Array<Tile>>;
-
-typedef MoveAction = { minionId :Int, pos :Point };
-typedef AttackAction = { minionId :Int, victimId :Int };
-
-enum Action {
-    Move(p :MoveAction);
-    Attack(a :AttackAction);
-}
 
 class Board {
     var boardSize :Point;
@@ -23,7 +16,7 @@ class Board {
         board = [ for (y in 0 ... boardSize.y) [for (x in 0 ... boardSize.x) create_tile(x, y)]];
     }
 
-    function handle_rules_for_minion(m :Minion /* + event type */) {
+    public function handle_rules_for_minion(m :Minion /* + event type */) {
         for (rule in m.rules) {
             var applicable = switch (rule.trigger) {
                 case OwnTurnStart: true;
@@ -79,34 +72,6 @@ class Board {
         }
     }
     
-    public function print_score_board_for_player(player :Player) {
-        trace('=> Score: ${score_board(player)} to ${player.name} (player ${player.id})');
-    }
-    
-    // TODO: Remove scoring algorithms from Board
-    public function score_board(player :Player) {
-        // score the players own stuff only
-        function get_score_for_player(p) {
-            var score = 0;
-            for (row in board) {
-                for (tile in row) {
-                    if (tile.minion == null) continue;
-                    if (tile.minion.player != p) continue;
-                    score += tile.minion.attack + tile.minion.life;
-                }
-            }
-            return score;
-        }
-         
-        var score = get_score_for_player(player);
-        // var otherPlayers = [player1, player2];
-        // otherPlayers.remove(player);
-        // for (p in otherPlayers) {
-        //     score -= get_score_for_player(p);
-        // }
-        return score;
-    }
-    
     function pick_random_move(arr :Array<MoveAction>) :MoveAction {
         return arr[Math.floor(arr.length * Math.random())];
     }
@@ -144,11 +109,11 @@ class Board {
         }
     }
         
-    public function get_minions_for_player(playerId :Int) :Array<Minion> {
+    public function get_minions_for_player(player :Player) :Array<Minion> {
         var minions = [];
         for (row in board) {
             for (tile in row) {
-                if (tile.minion != null && tile.minion.player.id == playerId) minions.push(tile.minion);
+                if (tile.minion != null && tile.minion.player.id == player.id) minions.push(tile.minion);
             }
         }
         return minions;
