@@ -33,7 +33,7 @@ class Test {
             players: [player1, player2],
             rules: new Rules()
         };
-        var game = new Game(gameState);
+        var game = new Game(new GameState(gameState));
         
         // TODO: Remove scoring algorithms from Board
         function score_board(player :Player, otherPlayers :Array<Player>) :Int {

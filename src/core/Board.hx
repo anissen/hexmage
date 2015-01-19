@@ -62,6 +62,7 @@ class Board {
                 trace('ATTACK: $minion attacks $victim');
                 attack(a);
                 trace('... $victim now has ${victim.life} life');
+            case _: trace('Action $action is unhandled!');
         }
     }
 
@@ -69,6 +70,7 @@ class Board {
         switch (action) {
             case Move(m): move(m);
             case Attack(a): attack(a);
+            case _: trace('Action $action is unhandled!');
         }
     }
     
