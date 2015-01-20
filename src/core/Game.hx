@@ -25,7 +25,7 @@ class GameState {
     }
 
     function set_players(players :Players) :Players {
-        return state.players = players;
+        return (state.players = players);
     }
 
     public function new(_state :GameStateOptions) {
@@ -37,18 +37,27 @@ class Game {
     var state :GameState;
 
     public function new(_state :GameState) {
-        _state = state;
+        state = _state;
     } 
 
     public function start() {
-
+        var maxTurns = 4; // TEMPORARY, for testing
+        for (turn in 0 ... maxTurns) {
+            var actions = get_current_player().take_turn(this);
+            for (action in actions) {
+                // check action available
+                state = do_action(action);
+                // check victory/defeat
+            }
+            end_turn();
+        }
     }
 
-    // public function get_available_actions() :Array<Action> {
-    //     return RuleEngine.get_best_actions_for_player(state.board, get_current_player, );
-    // }
+    public function get_available_actions() :Array<Action> {
+        return RuleEngine.get_available_actions(state, get_current_player());
+    }
 
-    public function get_current_player() :Player {
+    function get_current_player() :Player {
         return state.players[0];
     }
 
@@ -56,11 +65,9 @@ class Game {
         state.players.push(state.players.shift());
     }
 
-    public function do_action(action :Action) :GameState { // action includes end_turn
-        switch action {
-            case EndTurn: end_turn();
-            case _: state.board.do_action(action);
-        }
+    public function do_action(action :Action) :GameState {
+        // TODO: Clone state, do action on cloned state and return cloned state
+        state.board.do_action(action);
         return state;
     }
 }

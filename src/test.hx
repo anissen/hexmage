@@ -4,7 +4,24 @@ import core.Minion;
 import core.Board;
 import core.RuleEngine;
 import core.Rules;
+import core.Actions;
 import core.Player;
+
+class AIPlayer {
+    static public function actions_for_turn(game :Game) :Array<Action> {
+        // trace('AIPlayer says hello');
+        var actions = game.get_available_actions();
+        if (actions.length > 0) return [actions[0]];
+        return [];
+    }
+}
+
+class HumanPlayer {
+    static public function actions_for_turn(game :Game) :Array<Action> {
+        // trace('HumanPlayer says hello');
+        return [];
+    }
+}
 
 class Test {
 
@@ -16,8 +33,8 @@ class Test {
         }
 
         var tiles = { x: 1, y: 3 };
-        var player1 = { id: 0, name: 'Princess' };
-        var player2 = { id: 1, name: 'Troll' };
+        var player1 = { id: 0, name: 'Princess', take_turn: HumanPlayer.actions_for_turn };
+        var player2 = { id: 1, name: 'Troll', take_turn: AIPlayer.actions_for_turn };
         var goblin = new Minion({ player: player2, id: 0, name: 'Goblin 1', attack: 2, life: 2, rules: new Rules() });
         var unicorn = new Minion({ player: player1, id: 3, name: 'Unicorn', attack: -1, life: 3, rules: [{ trigger: OwnTurnStart, effect: Scripted(plus_one_attack_per_turn) }] });
 
@@ -34,6 +51,7 @@ class Test {
             rules: new Rules()
         };
         var game = new Game(new GameState(gameState));
+        game.start();
         
         // TODO: Remove scoring algorithms from Board
         function score_board(player :Player, otherPlayers :Array<Player>) :Int {
@@ -61,28 +79,28 @@ class Test {
         
         board.print_board();
         
-        for (x in 0 ... 5) {
-            trace('');
-            trace('========== TURN #${x+1} ==========');
-            for (minion in board.get_minions_for_player(player1)) {
-                board.handle_rules_for_minion(minion);
-            }
+        // for (x in 0 ... 5) {
+        //     trace('');
+        //     trace('========== TURN #${x+1} ==========');
+        //     for (minion in board.get_minions_for_player(player1)) {
+        //         board.handle_rules_for_minion(minion);
+        //     }
 
-            var actions = RuleEngine.get_best_actions_for_player(board, player1, function(board, player) {
-                return score_board(player, [player2]);
-            });
-            if (actions.length == 0) {
-                trace('No available action!');
-                continue;
-            } else if (actions.length > 1) {
-                trace('${actions.length} best actions to choose from!: ');
-                //for (a in actions) trace('action: $a');
-            }
-            var randomBestAction = actions[Math.floor(actions.length * Math.random())];
-            // trace('chosen action: $randomBestAction');
-            board.do_action(randomBestAction);
-            board.print_board();
-            print_score_board_for_player(player1);
-        }
+        //     var actions = RuleEngine.get_best_actions_for_player(board, player1, function(board, player) {
+        //         return score_board(player, [player2]);
+        //     });
+        //     if (actions.length == 0) {
+        //         trace('No available action!');
+        //         continue;
+        //     } else if (actions.length > 1) {
+        //         trace('${actions.length} best actions to choose from!: ');
+        //         //for (a in actions) trace('action: $a');
+        //     }
+        //     var randomBestAction = actions[Math.floor(actions.length * Math.random())];
+        //     // trace('chosen action: $randomBestAction');
+        //     board.do_action(randomBestAction);
+        //     board.print_board();
+        //     print_score_board_for_player(player1);
+        // }
     }
 }
