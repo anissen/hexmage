@@ -65,18 +65,6 @@ class Board {
             case _: trace('Action $action is unhandled!');
         }
     }
-
-    public function simulate_action(action :Action) {
-        switch (action) {
-            case Move(m): move(m);
-            case Attack(a): attack(a);
-            case _: trace('Action $action is unhandled!');
-        }
-    }
-    
-    function pick_random_move(arr :Array<MoveAction>) :MoveAction {
-        return arr[Math.floor(arr.length * Math.random())];
-    }
     
     function move(moveAction :MoveAction) {
         var minion = get_minion(moveAction.minionId);
