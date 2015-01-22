@@ -54,14 +54,14 @@ class Board {
         switch (action) {
             case Move(m):
                 var minion = get_minion(m.minionId);
-                trace('MOVE: $minion moves to ${m.pos}');
+                // trace('MOVE: $minion moves to ${m.pos}');
                 move(m);
             case Attack(a):
                 var minion = get_minion(a.minionId);
                 var victim = get_minion(a.victimId);
-                trace('ATTACK: $minion attacks $victim');
+                // trace('ATTACK: $minion attacks $victim');
                 attack(a);
-                trace('... $victim now has ${victim.life} life');
+                // trace('... $victim now has ${victim.life} life');
             case _: trace('Action $action is unhandled!');
         }
     }

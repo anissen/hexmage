@@ -43,27 +43,38 @@ class GameState {
 
 class Game {
     var state :GameState;
+    static var Id :Int = 0;
+    @:isVar public var id(default, null) :Int;
 
-    var listeners :Map<String, Void->Void>;
+    var listeners :Map<String, Dynamic->Void>;
 
     public function new(_state :GameState) {
         state = _state;
-        listeners = new Map<String, Void->Void>();
+        listeners = new Map<String, Dynamic->Void>();
+        id = Game.Id++;
     } 
 
     public function start() {
         var maxTurns = 4; // TEMPORARY, for testing
         for (turn in 0 ... maxTurns) {
-            if (listeners.exists('turn_start')) listeners.get('turn_start')();
+            emit('turn_start');
             var actions = get_current_player().take_turn(clone());
+            // trace('${get_current_player().name} has chosen these actions: ${actions}');
             for (action in actions) {
                 // check action available
+                trace('Doing action: $action');
                 do_action(action);
                 // check victory/defeat
             }
-            if (listeners.exists('turn_end')) listeners.get('turn_end')();
+            emit('turn_end');
             end_turn();
         }
+    }
+
+    function emit(key :String, ?data :Dynamic) :Void {
+        if (!listeners.exists(key)) return;
+        var listener = listeners.get(key);
+        listener(data);
     }
 
     public function get_available_actions() :Array<Action> {
@@ -90,7 +101,7 @@ class Game {
         state.board.do_action(action);
     }
 
-    public function listen(key :String, func: Void->Void) {
+    public function listen(key :String, func: Dynamic->Void) {
         listeners.set(key, func);
     }
 }
