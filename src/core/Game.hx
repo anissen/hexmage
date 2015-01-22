@@ -4,42 +4,11 @@ package core;
 import core.Player;
 import core.Actions;
 
-typedef GameStateOptions = {
+typedef GameState = {
     var board :Board;
     var players :Players; // includes deck
     var rules :Rules;
 };
-
-class GameState {
-    var state :GameStateOptions;
-
-    public var board (get, never) :Board;
-    public var players (get, set) :Players;
-
-    function get_board() :Board {
-        return state.board;
-    }
-
-    function get_players() :Players {
-        return state.players;
-    }
-
-    function set_players(players :Players) :Players {
-        return (state.players = players);
-    }
-
-    public function new(_state :GameStateOptions) {
-        state = _state;
-    }
-
-    public function clone() :GameState {
-        return new GameState({
-            board: state.board.clone_board(),
-            players: state.players.copy(), // TODO: Probably not enough
-            rules: state.rules.copy() // TODO: Probably not enough
-        });
-    }
-}
 
 class Game {
     var state :GameState;
@@ -82,7 +51,11 @@ class Game {
     }
 
     public function clone() :Game {
-        return new Game(state.clone());
+        return new Game({
+            board: state.board.clone_board(),
+            players: state.players.copy(), // TODO: Probably not enough
+            rules: state.rules.copy() // TODO: Probably not enough
+        });
     }
 
     public function get_state() :GameState {

@@ -83,7 +83,7 @@ class Test {
             players: [player1, player2],
             rules: new Rules()
         };
-        var game = new Game(new GameState(gameState));
+        var game = new Game(gameState);
 
         game.listen('turn_start', function(data) {
             trace('========= ${game.get_current_player().name} turn starts! =======');
