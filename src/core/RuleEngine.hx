@@ -16,33 +16,6 @@ class RuleEngine {
         return actions;
     }
 
-    // TODO: Move scoring algorithms elsewhere!
-    // static public function get_best_actions_for_player(board :Board, player :Player, scoreStrategy :Board->Player->Int /* TODO: incl. score strategy */) :Array<Action> {
-    //     var bestScore = -1000;
-    //     var bestActions = [];
-    //     var actions = [];
-    //     for (minion in board.get_minions_for_player(player)) {
-    //         actions = actions.concat(get_moves_for_minion(board, minion));
-    //         actions = actions.concat(get_attacks_for_minion(board, minion));    
-    //     }
-    //     var oldBoard = board.clone_board();
-    //     for (action in actions) {
-    //         board = oldBoard.clone_board();
-    //         // print_board();
-    //         board.simulate_action(action);
-    //         var score = scoreStrategy(board, player);// board.score_board(player);
-    //         // trace('score for doing $action: $score');
-    //         if (score == bestScore) { 
-    //             bestActions.push(action);
-    //         } else if (score > bestScore) {
-    //             bestActions = [action];
-    //             bestScore = score;
-    //         }
-    //     }
-    //     board = oldBoard;
-    //     return bestActions;
-    // }
-
     static function get_moves_for_minion(board :Board, minion :Minion) :Array<Action> {
         var pos = board.get_minion_pos(minion);
         var x = pos.x;
