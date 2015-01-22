@@ -59,7 +59,6 @@ class HumanPlayer {
 }
 
 class Test {
-
     static function main() {
         function plus_one_attack_per_turn(b :Board) :Void {
             var m = b.get_minion(3);
@@ -86,12 +85,18 @@ class Test {
         var game = new Game(gameState);
 
         game.listen('turn_start', function(data) {
-            trace('========= ${game.get_current_player().name} turn starts! =======');
+            trace('========= ${game.get_current_player().name} turn starts! =========');
         });
 
         game.listen('turn_end', function(data) {
             game.get_state().board.print_board();
-            trace('========= ${game.get_current_player().name} turn ends! =======');
+            // trace('--------- ${game.get_current_player().name} turn ends! ---------');
+        });
+
+        game.listen('won_game', function(data) {
+            trace('***********************');
+            trace('${game.get_current_player().name} won the game!');
+            game.get_state().board.print_board();
         });
 
         game.start();

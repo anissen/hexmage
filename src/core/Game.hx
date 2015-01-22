@@ -24,16 +24,20 @@ class Game {
     } 
 
     public function start() {
-        var maxTurns = 4; // TEMPORARY, for testing
+        var maxTurns = 10; // TEMPORARY, for testing
         for (turn in 0 ... maxTurns) {
             emit('turn_start');
             var actions = get_current_player().take_turn(clone());
             // trace('${get_current_player().name} has chosen these actions: ${actions}');
             for (action in actions) {
-                // check action available
+                // TODO: check action available
                 trace('Doing action: $action');
                 do_action(action);
-                // check victory/defeat
+                // TODO: check victory/defeat
+                if (has_won()) {
+                    emit('won_game');
+                    return;
+                }
             }
             emit('turn_end');
             end_turn();
@@ -68,10 +72,21 @@ class Game {
 
     function end_turn() :Void {
         state.players.push(state.players.shift());
+        trace('players: ');
+        for (p in state.players) trace('${p.name}');
     }
 
     public function do_action(action :Action) :Void {
         state.board.do_action(action);
+    }
+
+    function has_won() :Bool {
+        for (player in state.players) {
+            if (player == get_current_player()) continue;
+            if (state.board.get_minions_for_player(player).length > 0)
+                return false;
+        }
+        return true;
     }
 
     public function listen(key :String, func: Dynamic->Void) {

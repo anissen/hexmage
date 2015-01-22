@@ -1,4 +1,5 @@
 
 Tasks:
 
-  ☐ 
+  ☐ Use RuleEngine to filter available actions (e.g. a rule for units can only move once, attack once per turn)
+  ☐ Make AIPlayer return multiple actions for per turn
