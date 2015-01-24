@@ -7,25 +7,55 @@ import core.Rules;
 import core.Actions;
 import core.Player;
 
+typedef BestActionsResult = { score :Int, actions :Array<Action>, game :Game };
+
 class AIPlayer {
     static public function actions_for_turn(game :Game) :Array<Action> {
-        var bestScore = -1000;
-        var bestActions = [];
+        var actions = [];
+        var newGame = game;
+        while (true) {
+            var result = get_best_actions_greedily(newGame);
+
+            trace('Best action is ${result.actions} with a score of ${result.score}');
+
+            if (result.actions.length == 0) {
+                trace('Could not find any actions');
+                break;
+            }
+            if (result.score <= 0) {
+                trace('Score of ${result.score} is not good enough');
+                break;
+            }
+            var randomBestAction = result.actions[Math.floor(result.actions.length * Math.random())]; // random best action
+            actions.push(randomBestAction);
+            newGame = result.game;
+            trace('Score is now ${result.score}');
+        }
+        return actions;
+    }
+
+    static function get_best_actions_greedily(game :Game) :BestActionsResult {
+        var bestResult :BestActionsResult = { score: -1000, actions: [], game: game };
+
+        trace('Before get_available_actions');
         for (action in game.get_available_actions()) {
+            trace('Before clone');
             var newGame = game.clone();
+            trace('Trying action $action');
             newGame.do_action(action);
             var score = AIPlayer.score_board(newGame);
-            // trace('score for ${action}: $score');
-            if (score == bestScore) { 
-                bestActions.push(action);
-            } else if (score > bestScore) {
-                bestActions = [action];
-                bestScore = score;
+            if (score < bestResult.score) continue;
+
+            if (score > bestResult.score) {
+                bestResult.actions = [action];
+            } else {
+                bestResult.actions.push(action);
             }
+            bestResult.score = score;
+            bestResult.game = newGame;
         }
 
-        if (bestActions.length == 0) return [];
-        return [bestActions[Math.floor(bestActions.length * Math.random())]]; // random best action
+        return bestResult;
     }
 
     static function score_board(game :Game) :Int {
