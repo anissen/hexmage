@@ -72,8 +72,8 @@ class Game {
 
     function end_turn() :Void {
         state.players.push(state.players.shift());
-        trace('players: ');
-        for (p in state.players) trace('${p.name}');
+        // trace('players: ');
+        //     for (p in state.players) trace('${p.name}');
     }
 
     public function do_action(action :Action) :Void {

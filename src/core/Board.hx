@@ -30,8 +30,12 @@ class Board {
         }
     }
 
+    function clone_player(p :Player) :Player {
+        return { id: p.id, name: p.name, take_turn: p.take_turn };
+    }
+
     function clone_minion(m :Minion) :Minion {
-        return new Minion({ id: m.id, player: m.player, name: m.name, attack: m.attack, life: m.life, rules: m.rules });
+        return new Minion({ id: m.id, player: clone_player(m.player), name: m.name, attack: m.attack, life: m.life, rules: m.rules });
     }
     
     public function clone_board() :Board {
