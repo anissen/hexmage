@@ -7,7 +7,7 @@ import core.Rules;
 import core.Actions;
 import core.Player;
 
-typedef BestActionsResult = { score :Int, actions :Array<Action>, game :Game };
+typedef BestActionsResult = { score :Int, action :Null<Action>, game :Game };
 
 class AIPlayer {
     static public function actions_for_turn(game :Game) :Array<Action> {
@@ -21,16 +21,12 @@ class AIPlayer {
 
             // trace('Best action is ${result.actions} with a score of ${result.score}');
 
-            if (result.actions.length == 0) {
-                trace('Could not find any actions');
-                break;
-            }
             if (result.score <= 0) {
                 trace('Score of ${result.score} is not good enough');
                 break;
             }
-            var randomBestAction = result.actions[Math.floor(result.actions.length * Math.random())]; // random best action
-            actions.push(randomBestAction);
+            // var randomBestAction = result.actions[Math.floor(result.actions.length * Math.random())]; // random best action
+            actions.push(result.action);
             newGame = result.game;
             // trace('Score is now ${result.score}');
         }
@@ -38,7 +34,7 @@ class AIPlayer {
     }
 
     static function get_best_actions_greedily(game :Game) :BestActionsResult {
-        var bestResult :BestActionsResult = { score: -1000, actions: [], game: null };
+        var bestResult :BestActionsResult = { score: -1000, action: null, game: null };
 
         for (action in game.get_available_actions()) {
             var newGame = game.clone();
@@ -46,11 +42,7 @@ class AIPlayer {
             var score = AIPlayer.score_board(newGame);
             if (score < bestResult.score) continue;
 
-            if (score > bestResult.score) {
-                bestResult.actions = [action];
-            } else {
-                bestResult.actions.push(action);
-            }
+            bestResult.action = action;
             bestResult.score = score;
             bestResult.game = newGame;
         }

@@ -97,7 +97,7 @@ class Board {
         for (row in board) {
             var s = "";
             for (tile in row) {
-                s += (tile.minion != null ? '[${tile.minion.player.id}]' : "[ ]");
+                s += (tile.minion != null ? '[${tile.minion.id}]' : "[ ]");
             }     
             trace(s);
         }
