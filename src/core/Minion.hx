@@ -4,7 +4,16 @@ package core;
 
 import core.Rules;
 
-typedef MinionOptions = { player: Player, id :Int, name :String, attack :Int, life :Int, rules :Rules };
+typedef MinionOptions = { 
+    player: Player, 
+    id :Int, 
+    name :String, 
+    attack :Int, 
+    life :Int, 
+    rules :Rules,
+    movesLeft :Int,
+    attacksLeft :Int
+};
 
 @:forward
 abstract Minion(MinionOptions) from MinionOptions to MinionOptions {

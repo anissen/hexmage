@@ -35,7 +35,16 @@ class Board {
     }
 
     function clone_minion(m :Minion) :Minion {
-        return new Minion({ id: m.id, player: clone_player(m.player), name: m.name, attack: m.attack, life: m.life, rules: m.rules });
+        return new Minion({ 
+            id: m.id, 
+            player: clone_player(m.player), 
+            name: m.name, 
+            attack: m.attack, 
+            life: m.life, 
+            rules: m.rules,
+            movesLeft: m.movesLeft,
+            attacksLeft: m.attacksLeft
+        });
     }
     
     public function clone_board() :Board {
@@ -75,6 +84,7 @@ class Board {
         var currentPos = get_minion_pos(minion);
         get_tile(currentPos).minion = null;
         get_tile(moveAction.pos).minion = minion;
+        minion.movesLeft--;
     }
     
     function attack(attackAction :AttackAction) {
@@ -82,6 +92,7 @@ class Board {
         var victim = get_minion(attackAction.victimId);
         victim.life -= minion.attack;
         minion.life -= victim.attack;
+        minion.attacksLeft--;
         if (victim.life <= 0) {
             var pos = get_minion_pos(victim);
             get_tile(pos).minion = null;

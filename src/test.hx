@@ -13,16 +13,22 @@ class AIPlayer {
     static public function actions_for_turn(game :Game) :Array<Action> {
         var actions = [];
         var newGame = game;
+        var currentScore = AIPlayer.score_board(game);
 
         var tries = 0;
         while (tries < 10) { // TODO: Should be based on time instead
             tries++;
             var result = get_best_actions_greedily(newGame);
 
-            // trace('Best action is ${result.actions} with a score of ${result.score}');
+            if (result.action == null)
+                break;
 
-            if (result.score <= 0) {
-                trace('Score of ${result.score} is not good enough');
+            var deltaScore = result.score - currentScore;
+
+            // trace('Best action is ${result.action} with a delta score of $deltaScore');
+
+            if (deltaScore < 0) {
+                trace('Score of $deltaScore is not good enough');
                 break;
             }
             // var randomBestAction = result.actions[Math.floor(result.actions.length * Math.random())]; // random best action
@@ -86,22 +92,49 @@ class Test {
             m.attack += 1;
         }
 
-        var tiles = { x: 1, y: 4 };
+        var tiles = { x: 3, y: 4 };
         var player1 = { id: 0, name: 'Princess', take_turn: HumanPlayer.actions_for_turn };
         var player2 = { id: 1, name: 'Troll', take_turn: AIPlayer.actions_for_turn };
-        var goblin = new Minion({ player: player2, id: 0, name: 'Goblin 1', attack: 2, life: 3, rules: new Rules() });
-        var unicorn = new Minion({ player: player1, id: 3, name: 'Unicorn', attack: 2, life: 2, rules: new Rules() /* [{ trigger: OwnTurnStart, effect: Scripted(plus_one_attack_per_turn) }] */ });
+        var goblin = new Minion({ 
+            player: player2,
+            id: 0,
+            name: 'Goblin 1',
+            attack: 2,
+            life: 3,
+            rules: new Rules(),
+            movesLeft: 1,
+            attacksLeft: 1
+        });
+        var unicorn = new Minion({
+            player: player1,
+            id: 3,
+            name: 'Unicorn',
+            attack: 2,
+            life: 2,
+            rules: new Rules(), /* [{ trigger: OwnTurnStart, effect: Scripted(plus_one_attack_per_turn) }] */
+            movesLeft: 1,
+            attacksLeft: 1
+        });
 
         function create_tile(x :Int, y :Int) :Tile {
-            if (x == 0 && y == 0) return { minion: goblin };
-            if (x == 0 && y == 3) return { minion: unicorn };
+            if (x == 1 && y == 0) return { minion: goblin };
+            if (x == 1 && y == 2) return { minion: unicorn };
             return {};
         }
+
+        // function one_move_per_turn_rule(state :GameState) {
+        //     for (action in state.actions_for_turn) {
+        //         switch (action) {
+        //             case Move: available_actions = available_actions.filter(function(a) { return a != Move });
+        //             case _:
+        //         }
+        //     }
+        // }
 
         var gameState = {
             board: new Board(tiles.x, tiles.y, create_tile), // TODO: Make from a core.Map
             players: [player1, player2],
-            rules: new Rules()
+            rules: new Rules() // [{ trigger: Constant, effect:  }]
         };
         var game = new Game(gameState);
 

@@ -17,23 +17,37 @@ class RuleEngine {
     }
 
     static function get_moves_for_minion(board :Board, minion :Minion) :Array<Action> {
+        if (minion.movesLeft <= 0) return [];
+
         var pos = board.get_minion_pos(minion);
         var x = pos.x;
         var y = pos.y;
         var moves = [];
-        for (newx in x - 1 ... x + 2) {
-            for (newy in y - 1 ... y + 2) {
-                if (newx == x && newy == y) continue;
-                if (newx < 0 || newx >= board.get_board_size().x) continue;
-                if (newy < 0 || newy >= board.get_board_size().y) continue;
-                if (board.get_tile({ x: newx, y: newy }).minion != null) continue;
-                moves.push(Move({ minionId: minion.id, pos: { x: newx, y: newy } }));
-            }     
+        // for (newx in x - 1 ... x + 2) {
+        //     for (newy in y - 1 ... y + 2) {
+        //         if (newx == x && newy == y) continue;
+        //         if (newx < 0 || newx >= board.get_board_size().x) continue;
+        //         if (newy < 0 || newy >= board.get_board_size().y) continue;
+        //         if (board.get_tile({ x: newx, y: newy }).minion != null) continue;
+        //         moves.push(Move({ minionId: minion.id, pos: { x: newx, y: newy } }));
+        //     }     
+        // }
+        function add_move(newx, newy) {
+            if (newx < 0 || newx >= board.get_board_size().x) return;
+            if (newy < 0 || newy >= board.get_board_size().y) return;
+            if (board.get_tile({ x: newx, y: newy }).minion != null) return;
+            moves.push(Move({ minionId: minion.id, pos: { x: newx, y: newy } }));
         }
+        add_move(x, y - 1);
+        add_move(x, y + 1);
+        add_move(x - 1, y);
+        add_move(x + 1, y);
         return moves;
     }
 
     static function get_attacks_for_minion(board :Board, minion :Minion) :Array<Action> {
+        if (minion.attacksLeft <= 0) return [];
+
         var pos = board.get_minion_pos(minion);
         var x = pos.x;
         var y = pos.y;

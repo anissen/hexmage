@@ -10,6 +10,13 @@ typedef GameState = {
     var rules :Rules;
 };
 
+// enum Event {
+//     Move();
+//     Attack();
+//     StartTurn();
+//     EndTurn();
+// }
+
 class Game {
     var state :GameState;
     static var Id :Int = 0;
@@ -27,6 +34,7 @@ class Game {
         var maxTurns = 10; // TEMPORARY, for testing
         for (turn in 0 ... maxTurns) {
             emit('turn_start');
+            reset_minion_stats();
             var actions = get_current_player().take_turn(clone());
             // trace('${get_current_player().name} has chosen these actions: ${actions}');
             for (action in actions) {
@@ -41,6 +49,13 @@ class Game {
             }
             emit('turn_end');
             end_turn();
+        }
+    }
+
+    function reset_minion_stats() :Void {
+        for (minion in state.board.get_minions_for_player(get_current_player())) {
+            minion.movesLeft = 1;
+            minion.attacksLeft = 1;
         }
     }
 
