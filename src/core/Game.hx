@@ -34,9 +34,19 @@ class Game {
         var maxTurns = 10; // TEMPORARY, for testing
         for (turn in 0 ... maxTurns) {
             emit('turn_start');
-            var actions = get_current_player().take_turn(clone());
-            take_turn(actions);
+            // trace('${get_current_player().name} has chosen these actions: ${actions}');
+            for (action in get_current_player().take_turn(clone())) {
+                // TODO: check action available
+                trace('Doing action: $action');
+                do_action(action);
+                // TODO: check victory/defeat
+                if (has_won()) {
+                    emit('won_game');
+                    return;
+                }
+            }
             emit('turn_end');
+            // end_turn();
         }
     }
 
@@ -87,28 +97,16 @@ class Game {
 
     function end_turn() :Void {
         state.players.push(state.players.shift());
+        reset_minion_stats();
         // trace('players: ');
         //     for (p in state.players) trace('${p.name}');
     }
 
-    public function take_turn(actions :Array<Action>) :Void {
-        reset_minion_stats();
-        // trace('${get_current_player().name} has chosen these actions: ${actions}');
-        for (action in actions) {
-            // TODO: check action available
-            // trace('Doing action: $action');
-            state.board.do_action(action);
-            // TODO: check victory/defeat
-            if (has_won()) {
-                // emit('won_game');
-                return;
-            }
-        }
-        end_turn();
-    }
-
     public function do_action(action :Action) :Void {
-        state.board.do_action(action);
+        switch action {
+            case EndTurn: end_turn();
+            default: state.board.do_action(action);
+        }
     }
 
     function has_won() :Bool {

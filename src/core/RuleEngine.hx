@@ -11,7 +11,8 @@ class RuleEngine {
         var actions = [];
         for (minion in board.get_minions_for_player(player)) {
             actions = actions.concat(get_moves_for_minion(board, minion));
-            actions = actions.concat(get_attacks_for_minion(board, minion));    
+            actions = actions.concat(get_attacks_for_minion(board, minion));
+            actions = actions.concat([EndTurn]);
         }
         return actions;
     }

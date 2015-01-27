@@ -5,3 +5,13 @@ Tasks:
   ✔ Hardcode max moves, attacks per turn @done (27-01-15 20:28)
   ☐ Use RuleEngine to filter available actions (e.g. a rule for units can only move once, attack once per turn)
   ☐ Use minimax algorithm to return the hierarchically best actions
+
+
+Minimax fix:
+
+
+    minimax algorithm:
+        take_turn algorithm: 
+            find best/worst actions for turn
+            perform actions
+            end turn

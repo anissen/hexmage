@@ -15,8 +15,9 @@ class AIPlayer {
     static public function actions_for_turn(game :Game) :Array<Action> {
         AIPlayer.ai_iterations = 0;
 
-        var currentScore = AIPlayer.score_board(game);
-        var result = get_best_actions_greedily(game.get_current_player(), game, 3);
+        var player = game.get_current_player();
+        var currentScore = AIPlayer.score_board(player, game);
+        var result = get_best_actions_greedily(player, game, 3);
         var deltaScore = result.score - currentScore;
 
         trace('AI tested ${AIPlayer.ai_iterations} combinations of actions');
@@ -24,16 +25,19 @@ class AIPlayer {
 
         if (deltaScore < 0) {
             trace('Score of $deltaScore is not good enough');
-            return [];
+            return [EndTurn];
         }
 
+        // trace('actions: ${result.actions}');
+        if (result.actions.length == 0) return [EndTurn];
+        if (result.actions[result.actions.length - 1] != EndTurn) result.actions.push(EndTurn);
         return result.actions;
     }
 
     static function get_best_actions_greedily(player :Player, game :Game, depthRemaining :Int) :BestActionsResult {
         
         if (game.is_game_over() || depthRemaining <= 0)
-            return { score: AIPlayer.score_board(game), actions: [] };
+            return { score: AIPlayer.score_board(player, game), actions: [] };
 
         var best = { score: 0, actions: [] };
 
@@ -47,6 +51,7 @@ class AIPlayer {
 
         for (action in game.get_available_actions()) {
             var newGame = game.clone();
+            trace('Trying action $action');
             newGame.do_action(action);
 
             var result = get_best_actions_greedily(player, newGame, depthRemaining - 1);
@@ -54,11 +59,13 @@ class AIPlayer {
                 if (result.score > best.score) {
                     best.score = result.score;
                     best.actions = [action].concat(result.actions);
+                    trace('own best is ${best.actions} with a score of ${best.score}');
                 }
             } else {
                 if (result.score < best.score) {
                     best.score = result.score;
                     best.actions = [action].concat(result.actions);
+                    trace('enemy worst is ${best.actions} with a score of ${best.score}');
                 }
             }
         }
@@ -66,7 +73,7 @@ class AIPlayer {
         return best;
     }
 
-    static function score_board(game :Game) :Int {
+    static function score_board(player :Player, game :Game) :Int {
         var state = game.get_state();
 
         // score the players own stuff only
@@ -78,7 +85,6 @@ class AIPlayer {
             return score;
         }
         
-        var player = game.get_current_player();
         var score = get_score_for_player(player);
         for (p in state.players) {
             if (p == player) continue;
@@ -90,8 +96,8 @@ class AIPlayer {
 
 class HumanPlayer {
     static public function actions_for_turn(game :Game) :Array<Action> {
-        return [Move({ minionId: 3, pos: { x: 0, y: 3 } })];
-        // return [];
+        // return [Move({ minionId: 3, pos: { x: 0, y: 3 } }), EndTurn];
+        return [EndTurn];
     }
 }
 
