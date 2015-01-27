@@ -7,53 +7,49 @@ import core.Rules;
 import core.Actions;
 import core.Player;
 
-typedef BestActionsResult = { score :Int, action :Null<Action>, game :Game };
+typedef BestActionsResult = { score :Int, actions :Array<Action> };
 
 class AIPlayer {
+    static var ai_iterations = 0;
+
     static public function actions_for_turn(game :Game) :Array<Action> {
-        var actions = [];
-        var newGame = game;
+        AIPlayer.ai_iterations = 0;
+
         var currentScore = AIPlayer.score_board(game);
+        var result = get_best_actions_greedily(game, 3);
+        var deltaScore = result.score - currentScore;
 
-        var tries = 0;
-        while (tries < 10) { // TODO: Should be based on time instead
-            tries++;
-            var result = get_best_actions_greedily(newGame);
+        trace('AI tested ${AIPlayer.ai_iterations} combinations of actions');
+        trace('Best actions are ${result.actions} with a delta score of $deltaScore');
 
-            if (result.action == null)
-                break;
-
-            var deltaScore = result.score - currentScore;
-
-            // trace('Best action is ${result.action} with a delta score of $deltaScore');
-
-            if (deltaScore < 0) {
-                trace('Score of $deltaScore is not good enough');
-                break;
-            }
-            // var randomBestAction = result.actions[Math.floor(result.actions.length * Math.random())]; // random best action
-            actions.push(result.action);
-            newGame = result.game;
-            // trace('Score is now ${result.score}');
+        if (deltaScore < 0) {
+            trace('Score of $deltaScore is not good enough');
+            return [];
         }
-        return actions;
+
+        return result.actions;
     }
 
-    static function get_best_actions_greedily(game :Game) :BestActionsResult {
-        var bestResult :BestActionsResult = { score: -1000, action: null, game: null };
+    static function get_best_actions_greedily(game :Game, depthRemaining :Int) :BestActionsResult {
+        var best = { score: 0, actions: [] };
 
+        AIPlayer.ai_iterations++;
+
+        if (depthRemaining <= 0)
+            return { score: AIPlayer.score_board(game), actions: [] };
+        
         for (action in game.get_available_actions()) {
             var newGame = game.clone();
             newGame.do_action(action);
-            var score = AIPlayer.score_board(newGame);
-            if (score < bestResult.score) continue;
 
-            bestResult.action = action;
-            bestResult.score = score;
-            bestResult.game = newGame;
+            var result = get_best_actions_greedily(newGame, depthRemaining - 1);
+            if (result.score > best.score) {
+                best.score = result.score;
+                best.actions = [action].concat(result.actions);
+            }
         }
 
-        return bestResult;
+        return best;
     }
 
     static function score_board(game :Game) :Int {
@@ -80,8 +76,8 @@ class AIPlayer {
 
 class HumanPlayer {
     static public function actions_for_turn(game :Game) :Array<Action> {
-        // return [Move({ minionId: 3, pos: { x: 0, y: 3 } })];
-        return [];
+        return [Move({ minionId: 3, pos: { x: 0, y: 3 } })];
+        // return [];
     }
 }
 
@@ -117,8 +113,8 @@ class Test {
         });
 
         function create_tile(x :Int, y :Int) :Tile {
-            if (x == 1 && y == 0) return { minion: goblin };
-            if (x == 1 && y == 2) return { minion: unicorn };
+            if (x == 0 && y == 0) return { minion: goblin };
+            if (x == 1 && y == 3) return { minion: unicorn };
             return {};
         }
 
@@ -133,7 +129,7 @@ class Test {
 
         var gameState = {
             board: new Board(tiles.x, tiles.y, create_tile), // TODO: Make from a core.Map
-            players: [player1, player2],
+            players: [player2, player1],
             rules: new Rules() // [{ trigger: Constant, effect:  }]
         };
         var game = new Game(gameState);
