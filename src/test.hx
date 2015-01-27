@@ -16,7 +16,7 @@ class AIPlayer {
         AIPlayer.ai_iterations = 0;
 
         var currentScore = AIPlayer.score_board(game);
-        var result = get_best_actions_greedily(game, 3);
+        var result = get_best_actions_greedily(game.get_current_player(), game, 3);
         var deltaScore = result.score - currentScore;
 
         trace('AI tested ${AIPlayer.ai_iterations} combinations of actions');
@@ -30,22 +30,36 @@ class AIPlayer {
         return result.actions;
     }
 
-    static function get_best_actions_greedily(game :Game, depthRemaining :Int) :BestActionsResult {
+    static function get_best_actions_greedily(player :Player, game :Game, depthRemaining :Int) :BestActionsResult {
+        
+        if (game.is_game_over() || depthRemaining <= 0)
+            return { score: AIPlayer.score_board(game), actions: [] };
+
         var best = { score: 0, actions: [] };
+
+        if (game.is_current_player(player)) {
+            best.score = -1000;
+        } else {
+            best.score = 1000;
+        }
 
         AIPlayer.ai_iterations++;
 
-        if (depthRemaining <= 0)
-            return { score: AIPlayer.score_board(game), actions: [] };
-        
         for (action in game.get_available_actions()) {
             var newGame = game.clone();
             newGame.do_action(action);
 
-            var result = get_best_actions_greedily(newGame, depthRemaining - 1);
-            if (result.score > best.score) {
-                best.score = result.score;
-                best.actions = [action].concat(result.actions);
+            var result = get_best_actions_greedily(player, newGame, depthRemaining - 1);
+            if (newGame.is_current_player(player)) {
+                if (result.score > best.score) {
+                    best.score = result.score;
+                    best.actions = [action].concat(result.actions);
+                }
+            } else {
+                if (result.score < best.score) {
+                    best.score = result.score;
+                    best.actions = [action].concat(result.actions);
+                }
             }
         }
 

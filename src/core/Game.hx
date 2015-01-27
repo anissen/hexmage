@@ -34,21 +34,9 @@ class Game {
         var maxTurns = 10; // TEMPORARY, for testing
         for (turn in 0 ... maxTurns) {
             emit('turn_start');
-            reset_minion_stats();
             var actions = get_current_player().take_turn(clone());
-            // trace('${get_current_player().name} has chosen these actions: ${actions}');
-            for (action in actions) {
-                // TODO: check action available
-                trace('Doing action: $action');
-                do_action(action);
-                // TODO: check victory/defeat
-                if (has_won()) {
-                    emit('won_game');
-                    return;
-                }
-            }
+            take_turn(actions);
             emit('turn_end');
-            end_turn();
         }
     }
 
@@ -85,10 +73,38 @@ class Game {
         return state.players[0];
     } 
 
+    public function is_current_player(player :Player) :Bool {
+        return get_current_player().id == player.id;
+    }
+
+    public function is_game_over() :Bool {
+        for (player in state.players) {
+            if (state.board.get_minions_for_player(player).length > 0)
+                return false;
+        }
+        return true;
+    }
+
     function end_turn() :Void {
         state.players.push(state.players.shift());
         // trace('players: ');
         //     for (p in state.players) trace('${p.name}');
+    }
+
+    public function take_turn(actions :Array<Action>) :Void {
+        reset_minion_stats();
+        // trace('${get_current_player().name} has chosen these actions: ${actions}');
+        for (action in actions) {
+            // TODO: check action available
+            // trace('Doing action: $action');
+            state.board.do_action(action);
+            // TODO: check victory/defeat
+            if (has_won()) {
+                // emit('won_game');
+                return;
+            }
+        }
+        end_turn();
     }
 
     public function do_action(action :Action) :Void {
