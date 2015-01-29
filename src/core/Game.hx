@@ -46,7 +46,7 @@ class Game {
                 }
             }
             emit('turn_end');
-            // end_turn();
+            end_turn();
         }
     }
 
@@ -103,10 +103,7 @@ class Game {
     }
 
     public function do_action(action :Action) :Void {
-        switch action {
-            case EndTurn: end_turn();
-            default: state.board.do_action(action);
-        }
+        state.board.do_action(action);
     }
 
     function has_won() :Bool {

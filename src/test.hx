@@ -25,15 +25,14 @@ class AIPlayer {
 
         if (deltaScore < 0) {
             trace('Score of $deltaScore is not good enough');
-            return [EndTurn];
+            return [];
         }
 
         // trace('actions: ${result.actions}');
-        if (result.actions.length == 0) return [EndTurn];
-        if (result.actions[result.actions.length - 1] != EndTurn) result.actions.push(EndTurn);
         return result.actions;
     }
 
+    // http://web.cs.wpi.edu/~rich/courses/imgd4000-d09/lectures/E-MiniMax.pdf
     static function get_best_actions_greedily(player :Player, game :Game, depthRemaining :Int) :BestActionsResult {
         
         if (game.is_game_over() || depthRemaining <= 0)
@@ -96,8 +95,8 @@ class AIPlayer {
 
 class HumanPlayer {
     static public function actions_for_turn(game :Game) :Array<Action> {
-        // return [Move({ minionId: 3, pos: { x: 0, y: 3 } }), EndTurn];
-        return [EndTurn];
+        // return [Move({ minionId: 3, pos: { x: 0, y: 3 } })];
+        return [];
     }
 }
 
