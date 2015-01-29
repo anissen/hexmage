@@ -38,66 +38,50 @@ class AIPlayer {
 
         var bestResult = { score: 0, actions: [] };
 
-        var newGame = game.clone();
-        if (newGame.is_current_player(player)) {
-            var best = best_actions_for_state(player, newGame, 3 /* own action depth */);
+        // Should get all valid sets of actions, e.g.
+        // [Move1]
+        // [Move1, Move2]
+        // [Move1, Move2, Attack]
+        // [Move1, Attack]
+        for (actions in get_available_sets_of_actions(player, game, 3)) {
+            var newGame = game.clone();
             newGame.do_turn(best.actions); // TODO: Make this return a clone instead?
             var result = minimax(player, newGame, turnDepthRemaining - 1);
-            if (result.score > bestResult.score) {
-                bestResult.score = result.score;
-                bestResult.actions = result.actions;
-            }
-        } else {
-            var worst = worst_actions_for_state(player, newGame, 3 /* enemy action depth */);
-            newGame.do_turn(worst.actions);
-            var result = minimax(player, newGame, turnDepthRemaining - 1);
-            if (result.score < bestResult.score) {
-                bestResult.score = result.score;
-                bestResult.actions = result.actions;
+
+            if (game.is_current_player(player)) {
+                if (result.score > bestResult.score) {
+                    bestResult.score = result.score;
+                    bestResult.actions = result.actions;
+                }
+            } else {
+                if (result.score < bestResult.score) {
+                    bestResult.score = result.score;
+                    bestResult.actions = result.actions;
+                }
             }
         }
 
         return bestResult;
     }
 
-    static function best_actions_for_state(player :Player, game :Game, actionDepthRemaining :Int) :BestActionsResult {
-        var initialScore = -1000;
-        function scoreFunc(new_score, old_score) { 
-            return new_score > old_score; 
-        }
-        return AIPlayer.actions_for_state(player, game, initialScore, scoreFunc, actionDepthRemaining);
-    }
+    // TODO: This should return a tree structure instead
+    static function get_available_sets_of_actions(player :Player, game :Game, actionDepthRemaining :Int) :Array<Array<Action>> {
 
-    // http://web.cs.wpi.edu/~rich/courses/imgd4000-d09/lectures/E-MiniMax.pdf
-    static function worst_actions_for_state(player :Player, game :Game, actionDepthRemaining :Int) :BestActionsResult {
-        var initialScore = 1000;
-        function scoreFunc(new_score, old_score) { 
-            return new_score < old_score; 
-        }
-        return AIPlayer.actions_for_state(player, game, initialScore, scoreFunc, actionDepthRemaining);
-    }
-
-    static function actions_for_state(player :Player, game :Game, initialScore :Int, scoreFunc :Int -> Int -> Bool, actionDepthRemaining :Int) :BestActionsResult {
-
-        if (game.is_game_over() || actionDepthRemaining <= 0)
-            return { score: AIPlayer.score_board(player, game), actions: [] };
+        if (actionDepthRemaining <= 0)
+            return [[]];
 
         AIPlayer.ai_iterations++;
 
-        var best = { score: initialScore, actions: [] };
+        var actions = [[]];
         for (action in game.get_available_actions()) {
             var newGame = game.clone();
-            // trace('Trying action $action');
             newGame.do_action(action);
-
-            var result = actions_for_state(player, newGame, initialScore, scoreFunc, actionDepthRemaining - 1);
-            if (scoreFunc(result.score, best.score)) {
-                best.score = result.score;
-                best.actions = [action].concat(result.actions);
-            }
+            var result = AIPlayer.get_available_sets_of_actions(player, newGame, actionDepthRemaining - 1);
+            var blah :Array<Action> = [action].concat(result); // TODO: This should return a tree structure instead
+            actions.push(blah);
         }
 
-        return best;
+        return actions;
     }
 
     static function score_board(player :Player, game :Game) :Int {
