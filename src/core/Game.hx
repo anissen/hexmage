@@ -34,6 +34,7 @@ class Game {
         var maxTurns = 10; // TEMPORARY, for testing
         for (turn in 0 ... maxTurns) {
             emit('turn_start');
+            start_turn();
             // trace('${get_current_player().name} has chosen these actions: ${actions}');
             for (action in get_current_player().take_turn(clone())) {
                 // TODO: check action available
@@ -95,15 +96,28 @@ class Game {
         return true;
     }
 
+    function start_turn() :Void {
+        reset_minion_stats();
+    }
+
     function end_turn() :Void {
         state.players.push(state.players.shift());
-        reset_minion_stats();
-        // trace('players: ');
-        //     for (p in state.players) trace('${p.name}');
     }
 
     public function do_action(action :Action) :Void {
         state.board.do_action(action);
+    }
+
+    public function do_turn(actions :Array<Action>) :Void {
+        trace('>>> do_action for ${get_current_player().name}');
+        start_turn();
+        trace('>>> >>> start_turn');
+        for (action in actions) {
+            trace('>>> >>> doing action $action');
+            do_action(action);
+        }
+        trace('>>> >>> end_turn');
+        end_turn();
     }
 
     function has_won() :Bool {

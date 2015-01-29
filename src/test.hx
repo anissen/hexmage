@@ -17,7 +17,7 @@ class AIPlayer {
 
         var player = game.get_current_player();
         var currentScore = AIPlayer.score_board(player, game);
-        var result = get_best_actions_greedily(player, game, 3);
+        var result = minimax(player, game, 3);
         var deltaScore = result.score - currentScore;
 
         trace('AI tested ${AIPlayer.ai_iterations} combinations of actions');
@@ -32,40 +32,68 @@ class AIPlayer {
         return result.actions;
     }
 
-    // http://web.cs.wpi.edu/~rich/courses/imgd4000-d09/lectures/E-MiniMax.pdf
-    static function get_best_actions_greedily(player :Player, game :Game, depthRemaining :Int) :BestActionsResult {
-        
-        if (game.is_game_over() || depthRemaining <= 0)
+    static function minimax(player :Player, game :Game, turnDepthRemaining :Int) :BestActionsResult {
+        if (game.is_game_over() || turnDepthRemaining <= 0)
             return { score: AIPlayer.score_board(player, game), actions: [] };
 
-        var best = { score: 0, actions: [] };
+        var bestResult = { score: 0, actions: [] };
 
-        if (game.is_current_player(player)) {
-            best.score = -1000;
+        var newGame = game.clone();
+        if (newGame.is_current_player(player)) {
+            var best = best_actions_for_state(player, newGame, 3 /* own action depth */);
+            newGame.do_turn(best.actions); // TODO: Make this return a clone instead?
+            var result = minimax(player, newGame, turnDepthRemaining - 1);
+            if (result.score > bestResult.score) {
+                bestResult.score = result.score;
+                bestResult.actions = result.actions;
+            }
         } else {
-            best.score = 1000;
+            var worst = worst_actions_for_state(player, newGame, 3 /* enemy action depth */);
+            newGame.do_turn(worst.actions);
+            var result = minimax(player, newGame, turnDepthRemaining - 1);
+            if (result.score < bestResult.score) {
+                bestResult.score = result.score;
+                bestResult.actions = result.actions;
+            }
         }
+
+        return bestResult;
+    }
+
+    static function best_actions_for_state(player :Player, game :Game, actionDepthRemaining :Int) :BestActionsResult {
+        var initialScore = -1000;
+        function scoreFunc(new_score, old_score) { 
+            return new_score > old_score; 
+        }
+        return AIPlayer.actions_for_state(player, game, initialScore, scoreFunc, actionDepthRemaining);
+    }
+
+    // http://web.cs.wpi.edu/~rich/courses/imgd4000-d09/lectures/E-MiniMax.pdf
+    static function worst_actions_for_state(player :Player, game :Game, actionDepthRemaining :Int) :BestActionsResult {
+        var initialScore = 1000;
+        function scoreFunc(new_score, old_score) { 
+            return new_score < old_score; 
+        }
+        return AIPlayer.actions_for_state(player, game, initialScore, scoreFunc, actionDepthRemaining);
+    }
+
+    static function actions_for_state(player :Player, game :Game, initialScore :Int, scoreFunc :Int -> Int -> Bool, actionDepthRemaining :Int) :BestActionsResult {
+
+        if (game.is_game_over() || actionDepthRemaining <= 0)
+            return { score: AIPlayer.score_board(player, game), actions: [] };
 
         AIPlayer.ai_iterations++;
 
+        var best = { score: initialScore, actions: [] };
         for (action in game.get_available_actions()) {
             var newGame = game.clone();
-            trace('Trying action $action');
+            // trace('Trying action $action');
             newGame.do_action(action);
 
-            var result = get_best_actions_greedily(player, newGame, depthRemaining - 1);
-            if (newGame.is_current_player(player)) {
-                if (result.score > best.score) {
-                    best.score = result.score;
-                    best.actions = [action].concat(result.actions);
-                    trace('own best is ${best.actions} with a score of ${best.score}');
-                }
-            } else {
-                if (result.score < best.score) {
-                    best.score = result.score;
-                    best.actions = [action].concat(result.actions);
-                    trace('enemy worst is ${best.actions} with a score of ${best.score}');
-                }
+            var result = actions_for_state(player, newGame, initialScore, scoreFunc, actionDepthRemaining - 1);
+            if (scoreFunc(result.score, best.score)) {
+                best.score = result.score;
+                best.actions = [action].concat(result.actions);
             }
         }
 
