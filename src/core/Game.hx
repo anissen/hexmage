@@ -31,7 +31,7 @@ class Game {
     } 
 
     public function start() {
-        var maxTurns = 10; // TEMPORARY, for testing
+        var maxTurns = 1; // TEMPORARY, for testing
         for (turn in 0 ... maxTurns) {
             emit('turn_start');
             start_turn();
@@ -53,7 +53,7 @@ class Game {
 
     function reset_minion_stats() :Void {
         for (minion in state.board.get_minions_for_player(get_current_player())) {
-            minion.movesLeft = 1;
+            minion.movesLeft = 2;
             minion.attacksLeft = 1;
         }
     }
@@ -109,7 +109,8 @@ class Game {
     }
 
     public function do_turn(actions :Array<Action>) :Void {
-        // trace('>>> do_action for ${get_current_player().name}');
+        trace('>>> do_action for ${get_current_player().name}');
+        trace('*** do_turn with actions: $actions');
         start_turn();
         // trace('>>> >>> start_turn');
         for (action in actions) {

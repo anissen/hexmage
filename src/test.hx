@@ -13,14 +13,14 @@ class AIPlayer {
     static var ai_iterations = 0;
 
     static public function actions_for_turn(game :Game) :Array<Action> {
-        AIPlayer.ai_iterations = 0;
+        ai_iterations = 0;
 
         var player = game.get_current_player();
-        var currentScore = AIPlayer.score_board(player, game);
-        var result = minimax(player, game, 3);
+        var currentScore = score_board(player, game);
+        var result = minimax(player, game, 1 /* number of turns to test */);
         var deltaScore = result.score - currentScore;
 
-        trace('AI tested ${AIPlayer.ai_iterations} combinations of actions');  
+        trace('AI tested ${ai_iterations} combinations of actions');  
         // TODO: Also write time spend
         trace('Best actions are ${result.actions} with a delta score of $deltaScore');
 
@@ -37,18 +37,27 @@ class AIPlayer {
         trace('minimax turnDepthRemaining: $turnDepthRemaining, player: ${game.get_current_player().name}');
 
         if (game.is_game_over() || turnDepthRemaining <= 0)
-            return { score: AIPlayer.score_board(player, game), actions: [] };
+            return { score: score_board(player, game), actions: [] };
 
         var bestResult = { score: 0, actions: [] };
+        if (game.is_current_player(player)) {
+            bestResult.score = -1000;
+        } else {
+            bestResult.score = 1000;
+        }
 
         // Should get all valid sets of actions, e.g.
         // [Move1]
         // [Move1, Move2]
         // [Move1, Move2, Attack]
         // [Move1, Attack]
-        for (actions in get_available_sets_of_actions(player, game, 3)) {
+        var set_of_all_actions = get_available_sets_of_actions(player, game, 4 /* number of actions per turns to test */);
+        // trace('ACTIONS: $set_of_all_actions');
+
+        for (actions in set_of_all_actions) {
             // trace('actions from get_available_sets_of_actions');
             // trace(actions);
+
             var newGame = game.clone();
             newGame.do_turn(actions); // TODO: Make this return a clone instead?
             var result = minimax(player, newGame, turnDepthRemaining - 1);
@@ -71,25 +80,29 @@ class AIPlayer {
 
     static function get_available_sets_of_actions(player :Player, game :Game, actionDepthRemaining :Int) :Array<Array<Action>> {
 
-        if (actionDepthRemaining <= 0)
-            return [game.get_available_actions()];
+        trace('get_available_sets_of_actions actionDepthRemaining: $actionDepthRemaining');
 
-        AIPlayer.ai_iterations++;
+        if (actionDepthRemaining <= 0) {
+            trace('default case, actions: ${game.get_available_actions()}');
+            return [game.get_available_actions()];
+        }
+
+        ai_iterations++;
 
         // trace('get_available_actions: ${game.get_available_actions()}');
-        var actions = [];
+        var actions :Array<Array<Action>> = [];
         for (action in game.get_available_actions()) {
             // trace('Trying action $action');
             var newGame = game.clone();
             newGame.do_action(action);
 
-            var result = AIPlayer.get_available_sets_of_actions(player, newGame, actionDepthRemaining - 1);
-
+            var result = get_available_sets_of_actions(player, newGame, actionDepthRemaining - 1);
+            // trace('result');
+            // trace(result);
             actions.push([action]);
             for (resultActions in result) {
                 actions.push([action].concat(resultActions)); // array<action>
             }
-            // trace('ACTIONS: $actions');
         }
 
         return actions;
@@ -156,7 +169,7 @@ class Test {
 
         function create_tile(x :Int, y :Int) :Tile {
             if (x == 0 && y == 0) return { minion: goblin };
-            if (x == 1 && y == 3) return { minion: unicorn };
+            if (x == 1 && y == 2) return { minion: unicorn };
             return {};
         }
 
