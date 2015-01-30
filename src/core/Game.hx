@@ -109,8 +109,8 @@ class Game {
     }
 
     public function do_turn(actions :Array<Action>) :Void {
-        trace('>>> do_action for ${get_current_player().name}');
-        trace('*** do_turn with actions: $actions');
+        // trace('>>> do_turn for ${get_current_player().name}');
+        // trace('*** do_turn with actions: $actions');
         start_turn();
         // trace('>>> >>> start_turn');
         for (action in actions) {

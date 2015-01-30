@@ -22,27 +22,31 @@ class AIPlayer {
 
         trace('AI tested ${ai_iterations} combinations of actions');  
         // TODO: Also write time spend
-        trace('Best actions are ${result.actions} with a delta score of $deltaScore');
+        trace('Best actions are ${result.actions} with a result of $result and a delta score of $deltaScore');
 
-        if (deltaScore < 0) {
-            trace('Score of $deltaScore is not good enough');
-            return [];
-        }
+        // if (deltaScore < 0) {
+        //     trace('Score of $deltaScore is not good enough');
+        //     return [];
+        // }
 
         // trace('actions: ${result.actions}');
         return result.actions;
     }
 
     static function minimax(player :Player, game :Game, turnDepthRemaining :Int) :BestActionsResult {
-        trace('minimax turnDepthRemaining: $turnDepthRemaining, player: ${game.get_current_player().name}');
-
-        if (game.is_game_over() || turnDepthRemaining <= 0)
+        if (game.is_game_over() || turnDepthRemaining <= 0) {
+            // trace('SCORE: ${score_board(player, game)}');
             return { score: score_board(player, game), actions: [] };
+        }
+
+        // trace('minimax turnDepthRemaining: $turnDepthRemaining, player: ${game.get_current_player().name}');
 
         var bestResult = { score: 0, actions: [] };
         if (game.is_current_player(player)) {
+            // trace('current player start');
             bestResult.score = -1000;
         } else {
+            // trace('other player start');
             bestResult.score = 1000;
         }
 
@@ -60,27 +64,30 @@ class AIPlayer {
 
             var newGame = game.clone();
             newGame.do_turn(actions); // TODO: Make this return a clone instead?
-            var result = minimax(player, newGame, turnDepthRemaining - 1);
 
+            var result = minimax(player, newGame, turnDepthRemaining - 1);
             if (game.is_current_player(player)) {
+                // trace('current player');
                 if (result.score > bestResult.score) {
                     bestResult.score = result.score;
-                    bestResult.actions = result.actions;
+                    bestResult.actions = actions;
                 }
             } else {
+                // trace('other player');
                 if (result.score < bestResult.score) {
                     bestResult.score = result.score;
-                    bestResult.actions = result.actions;
+                    bestResult.actions = actions;
                 }
             }
         }
 
+        trace('BEST RESULT: ${bestResult.score} for ${bestResult.actions}');
         return bestResult;
     }
 
     static function get_available_sets_of_actions(player :Player, game :Game, actionDepthRemaining :Int) :Array<Array<Action>> {
 
-        trace('get_available_sets_of_actions actionDepthRemaining: $actionDepthRemaining');
+        // trace('get_available_sets_of_actions actionDepthRemaining: $actionDepthRemaining');
 
         if (actionDepthRemaining <= 0) {
             trace('default case, actions: ${game.get_available_actions()}');
@@ -144,10 +151,10 @@ class Test {
         }
 
         var tiles = { x: 3, y: 4 };
-        var player1 = { id: 0, name: 'Princess', take_turn: HumanPlayer.actions_for_turn };
-        var player2 = { id: 1, name: 'Troll', take_turn: AIPlayer.actions_for_turn };
+
+        var ai_player = { id: 0, name: 'AI Player', take_turn: AIPlayer.actions_for_turn };
         var goblin = new Minion({ 
-            player: player2,
+            player: ai_player,
             id: 0,
             name: 'Goblin 1',
             attack: 2,
@@ -156,8 +163,10 @@ class Test {
             movesLeft: 1,
             attacksLeft: 1
         });
+
+        var human_player = { id: 1, name: 'Human Player', take_turn: HumanPlayer.actions_for_turn };
         var unicorn = new Minion({
-            player: player1,
+            player: human_player,
             id: 3,
             name: 'Unicorn',
             attack: 2,
@@ -184,7 +193,7 @@ class Test {
 
         var gameState = {
             board: new Board(tiles.x, tiles.y, create_tile), // TODO: Make from a core.Map
-            players: [player2, player1],
+            players: [ai_player, human_player],
             rules: new Rules() // [{ trigger: Constant, effect:  }]
         };
         var game = new Game(gameState);
