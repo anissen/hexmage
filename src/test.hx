@@ -7,7 +7,7 @@ import core.Rules;
 import core.Actions;
 import core.Player;
 
-typedef BestActionsResult = { score :Int, actions :Array<Action> };
+typedef BestActionsResult = { /* potentialScore :Int, */ score :Int, actions :Array<Action> };
 
 class AIPlayer {
     static var ai_iterations = 0;
@@ -19,7 +19,7 @@ class AIPlayer {
 
         var player = game.get_current_player();
         var currentScore = score_board(player, game);
-        var result = minimax(player, game, 3 /* number of turns to test */);
+        var result = minimax(player, game, 2 /* number of turns to test */);
         var deltaScore = result.score - currentScore;
 
         trace('AI tested ${ai_iterations} combinations of actions');  
@@ -42,7 +42,7 @@ class AIPlayer {
     }
 
     static function indent_trace(index :Int, s :String) {
-        trace('${get_indent(index)} $s');
+        // trace('${get_indent(index)} $s');
     }
 
     static function minimax(player :Player, game :Game, turnDepthRemaining :Int) :BestActionsResult {
@@ -72,13 +72,13 @@ class AIPlayer {
             if (game.is_current_player(player)) {
                 if (result.score > bestResult.score) {
                     // trace('::: BEST for current player');
-                    bestResult.score = score_board(player, game);
+                    bestResult.score = result.score;
                     bestResult.actions = actions;
                 }
             } else { // ensure we only set actions if we simulate more turns
                 if (result.score < bestResult.score) {
                     // trace('::: BEST for other player');
-                    bestResult.score = score_board(player, game);
+                    bestResult.score = result.score;
                     bestResult.actions = actions;
                 }
             }
@@ -92,26 +92,20 @@ class AIPlayer {
 
         // trace('get_available_sets_of_actions actionDepthRemaining: $actionDepthRemaining');
 
-        if (actionDepthRemaining <= 0) {
-            // trace('default case, actions: []');
+        if (actionDepthRemaining <= 0)
             return [];
-        }
 
         ai_iterations++;
 
-        // trace('get_available_actions: ${game.get_available_actions()}');
         var actions :Array<Array<Action>> = [];
         for (action in game.get_available_actions()) {
-            // trace('Trying action $action');
             var newGame = game.clone();
             newGame.do_action(action);
 
             var result = get_available_sets_of_actions(player, newGame, actionDepthRemaining - 1);
-            // trace('result');
-            // trace(result);
             actions.push([action]);
             for (resultActions in result) {
-                actions.push([action].concat(resultActions)); // array<action>
+                actions.push([action].concat(resultActions));
             }
         }
 
@@ -141,8 +135,8 @@ class AIPlayer {
 
 class HumanPlayer {
     static public function actions_for_turn(game :Game) :Array<Action> {
-        // return [Move({ minionId: 3, pos: { x: 2, y: 2 } })];
-        return [];
+        return [Move({ minionId: 1, pos: { x: 1, y: 2 } })];
+        // return [];
     }
 }
 
@@ -153,7 +147,7 @@ class Test {
             m.attack += 1;
         }
 
-        var tiles = { x: 1, y: 4 };
+        var tiles = { x: 3, y: 4 };
 
         var ai_player = { id: 0, name: 'AI Player', take_turn: AIPlayer.actions_for_turn };
         var goblin = new Minion({ 
@@ -170,7 +164,7 @@ class Test {
         var human_player = { id: 1, name: 'Human Player', take_turn: HumanPlayer.actions_for_turn };
         var unicorn = new Minion({
             player: human_player,
-            id: 3,
+            id: 1,
             name: 'Unicorn',
             attack: 2,
             life: 2,
@@ -181,7 +175,7 @@ class Test {
 
         function create_tile(x :Int, y :Int) :Tile {
             if (x == 0 && y == 0) return { minion: goblin };
-            if (x == 0 && y == 3) return { minion: unicorn };
+            if (x == 1 && y == 3) return { minion: unicorn };
             return {};
         }
 
