@@ -20,7 +20,8 @@ class AIPlayer {
         var result = minimax(player, game, 3);
         var deltaScore = result.score - currentScore;
 
-        trace('AI tested ${AIPlayer.ai_iterations} combinations of actions');
+        trace('AI tested ${AIPlayer.ai_iterations} combinations of actions');  
+        // TODO: Also write time spend
         trace('Best actions are ${result.actions} with a delta score of $deltaScore');
 
         if (deltaScore < 0) {
@@ -33,6 +34,8 @@ class AIPlayer {
     }
 
     static function minimax(player :Player, game :Game, turnDepthRemaining :Int) :BestActionsResult {
+        trace('minimax turnDepthRemaining: $turnDepthRemaining, player: ${game.get_current_player().name}');
+
         if (game.is_game_over() || turnDepthRemaining <= 0)
             return { score: AIPlayer.score_board(player, game), actions: [] };
 
@@ -44,8 +47,10 @@ class AIPlayer {
         // [Move1, Move2, Attack]
         // [Move1, Attack]
         for (actions in get_available_sets_of_actions(player, game, 3)) {
+            // trace('actions from get_available_sets_of_actions');
+            // trace(actions);
             var newGame = game.clone();
-            newGame.do_turn(best.actions); // TODO: Make this return a clone instead?
+            newGame.do_turn(actions); // TODO: Make this return a clone instead?
             var result = minimax(player, newGame, turnDepthRemaining - 1);
 
             if (game.is_current_player(player)) {
@@ -64,21 +69,27 @@ class AIPlayer {
         return bestResult;
     }
 
-    // TODO: This should return a tree structure instead
     static function get_available_sets_of_actions(player :Player, game :Game, actionDepthRemaining :Int) :Array<Array<Action>> {
 
         if (actionDepthRemaining <= 0)
-            return [[]];
+            return [game.get_available_actions()];
 
         AIPlayer.ai_iterations++;
 
-        var actions = [[]];
+        // trace('get_available_actions: ${game.get_available_actions()}');
+        var actions = [];
         for (action in game.get_available_actions()) {
+            // trace('Trying action $action');
             var newGame = game.clone();
             newGame.do_action(action);
+
             var result = AIPlayer.get_available_sets_of_actions(player, newGame, actionDepthRemaining - 1);
-            var blah :Array<Action> = [action].concat(result); // TODO: This should return a tree structure instead
-            actions.push(blah);
+
+            actions.push([action]);
+            for (resultActions in result) {
+                actions.push([action].concat(resultActions)); // array<action>
+            }
+            // trace('ACTIONS: $actions');
         }
 
         return actions;
