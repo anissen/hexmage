@@ -31,7 +31,7 @@ class Game {
     } 
 
     public function start() {
-        var maxTurns = 1; // TEMPORARY, for testing
+        var maxTurns = 3; // TEMPORARY, for testing
         for (turn in 0 ... maxTurns) {
             emit('turn_start');
             start_turn();
@@ -53,7 +53,7 @@ class Game {
 
     function reset_minion_stats() :Void {
         for (minion in state.board.get_minions_for_player(get_current_player())) {
-            minion.movesLeft = 2;
+            minion.movesLeft = 1;
             minion.attacksLeft = 1;
         }
     }
