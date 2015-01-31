@@ -19,7 +19,7 @@ class AIPlayer {
 
         var player = game.get_current_player();
         var currentScore = score_board(player, game);
-        var result = minimax(player, game, 2 /* number of turns to test */);
+        var result = minimax(player, game, 3 /* number of turns to test */);
         var deltaScore = result.score - currentScore;
 
         trace('AI tested ${ai_iterations} combinations of actions');  
@@ -42,7 +42,7 @@ class AIPlayer {
     }
 
     static function indent_trace(index :Int, s :String) {
-        // trace('${get_indent(index)} $s');
+        trace('${get_indent(index)} $s');
     }
 
     static function minimax(player :Player, game :Game, turnDepthRemaining :Int) :BestActionsResult {
@@ -55,20 +55,21 @@ class AIPlayer {
         indent_trace(4-turnDepthRemaining, 'ACTIONS: $set_of_all_actions');
 
         if (set_of_all_actions.length == 0) {
-            return { score: score_board(player, game), actions: [] };
+            var turn_penalty = turnDepthRemaining - 3;
+            return { score: score_board(player, game) + turn_penalty, actions: [] };
         }
 
         indent_trace(4-turnDepthRemaining, 'minimax turnDepthRemaining: $turnDepthRemaining, player: ${game.get_current_player().name}');
 
         var bestResult = { score: (game.is_current_player(player) ? -1000 : 1000), actions: [] };
         for (actions in set_of_all_actions) {
-            indent_trace(4-turnDepthRemaining, 'trying $actions');
+            indent_trace(4-turnDepthRemaining, '· TRYING $actions');
 
             var newGame = game.clone();
             newGame.do_turn(actions); // TODO: Make this return a clone instead?
 
             var result = minimax(player, newGame, turnDepthRemaining - 1);
-            indent_trace(4-turnDepthRemaining, 'RESULT: ${result.score} for ${actions}');
+            indent_trace(4-turnDepthRemaining, '· RESULT: ${result.score} for ${actions}');
             if (game.is_current_player(player)) {
                 if (result.score > bestResult.score) {
                     // trace('::: BEST for current player');
@@ -79,7 +80,7 @@ class AIPlayer {
                 if (result.score < bestResult.score) {
                     // trace('::: BEST for other player');
                     bestResult.score = result.score;
-                    bestResult.actions = actions;
+                    // bestResult.actions = actions;
                 }
             }
         }
