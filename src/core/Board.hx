@@ -30,7 +30,7 @@ class Board {
         }
     }
 
-    function clone_player(p :Player) :Player {
+    public function clone_player(p :Player) :Player {
         return { id: p.id, name: p.name, take_turn: p.take_turn };
     }
 

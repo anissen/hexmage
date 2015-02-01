@@ -31,7 +31,7 @@ class Game {
     } 
 
     public function start() {
-        var maxTurns = 5; // TEMPORARY, for testing
+        var maxTurns = 1; // TEMPORARY, for testing
         for (turn in 0 ... maxTurns) {
             emit('turn_start');
             start_turn();
@@ -68,10 +68,14 @@ class Game {
         return RuleEngine.get_available_actions(state, get_current_player());
     }
 
+    function clone_players() :Players {
+        return [ for (p in state.players) state.board.clone_player(p) ];
+    }
+
     public function clone() :Game {
         return new Game({
             board: state.board.clone_board(),
-            players: state.players.copy(), // TODO: Probably not enough
+            players: clone_players(),
             rules: state.rules.copy() // TODO: Probably not enough
         });
     }

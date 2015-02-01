@@ -45,17 +45,33 @@ class AIPlayer {
         trace('${get_indent(index)} $s');
     }
 
+    /*
+    ERROR:
+
+    Test.hx:45: ->  minimax turn: 1, player: Human Player
+    Test.hx:45: -> ->  minimax turn: 2, player: AI Player
+    Test.hx:45: ->  RESULT: -1 for Human Player with [Move({ pos => { x => 2, y => 1 }, minionId => 1 })]
+    Test.hx:45: -> ->  minimax turn: 2, player: AI Player
+    Test.hx:45: ->  RESULT: -1 for Human Player with [Move({ pos => { x => 2, y => 3 }, minionId => 1 })]
+    Test.hx:45: -> ->  minimax turn: 2, player: AI Player
+    Test.hx:45: -> -> ->  minimax turn: 3, player: Human Player
+    Test.hx:45: -> ->  RESULT: 5 for AI Player with [Attack({ victimId => 1, minionId => 0 })]
+    Test.hx:45: -> ->  BEST RESULT: 5 for [Attack({ victimId => 1, minionId => 0 })]
+    Test.hx:45: ->  RESULT: 5 for Human Player with [Move({ pos => { x => 1, y => 2 }, minionId => 1 })]
+    Test.hx:45: ->  BEST RESULT: -1 for [Move({ pos => { x => 2, y => 1 }, minionId => 1 })]
+    */
+
     static function minimax(player :Player, game :Game, maxTurns :Int, turn :Int = 0) :BestActionsResult {
         indent_trace(turn, 'minimax turn: $turn, player: ${game.get_current_player().name}');
 
         if (game.is_game_over() || turn >= maxTurns) {
             var turn_penalty = -turn;
-            indent_trace(turn, 'SCORE: ${score_board(player, game) + turn_penalty}');
+            // indent_trace(turn, 'SCORE: ${score_board(player, game) + turn_penalty}');
             return { score: score_board(player, game) + turn_penalty, actions: [] };
         }
 
-        var set_of_all_actions = get_available_sets_of_actions(player, game, 2 /* number of actions per turns to test */);
-        indent_trace(turn, 'ACTIONS: $set_of_all_actions');
+        var set_of_all_actions = get_available_sets_of_actions(game, 2 /* number of actions per turns to test */);
+        // indent_trace(turn, 'ACTIONS: $set_of_all_actions');
 
         if (set_of_all_actions.length == 0) {
             var turn_penalty = -turn;
@@ -64,20 +80,36 @@ class AIPlayer {
 
         var bestResult = { score: (game.is_current_player(player) ? -1000 : 1000), actions: [] };
         for (actions in set_of_all_actions) {
-            indent_trace(turn, '· TRYING $actions');
+            // indent_trace(turn, '· TRYING $actions');
 
             var newGame = game.clone();
             newGame.do_turn(actions); // TODO: Make this return a clone instead?
 
             var result = minimax(player, newGame, maxTurns, turn + 1);
-            indent_trace(turn, '· RESULT: ${result.score} for ${actions}');
+            var score = result.score;
+            indent_trace(turn, 'RESULT: ${result.score} for ${game.get_current_player().name} with $actions');
+            // if (result.score == 5 && !game.is_current_player(player)) {
+            //     trace('--------------');
+            //     trace('MAYBE ERROR HERE!!');
+            //     trace('minimax turn: $turn, player: ${game.get_current_player().name}');
+            //     trace(result);
+            //     trace('--------------');
+            // }
+            /*
+            |x| |y|
+            AI:
+            | |x|y| -> Move X (good score, e.g. 10)
+            Human:
+            | |-|y| -> Attack Y (bad score, e.g. 2)
+            -> Bad move!
+            */
             if (game.is_current_player(player)) {
                 if (result.score > bestResult.score) {
                     // trace('::: BEST for current player');
                     bestResult.score = result.score;
                     bestResult.actions = actions;
                 }
-            } else { // ensure we only set actions if we simulate more turns
+            } else {
                 if (result.score < bestResult.score) {
                     // trace('::: BEST for other player');
                     bestResult.score = result.score;
@@ -86,11 +118,11 @@ class AIPlayer {
             }
         }
 
-        indent_trace(turn, 'BEST RESULT: ${bestResult.score} for ${bestResult.actions}');
+        indent_trace(turn, '== BEST RESULT: ${bestResult.score} for ${game.get_current_player().name} with ${bestResult.actions}');
         return bestResult;
     }
 
-    static function get_available_sets_of_actions(player :Player, game :Game, actionDepthRemaining :Int) :Array<Array<Action>> {
+    static function get_available_sets_of_actions(game :Game, actionDepthRemaining :Int) :Array<Array<Action>> {
         if (actionDepthRemaining <= 0)
             return [];
 
@@ -101,7 +133,7 @@ class AIPlayer {
             var newGame = game.clone();
             newGame.do_action(action);
 
-            var result = get_available_sets_of_actions(player, newGame, actionDepthRemaining - 1);
+            var result = get_available_sets_of_actions(newGame, actionDepthRemaining - 1);
             actions.push([action]);
             for (resultActions in result) {
                 actions.push([action].concat(resultActions));
@@ -126,7 +158,7 @@ class AIPlayer {
         
         var score = get_score_for_player(player);
         for (p in state.players) {
-            if (p == player) continue;
+            if (p.id == player.id) continue;
             score -= get_score_for_player(p);
         }
         return score;
@@ -154,8 +186,8 @@ class Test {
             player: ai_player,
             id: 0,
             name: 'Goblin 1',
-            attack: 2,
-            life: 3,
+            attack: 4,
+            life: 4,
             rules: new Rules(),
             movesLeft: 1,
             attacksLeft: 1
@@ -174,8 +206,8 @@ class Test {
         });
 
         function create_tile(x :Int, y :Int) :Tile {
-            if (x == 0 && y == 0) return { minion: goblin };
-            if (x == 2 && y == 2) return { minion: unicorn };
+            if (x == 0 && y == 1) return { minion: goblin };
+            if (x == 1 && y == 3) return { minion: unicorn };
             return {};
         }
 
