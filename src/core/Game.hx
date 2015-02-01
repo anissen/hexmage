@@ -31,7 +31,7 @@ class Game {
     } 
 
     public function start() {
-        var maxTurns = 3; // TEMPORARY, for testing
+        var maxTurns = 5; // TEMPORARY, for testing
         for (turn in 0 ... maxTurns) {
             emit('turn_start');
             start_turn();

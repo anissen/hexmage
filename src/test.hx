@@ -45,31 +45,32 @@ class AIPlayer {
         trace('${get_indent(index)} $s');
     }
 
-    static function minimax(player :Player, game :Game, turnDepthRemaining :Int) :BestActionsResult {
-        if (game.is_game_over() || turnDepthRemaining <= 0) {
-            indent_trace(4-turnDepthRemaining, 'SCORE: ${score_board(player, game)}');
-            return { score: score_board(player, game), actions: [] };
-        }
+    static function minimax(player :Player, game :Game, maxTurns :Int, turn :Int = 0) :BestActionsResult {
+        indent_trace(turn, 'minimax turn: $turn, player: ${game.get_current_player().name}');
 
-        var set_of_all_actions = get_available_sets_of_actions(player, game, 2 /* number of actions per turns to test */);
-        indent_trace(4-turnDepthRemaining, 'ACTIONS: $set_of_all_actions');
-
-        if (set_of_all_actions.length == 0) {
-            var turn_penalty = turnDepthRemaining - 3;
+        if (game.is_game_over() || turn >= maxTurns) {
+            var turn_penalty = -turn;
+            indent_trace(turn, 'SCORE: ${score_board(player, game) + turn_penalty}');
             return { score: score_board(player, game) + turn_penalty, actions: [] };
         }
 
-        indent_trace(4-turnDepthRemaining, 'minimax turnDepthRemaining: $turnDepthRemaining, player: ${game.get_current_player().name}');
+        var set_of_all_actions = get_available_sets_of_actions(player, game, 2 /* number of actions per turns to test */);
+        indent_trace(turn, 'ACTIONS: $set_of_all_actions');
+
+        if (set_of_all_actions.length == 0) {
+            var turn_penalty = -turn;
+            return { score: score_board(player, game) + turn_penalty, actions: [] };
+        }
 
         var bestResult = { score: (game.is_current_player(player) ? -1000 : 1000), actions: [] };
         for (actions in set_of_all_actions) {
-            indent_trace(4-turnDepthRemaining, '· TRYING $actions');
+            indent_trace(turn, '· TRYING $actions');
 
             var newGame = game.clone();
             newGame.do_turn(actions); // TODO: Make this return a clone instead?
 
-            var result = minimax(player, newGame, turnDepthRemaining - 1);
-            indent_trace(4-turnDepthRemaining, '· RESULT: ${result.score} for ${actions}');
+            var result = minimax(player, newGame, maxTurns, turn + 1);
+            indent_trace(turn, '· RESULT: ${result.score} for ${actions}');
             if (game.is_current_player(player)) {
                 if (result.score > bestResult.score) {
                     // trace('::: BEST for current player');
@@ -80,19 +81,16 @@ class AIPlayer {
                 if (result.score < bestResult.score) {
                     // trace('::: BEST for other player');
                     bestResult.score = result.score;
-                    // bestResult.actions = actions;
+                    bestResult.actions = actions;
                 }
             }
         }
 
-        indent_trace(4-turnDepthRemaining, 'BEST RESULT: ${bestResult.score} for ${bestResult.actions}');
+        indent_trace(turn, 'BEST RESULT: ${bestResult.score} for ${bestResult.actions}');
         return bestResult;
     }
 
     static function get_available_sets_of_actions(player :Player, game :Game, actionDepthRemaining :Int) :Array<Array<Action>> {
-
-        // trace('get_available_sets_of_actions actionDepthRemaining: $actionDepthRemaining');
-
         if (actionDepthRemaining <= 0)
             return [];
 
@@ -119,8 +117,9 @@ class AIPlayer {
         // score the players own stuff only
         function get_score_for_player(p) {
             var score = 0;
+            var intrinsicMinionScore = 5;
             for (minion in state.board.get_minions_for_player(p)) {
-                score += minion.attack + minion.life;
+                score += intrinsicMinionScore + minion.attack + minion.life;
             }
             return score;
         }
@@ -136,8 +135,8 @@ class AIPlayer {
 
 class HumanPlayer {
     static public function actions_for_turn(game :Game) :Array<Action> {
-        return [Move({ minionId: 1, pos: { x: 1, y: 2 } })];
-        // return [];
+        // return [Move({ minionId: 1, pos: { x: 1, y: 2 } })];
+        return [];
     }
 }
 
@@ -176,7 +175,7 @@ class Test {
 
         function create_tile(x :Int, y :Int) :Tile {
             if (x == 0 && y == 0) return { minion: goblin };
-            if (x == 1 && y == 3) return { minion: unicorn };
+            if (x == 2 && y == 2) return { minion: unicorn };
             return {};
         }
 
