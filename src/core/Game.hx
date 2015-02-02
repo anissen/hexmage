@@ -33,22 +33,26 @@ class Game {
     public function start() {
         var maxTurns = 1; // TEMPORARY, for testing
         for (turn in 0 ... maxTurns) {
-            emit('turn_start');
-            start_turn();
-            // trace('${get_current_player().name} has chosen these actions: ${actions}');
-            for (action in get_current_player().take_turn(clone())) {
-                // TODO: check action available
-                trace('Doing action: $action');
-                do_action(action);
-                // TODO: check victory/defeat
-                if (has_won()) {
-                    emit('won_game');
-                    return;
-                }
-            }
-            emit('turn_end');
-            end_turn();
+            take_turn();
         }
+    }
+
+    public function take_turn() :Void {
+        emit('turn_start');
+        start_turn();
+        // trace('${get_current_player().name} has chosen these actions: ${actions}');
+        for (action in get_current_player().take_turn(clone())) {
+            // TODO: check action available
+            trace('Doing action: $action');
+            do_action(action);
+            // TODO: check victory/defeat
+            if (has_won()) {
+                emit('won_game');
+                return;
+            }
+        }
+        emit('turn_end');
+        end_turn();
     }
 
     function reset_minion_stats() :Void {
