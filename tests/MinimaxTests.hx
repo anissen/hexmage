@@ -1,4 +1,6 @@
 
+package tests;
+
 import core.Game;
 import core.Minion;
 import core.Board;
@@ -7,7 +9,9 @@ import core.Rules;
 import core.Actions;
 import core.Player;
 
-typedef BestActionsResult = { /* potentialScore :Int, */ score :Int, actions :Array<Action> };
+import mohxa.Mohxa;
+
+typedef BestActionsResult = { score :Int, actions :Array<Action> };
 
 class AIPlayer {
     static var ai_iterations = 0;
@@ -172,12 +176,9 @@ class HumanPlayer {
     }
 }
 
-class Test {
-    static function main() {
-        function plus_one_attack_per_turn(b :Board) :Void {
-            var m = b.get_minion(3);
-            m.attack += 1;
-        }
+class MinimaxTests extends Mohxa {
+    public function new() {
+        super();
 
         var tiles = { x: 3, y: 4 };
 
@@ -198,11 +199,11 @@ class Test {
             player: human_player,
             id: 1,
             name: 'Unicorn',
-            attack: 2,
-            life: 2,
+            attack: 0,
+            life: 1,
             rules: new Rules(), /* [{ trigger: OwnTurnStart, effect: Scripted(plus_one_attack_per_turn) }] */
-            movesLeft: 1,
-            attacksLeft: 1
+            movesLeft: 0,
+            attacksLeft: 0
         });
 
         function create_tile(x :Int, y :Int) :Tile {
@@ -210,15 +211,6 @@ class Test {
             if (x == 1 && y == 3) return { minion: unicorn };
             return {};
         }
-
-        // function one_move_per_turn_rule(state :GameState) {
-        //     for (action in state.actions_for_turn) {
-        //         switch (action) {
-        //             case Move: available_actions = available_actions.filter(function(a) { return a != Move });
-        //             case _:
-        //         }
-        //     }
-        // }
 
         var gameState = {
             board: new Board(tiles.x, tiles.y, create_tile), // TODO: Make from a core.Map
@@ -242,6 +234,26 @@ class Test {
             game.get_state().board.print_board();
         });
 
-        game.start();
+        // game.start();
+
+        describe('Minimax Tests', function() {
+            log('Here we test the minimax algorithm using a simple test game state');
+
+            it('should start with both minions', function() {
+                equal(1, game.get_state().board.get_minions_for_player(ai_player).length, 'should have 1 minion');
+                equal(1, game.get_state().board.get_minions_for_player(human_player).length, 'should have 1 minion');
+            });
+
+            game.take_turn(); // AI
+            game.take_turn(); // Human
+            game.take_turn(); // AI
+
+            it('should have killed the human players minion after a turn', function() {
+                equal(1, game.get_state().board.get_minions_for_player(ai_player).length, 'should have 1 minion');
+                equal(0, game.get_state().board.get_minions_for_player(human_player).length, 'should have 0 minions');
+            });
+        });
+
+        run();
     }
 }

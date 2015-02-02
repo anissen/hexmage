@@ -1,5 +1,5 @@
 -cp tests
 -cp src
--main Minimax
+-main tests.AllTests
 -lib mohxa
--x tests/bin/MinimaxTest.n
+-x tests/bin/AllTests
