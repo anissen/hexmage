@@ -1,0 +1,5 @@
+-cp src
+-main Test
+-dce full
+-cpp bin/cpp
+-cmd ./bin/cpp/Test

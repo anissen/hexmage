@@ -1,0 +1,5 @@
+-cp tests
+-lib mohxa
+-main UnitTest
+-cpp bin/test/cpp
+-cmd ./bin/test/cpp/UnitTest
