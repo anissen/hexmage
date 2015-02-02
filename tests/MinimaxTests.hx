@@ -176,6 +176,76 @@ class HumanPlayer {
     }
 }
 
+class TestGame {
+    public static var ai_player = { id: 0, name: 'AI Player', take_turn: AIPlayer.actions_for_turn };
+    public static var goblin = new Minion({ 
+        player: ai_player,
+        id: 0,
+        name: 'Goblin 1',
+        attack: 4,
+        life: 4,
+        rules: new Rules(),
+        movesLeft: 1,
+        attacksLeft: 1
+    });
+
+    public static var human_player = { id: 1, name: 'Human Player', take_turn: HumanPlayer.actions_for_turn };
+    public static var unicorn = new Minion({
+        player: human_player,
+        id: 1,
+        name: 'Unicorn',
+        attack: 0,
+        life: 1,
+        rules: new Rules(), /* [{ trigger: OwnTurnStart, effect: Scripted(plus_one_attack_per_turn) }] */
+        movesLeft: 0,
+        attacksLeft: 0
+    });
+}
+
+class MinimaxTrivialTests extends Mohxa {
+    public function new() {
+        super();
+
+        var tiles = { x: 1, y: 2 };
+        function create_tile(x :Int, y :Int) :Tile {
+            if (x == 0 && y == 0) return { minion: TestGame.goblin };
+            if (x == 0 && y == 1) return { minion: TestGame.unicorn };
+            return {};
+        }
+
+        var gameState = {
+            board: new Board(tiles.x, tiles.y, create_tile), // TODO: Make from a core.Map
+            players: [TestGame.ai_player, TestGame.human_player],
+            rules: new Rules()
+        };
+        var game = new Game(gameState);
+
+        log('Minimax Trivial Tests');
+        describe('Board setup', function() {
+
+            it('should start with one minion for each player', function() {
+                equal(1, game.get_state().board.get_minions_for_player(TestGame.ai_player).length, 'should have 1 minion');
+                equal(1, game.get_state().board.get_minions_for_player(TestGame.human_player).length, 'should have 1 minion');
+            });
+
+            it('should start with AI player as the current player', function() {
+                equal(true, game.is_current_player(TestGame.ai_player), 'AI should be current player');
+            });
+
+            // game.take_turn(); // AI
+            // game.take_turn(); // Human
+            // game.take_turn(); // AI
+
+            // it('should have killed the human players minion after a turn', function() {
+            //     equal(1, game.get_state().board.get_minions_for_player(ai_player).length, 'should have 1 minion');
+            //     equal(0, game.get_state().board.get_minions_for_player(human_player).length, 'should have 0 minions');
+            // });
+        });
+
+        run();
+    }
+}
+
 class MinimaxTests extends Mohxa {
     public function new() {
         super();
