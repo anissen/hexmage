@@ -222,14 +222,105 @@ class MinimaxTrivialTests extends Mohxa {
 
         log('Minimax Trivial Tests');
         describe('Board setup', function() {
+            var board = game.get_state().board;
+            board.print_board();
 
-            it('should start with one minion for each player', function() {
-                equal(1, game.get_state().board.get_minions_for_player(TestGame.ai_player).length, 'should have 1 minion');
-                equal(1, game.get_state().board.get_minions_for_player(TestGame.human_player).length, 'should have 1 minion');
+            it('should be the correct size', function() {
+                var size = board.get_board_size();
+                equal(1, size.x, '1 tile wide');
+                equal(2, size.y, '2 tiles height');
+            });
+
+            var ai_minion;
+            var human_minion;
+
+            describe('AI player', function() {
+                var minions = board.get_minions_for_player(TestGame.ai_player);
+
+                it('should start with one minion', function() {
+                    equal(1, minions.length, '1 minion');
+                });
+
+                it('should have a minion of type "goblin"', function() {
+                    equal(true, minions[0] == TestGame.goblin, 'Is of type "goblin"');
+                });
+
+                ai_minion = minions[0];
+                it('should have correct properties', function() {
+                    equal(4, ai_minion.attack, '4 attack value');
+                    equal(4, ai_minion.life, '4 life');
+                    equal(1, ai_minion.movesLeft, '1 move left');
+                    equal(1, ai_minion.attacksLeft, '1 attack left');
+                });
+
+                it('should be positioned at (0, 0)', function() {
+                    var pos = board.get_minion_pos(ai_minion);
+                    equal(0, pos.x, 'x: 0');
+                    equal(0, pos.y, 'y: 0');
+                });
+            });
+
+            describe('Human player', function() {
+                var minions = board.get_minions_for_player(TestGame.human_player);
+
+                it('should start with one minion', function() {
+                    equal(1, minions.length, '1 minion');
+                });
+
+                it('should have a minion of type "unicorn"', function() {
+                    equal(true, minions[0] == TestGame.unicorn, 'Is of type "unicorn"');
+                });
+
+                human_minion = minions[0];
+                it('should have correct properties', function() {
+                    equal(0, human_minion.attack, '0 attack value');
+                    equal(1, human_minion.life, '1 life');
+                    equal(0, human_minion.movesLeft, '0 move left');
+                    equal(0, human_minion.attacksLeft, '0 attack left');
+                });
+
+                it('should be positioned at (0, 1)', function() {
+                    var pos = board.get_minion_pos(human_minion);
+                    equal(0, pos.x, 'x: 0');
+                    equal(1, pos.y, 'y: 1');
+                });
             });
 
             it('should start with AI player as the current player', function() {
                 equal(true, game.is_current_player(TestGame.ai_player), 'AI should be current player');
+            });
+
+            describe('AI turn', function() {
+                it('should have the correct actions available', function() {
+                    var actions = game.get_available_actions();
+                    equal(1, actions.length, '1 action');
+
+                    var action = actions[0];
+                    equal('Attack', Type.enumConstructor(action), 'Action is an "attack" action');
+                    var actionParams = Type.enumParameters(action)[0];
+                    equal(ai_minion.id, actionParams.minionId, 'Attacker is the AI minion');
+                    equal(human_minion.id, actionParams.victimId, 'Victim is the human minion');
+                });
+
+                it('should take the turn', function() {
+                    log('AI player is taking the turn');
+                    game.take_turn();
+
+                    it('should have changed the board state', function() {
+                        var ai_minons_changed = board.get_minions_for_player(TestGame.ai_player);
+                        equal(1, ai_minons_changed.length, 'AI player should have 1 minion');
+                        equal(0, ai_minons_changed[0].attacksLeft, 'AI minion should have 0 attacks left');
+                        equal(1, ai_minons_changed[0].movesLeft, 'AI minion should have 1 moves left');
+
+                        equal(0, board.get_minions_for_player(TestGame.human_player).length, 'Human player should have 0 minions');
+                    });
+
+                    it('should be game over', function() {
+                        equal(true, game.is_game_over(), 'Game should be over');
+                        equal(true, game.has_won(TestGame.ai_player), 'AI player should have won');
+                        equal(false, game.has_won(TestGame.human_player), 'Human player should have lost');
+                    });
+                });
             });
 
             // game.take_turn(); // AI

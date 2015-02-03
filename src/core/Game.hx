@@ -46,7 +46,7 @@ class Game {
             trace('Doing action: $action');
             do_action(action);
             // TODO: check victory/defeat
-            if (has_won()) {
+            if (has_won(get_current_player())) {
                 emit('won_game');
                 return;
             }
@@ -98,10 +98,10 @@ class Game {
 
     public function is_game_over() :Bool {
         for (player in state.players) {
-            if (state.board.get_minions_for_player(player).length > 0)
-                return false;
+            if (state.board.get_minions_for_player(player).length == 0)
+                return true;
         }
-        return true;
+        return false;
     }
 
     function start_turn() :Void {
@@ -129,10 +129,10 @@ class Game {
         end_turn();
     }
 
-    function has_won() :Bool {
-        for (player in state.players) {
-            if (player == get_current_player()) continue;
-            if (state.board.get_minions_for_player(player).length > 0)
+    public function has_won(player :Player) :Bool {
+        for (other_player in state.players) {
+            if (other_player.id == player.id) continue;
+            if (state.board.get_minions_for_player(other_player).length > 0)
                 return false;
         }
         return true;
