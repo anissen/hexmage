@@ -1,5 +1,7 @@
--cp src
--main Test
--dce full
--cpp bin/cpp
--cmd ./bin/cpp/Test
+tests/build.hxml
+#--next
+#-cp src
+#-main Test
+#-dce full
+#-cpp bin/cpp
+#-cmd ./bin/cpp/Test

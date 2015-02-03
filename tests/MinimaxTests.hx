@@ -246,45 +246,22 @@ class MinimaxTrivialTests extends Mohxa {
     }
 }
 
+/*
 class MinimaxTests extends Mohxa {
     public function new() {
         super();
 
         var tiles = { x: 3, y: 4 };
 
-        var ai_player = { id: 0, name: 'AI Player', take_turn: AIPlayer.actions_for_turn };
-        var goblin = new Minion({ 
-            player: ai_player,
-            id: 0,
-            name: 'Goblin 1',
-            attack: 4,
-            life: 4,
-            rules: new Rules(),
-            movesLeft: 1,
-            attacksLeft: 1
-        });
-
-        var human_player = { id: 1, name: 'Human Player', take_turn: HumanPlayer.actions_for_turn };
-        var unicorn = new Minion({
-            player: human_player,
-            id: 1,
-            name: 'Unicorn',
-            attack: 0,
-            life: 1,
-            rules: new Rules(), /* [{ trigger: OwnTurnStart, effect: Scripted(plus_one_attack_per_turn) }] */
-            movesLeft: 0,
-            attacksLeft: 0
-        });
-
         function create_tile(x :Int, y :Int) :Tile {
-            if (x == 0 && y == 1) return { minion: goblin };
-            if (x == 1 && y == 3) return { minion: unicorn };
+            if (x == 0 && y == 1) return { minion: TestGame.goblin };
+            if (x == 1 && y == 3) return { minion: TestGame.unicorn };
             return {};
         }
 
         var gameState = {
             board: new Board(tiles.x, tiles.y, create_tile), // TODO: Make from a core.Map
-            players: [ai_player, human_player],
+            players: [TestGame.ai_player, TestGame.human_player],
             rules: new Rules() // [{ trigger: Constant, effect:  }]
         };
         var game = new Game(gameState);
@@ -310,8 +287,8 @@ class MinimaxTests extends Mohxa {
             log('Here we test the minimax algorithm using a simple test game state');
 
             it('should start with both minions', function() {
-                equal(1, game.get_state().board.get_minions_for_player(ai_player).length, 'should have 1 minion');
-                equal(1, game.get_state().board.get_minions_for_player(human_player).length, 'should have 1 minion');
+                equal(1, game.get_state().board.get_minions_for_player(TestGame.ai_player).length, 'should have 1 minion');
+                equal(1, game.get_state().board.get_minions_for_player(TestGame.human_player).length, 'should have 1 minion');
             });
 
             game.take_turn(); // AI
@@ -319,11 +296,12 @@ class MinimaxTests extends Mohxa {
             game.take_turn(); // AI
 
             it('should have killed the human players minion after a turn', function() {
-                equal(1, game.get_state().board.get_minions_for_player(ai_player).length, 'should have 1 minion');
-                equal(0, game.get_state().board.get_minions_for_player(human_player).length, 'should have 0 minions');
+                equal(1, game.get_state().board.get_minions_for_player(TestGame.ai_player).length, 'should have 1 minion');
+                equal(0, game.get_state().board.get_minions_for_player(TestGame.human_player).length, 'should have 0 minions');
             });
         });
 
         run();
     }
 }
+*/
