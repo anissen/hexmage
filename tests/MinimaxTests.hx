@@ -157,7 +157,9 @@ class TestGame {
         attack: 4,
         life: 4,
         rules: new Rules(),
+        moves: 1,
         movesLeft: 1,
+        attacks: 1,
         attacksLeft: 1
     });
 
@@ -169,7 +171,9 @@ class TestGame {
         attack: 0,
         life: 1,
         rules: new Rules(), /* [{ trigger: OwnTurnStart, effect: Scripted(plus_one_attack_per_turn) }] */
+        moves: 0,
         movesLeft: 0,
+        attacks: 0,
         attacksLeft: 0
     });
 }
@@ -566,6 +570,7 @@ class MinimaxMultiTurnPlanningTests extends Mohxa {
             });
 
             describe('Human turn', function() {
+                game.start_turn(); // HACK HACK HACK
                 it('should have the correct actions available', function() {
                     var set_of_actions = game.get_available_sets_of_actions(3);
                     equal(0, set_of_actions.length, '0 sets of actions');
@@ -578,7 +583,7 @@ class MinimaxMultiTurnPlanningTests extends Mohxa {
                     it('should not have moved the minion', function() {
                         var human_minons_changed = board.get_minions_for_player(TestGame.human_player);
                         equal(1, human_minons_changed.length, 'Human player should have 1 minion');
-                        equal(1, human_minons_changed[0].movesLeft, 'Human minion should have 0 moves left');
+                        equal(0, human_minons_changed[0].movesLeft, 'Human minion should have 0 moves left');
                         var pos = board.get_minion_pos(human_minons_changed[0]);
                         equal(0, pos.x, 'Human minion should be at x: 0');
                         equal(3, pos.y, 'Human minion should be at y: 3');
@@ -603,6 +608,88 @@ class MinimaxMultiTurnPlanningTests extends Mohxa {
                         equal(1, ai_minons_changed.length, 'AI player should have 1 minion');
                         equal(0, board.get_minions_for_player(TestGame.human_player).length, 'Human should have 0 minions');
                     });
+                });
+            });
+        });
+
+        run();
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------
+
+
+class MinimaxFailingTest extends Mohxa {
+    public function new() {
+        super();
+
+        this.use_colors = false;
+
+        /*
+        [ ][ ][ ]
+        [0][ ][ ] goblin: (0, 1)
+        [ ][ ][ ]
+        [ ][1][ ] unicorn: (1, 3)
+        */
+        var tiles = { x: 3, y: 4 };
+        function create_tile(x :Int, y :Int) :Tile {
+            if (x == 0 && y == 1) return { minion: TestGame.goblin.clone() };
+            if (x == 1 && y == 3) return { minion: TestGame.unicorn.clone() };
+            return {};
+        }
+
+        var gameState = {
+            board: new Board(tiles.x, tiles.y, create_tile), // TODO: Make from a core.Map
+            players: [TestGame.ai_player, TestGame.human_player],
+            rules: new Rules()
+        };
+        var game = new Game(gameState);
+
+        log('FailingTest');
+        describe('Board setup', function() {
+            var board = game.get_state().board;
+            board.print_board();
+
+            describe('AI turn', function() {
+                it('should take the correct action', function() {
+                    log('AI player is taking the turn');
+                    game.take_turn();
+
+                    var goblin = board.get_minions_for_player(TestGame.ai_player)[0];
+                    var pos = board.get_minion_pos(goblin);
+                    equal(0, pos.x, 'AI minion should be at x: 0');
+                    equal(2, pos.y, 'AI minion should be at y: 2');
+                });
+            });
+
+            describe('Human turn', function() {
+                game.start_turn(); // HACK HACK HACK
+                board.print_board();
+                it('should not take any action', function() {
+                    log('Human player is taking the turn');
+                    game.take_turn();
+
+                    var unicorn = board.get_minions_for_player(TestGame.human_player)[0];
+                    var pos = board.get_minion_pos(unicorn);
+                    equal(1, pos.x, 'AI minion should be at x: 1');
+                    equal(3, pos.y, 'AI minion should be at y: 3');
+                });
+            });
+
+            describe('AI turn', function() {
+                game.start_turn(); // HACK HACK HACK (to reset minion stats to get the correct sets of actions)
+                board.print_board();
+
+                it('should take the correct action', function() {
+                    log('AI player is taking the turn');
+                    game.take_turn();
+
+                    var goblin = board.get_minions_for_player(TestGame.ai_player)[0];
+                    var pos = board.get_minion_pos(goblin);
+                    equal(0, pos.x, 'AI minion should be at x: 0');
+                    equal(3, pos.y, 'AI minion should be at y: 3');
+
+                    equal(true, game.has_won(TestGame.ai_player));
                 });
             });
         });

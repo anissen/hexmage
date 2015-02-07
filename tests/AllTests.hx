@@ -9,7 +9,8 @@ class AllTests extends Mohxa {
         var failed = 
             new MinimaxTrivialTests().failed +
             new MinimaxTrivialTests2().failed +
-            new MinimaxMultiTurnPlanningTests().failed;
+            new MinimaxMultiTurnPlanningTests().failed +
+            new MinimaxFailingTest().failed;
         trace('=================================================');
         trace('Failed: $failed');
     }
