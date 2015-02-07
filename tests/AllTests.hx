@@ -6,9 +6,11 @@ import mohxa.Mohxa;
 
 class AllTests extends Mohxa {
     static function main() {
-        new MinimaxTrivialTests();
-        new MinimaxTrivialTests2();
-        // new MinimaxMultiTurnPlanningTests();
-        // new MinimaxTests();
+        var failed = 
+            new MinimaxTrivialTests().failed +
+            new MinimaxTrivialTests2().failed +
+            new MinimaxMultiTurnPlanningTests().failed;
+        trace('=================================================');
+        trace('Failed: $failed');
     }
 }

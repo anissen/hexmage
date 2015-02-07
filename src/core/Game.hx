@@ -123,7 +123,7 @@ class Game {
         return false;
     }
 
-    function start_turn() :Void {
+    public function start_turn() :Void {
         reset_minion_stats();
     }
 

@@ -14,20 +14,13 @@ import mohxa.Mohxa;
 typedef BestActionsResult = { score :Int, actions :Array<Action> };
 
 class AIPlayer {
-    static var ai_iterations = 0;
-
     static public function actions_for_turn(game :Game) :Array<Action> {
-        ai_iterations = 0;
-
-        game.get_state().board.print_board();
 
         var player = game.get_current_player();
         var currentScore = score_board(player, game);
         var result = minimax(player, game, 3 /* number of turns to test */);
         var deltaScore = result.score - currentScore;
 
-        trace('AI tested ${ai_iterations} combinations of actions');  
-        // TODO: Also write time spend
         trace('Best actions are ${result.actions} with a result of $result and a delta score of $deltaScore');
 
         // if (deltaScore < 0) {
@@ -181,6 +174,10 @@ class TestGame {
     });
 }
 
+
+// ---------------------------------------------------------------------------------------------------------
+
+
 class MinimaxTrivialTests extends Mohxa {
     public function new() {
         super();
@@ -315,6 +312,10 @@ class MinimaxTrivialTests extends Mohxa {
     }
 }
 
+
+// ---------------------------------------------------------------------------------------------------------
+
+
 class MinimaxTrivialTests2 extends Mohxa {
     public function new() {
         super();
@@ -445,3 +446,167 @@ class MinimaxTrivialTests2 extends Mohxa {
     }
 }
 
+
+// ---------------------------------------------------------------------------------------------------------
+
+
+class MinimaxMultiTurnPlanningTests extends Mohxa {
+    public function new() {
+        super();
+
+        this.use_colors = false;
+
+        /*
+        [0] (0, 0), goblin
+        [ ] (0, 1)
+        [ ] (0, 2)
+        [1] (0, 3), unicorn
+        */
+        var tiles = { x: 1, y: 4 };
+        function create_tile(x :Int, y :Int) :Tile {
+            if (x == 0 && y == 0) return { minion: TestGame.goblin.clone() };
+            if (x == 0 && y == 3) return { minion: TestGame.unicorn.clone() };
+            return {};
+        }
+
+        var gameState = {
+            board: new Board(tiles.x, tiles.y, create_tile), // TODO: Make from a core.Map
+            players: [TestGame.ai_player, TestGame.human_player],
+            rules: new Rules()
+        };
+        var game = new Game(gameState);
+
+        log('MinimaxMultiTurnPlanningTests');
+        describe('Board setup', function() {
+            var board = game.get_state().board;
+            board.print_board();
+
+            var ai_minion;
+            var human_minion;
+
+            describe('AI player', function() {
+                var minions = board.get_minions_for_player(TestGame.ai_player);
+
+                it('should start with one minion', function() {
+                    equal(1, minions.length, '1 minion');
+                });
+
+                it('should have a minion of type "goblin"', function() {
+                    equal(true, minions[0] == TestGame.goblin, 'Is of type "goblin"');
+                });
+
+                ai_minion = minions[0];
+                it('should have correct properties', function() {
+                    equal(4, ai_minion.attack, '4 attack value');
+                    equal(4, ai_minion.life, '4 life');
+                    equal(1, ai_minion.movesLeft, '1 move left');
+                    equal(1, ai_minion.attacksLeft, '1 attack left');
+                });
+
+                it('should be positioned at (0, 0)', function() {
+                    var pos = board.get_minion_pos(ai_minion);
+                    equal(0, pos.x, 'x: 0');
+                    equal(0, pos.y, 'y: 0');
+                });
+            });
+
+            describe('Human player', function() {
+                var minions = board.get_minions_for_player(TestGame.human_player);
+
+                it('should start with one minion', function() {
+                    equal(1, minions.length, '1 minion');
+                });
+
+                it('should have a minion of type "unicorn"', function() {
+                    equal(true, minions[0] == TestGame.unicorn, 'Is of type "unicorn"');
+                });
+
+                human_minion = minions[0];
+                it('should have correct properties', function() {
+                    equal(0, human_minion.attack, '0 attack value');
+                    equal(1, human_minion.life, '1 life');
+                    equal(0, human_minion.movesLeft, '0 move left');
+                    equal(0, human_minion.attacksLeft, '0 attack left');
+                });
+
+                it('should be positioned at (0, 3)', function() {
+                    var pos = board.get_minion_pos(human_minion);
+                    equal(0, pos.x, 'x: 0');
+                    equal(3, pos.y, 'y: 3');
+                });
+            });
+
+            it('should start with AI player as the current player', function() {
+                equal(true, game.is_current_player(TestGame.ai_player), 'AI should be current player');
+            });
+
+            describe('AI turn', function() {
+                it('should have the correct actions available', function() {
+                    var set_of_actions = game.get_available_sets_of_actions(3);
+                    equal(1, set_of_actions.length, '1 set of actions');
+
+                    var moveAction = set_of_actions[0];
+                    equal(1, moveAction.length, 'containing list of 1 action');
+                    equal('Move', Type.enumConstructor(moveAction[0]), 'Action is a "Move" action');
+                });
+
+                it('should take the turn', function() {
+                    log('AI player is taking the turn');
+                    game.take_turn();
+
+                    it('should have changed the board state', function() {
+                        var ai_minons_changed = board.get_minions_for_player(TestGame.ai_player);
+                        equal(1, ai_minons_changed.length, 'AI player should have 1 minion');
+                        equal(0, ai_minons_changed[0].movesLeft, 'AI minion should have 0 moves left');
+                        var pos = board.get_minion_pos(ai_minons_changed[0]);
+                        equal(0, pos.x, 'AI minion should be at x: 0');
+                        equal(1, pos.y, 'AI minion should be at y: 1');
+                    });
+                });
+            });
+
+            describe('Human turn', function() {
+                it('should have the correct actions available', function() {
+                    var set_of_actions = game.get_available_sets_of_actions(3);
+                    equal(0, set_of_actions.length, '0 sets of actions');
+                });
+
+                it('should take the turn', function() {
+                    log('Human player is taking the turn');
+                    game.take_turn();
+
+                    it('should not have moved the minion', function() {
+                        var human_minons_changed = board.get_minions_for_player(TestGame.human_player);
+                        equal(1, human_minons_changed.length, 'Human player should have 1 minion');
+                        equal(1, human_minons_changed[0].movesLeft, 'Human minion should have 0 moves left');
+                        var pos = board.get_minion_pos(human_minons_changed[0]);
+                        equal(0, pos.x, 'Human minion should be at x: 0');
+                        equal(3, pos.y, 'Human minion should be at y: 3');
+                    });
+                });
+            });
+
+            describe('AI turn', function() {
+                game.start_turn(); // HACK HACK HACK (to reset minion stats to get the correct sets of actions)
+
+                it('should have the correct actions available', function() {
+                    var set_of_actions = game.get_available_sets_of_actions(3);
+                    equal(3, set_of_actions.length, '3 set of actions');
+                });
+
+                it('should take the turn', function() {
+                    log('AI player is taking the turn');
+                    game.take_turn();
+
+                    it('should have changed the board state', function() {
+                        var ai_minons_changed = board.get_minions_for_player(TestGame.ai_player);
+                        equal(1, ai_minons_changed.length, 'AI player should have 1 minion');
+                        equal(0, board.get_minions_for_player(TestGame.human_player).length, 'Human should have 0 minions');
+                    });
+                });
+            });
+        });
+
+        run();
+    }
+}
