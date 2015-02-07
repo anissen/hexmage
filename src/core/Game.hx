@@ -57,8 +57,8 @@ class Game {
 
     function reset_minion_stats() :Void {
         for (minion in state.board.get_minions_for_player(get_current_player())) {
-            minion.movesLeft = 1;
-            minion.attacksLeft = 1;
+            minion.movesLeft = minion.moves;
+            minion.attacksLeft = minion.attacks;
         }
     }
 

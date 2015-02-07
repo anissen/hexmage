@@ -11,7 +11,9 @@ typedef MinionOptions = {
     attack :Int, 
     life :Int, 
     rules :Rules,
+    moves: Int,
     movesLeft :Int,
+    attacks: Int,
     attacksLeft :Int
 };
 
@@ -29,7 +31,9 @@ abstract Minion(MinionOptions) from MinionOptions to MinionOptions {
             attack: this.attack, 
             life: this.life, 
             rules: this.rules,
+            moves: this.moves,
             movesLeft: this.movesLeft,
+            attacks: this.attacks,
             attacksLeft: this.attacksLeft
         });
     }
