@@ -72,8 +72,27 @@ class Game {
         return RuleEngine.get_available_actions(state, get_current_player());
     }
 
+    public function get_available_sets_of_actions(actionDepthRemaining :Int) :Array<Array<Action>> {
+        if (actionDepthRemaining <= 0)
+            return [];
+
+        var actions :Array<Array<Action>> = [];
+        for (action in get_available_actions()) {
+            var newGame = this.clone();
+            newGame.do_action(action);
+
+            var result = newGame.get_available_sets_of_actions(actionDepthRemaining - 1);
+            actions.push([action]);
+            for (resultActions in result) {
+                actions.push([action].concat(resultActions));
+            }
+        }
+
+        return actions;
+    }
+
     function clone_players() :Players {
-        return [ for (p in state.players) state.board.clone_player(p) ];
+        return [ for (p in state.players) p.clone() ];
     }
 
     public function clone() :Game {

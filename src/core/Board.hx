@@ -30,27 +30,27 @@ class Board {
         }
     }
 
-    public function clone_player(p :Player) :Player {
-        return { id: p.id, name: p.name, take_turn: p.take_turn };
-    }
+    // public function clone_player(p :Player) :Player {
+    //     return { id: p.id, name: p.name, take_turn: p.take_turn };
+    // }
 
-    function clone_minion(m :Minion) :Minion {
-        return new Minion({ 
-            id: m.id, 
-            player: clone_player(m.player), 
-            name: m.name, 
-            attack: m.attack, 
-            life: m.life, 
-            rules: m.rules,
-            movesLeft: m.movesLeft,
-            attacksLeft: m.attacksLeft
-        });
-    }
+    // function clone_minion(m :Minion) :Minion {
+    //     return new Minion({ 
+    //         id: m.id, 
+    //         player: clone_player(m.player), 
+    //         name: m.name, 
+    //         attack: m.attack, 
+    //         life: m.life, 
+    //         rules: m.rules,
+    //         movesLeft: m.movesLeft,
+    //         attacksLeft: m.attacksLeft
+    //     });
+    // }
     
     public function clone_board() :Board {
         function create_tile(x, y) {
             var tile = get_tile({ x: x, y: y });
-            return { minion: (tile.minion != null ? clone_minion(tile.minion) : null) };
+            return { minion: (tile.minion != null ? tile.minion.clone() : null) };
         }
         return new Board(boardSize.x, boardSize.y, create_tile);
     }

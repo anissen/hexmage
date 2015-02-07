@@ -20,6 +20,19 @@ abstract Minion(MinionOptions) from MinionOptions to MinionOptions {
     inline public function new(m :MinionOptions) {
         this = m;
     }
+
+    inline public function clone() :Minion {
+        return new Minion({ 
+            id: this.id, 
+            player: this.player.clone(), 
+            name: this.name, 
+            attack: this.attack, 
+            life: this.life, 
+            rules: this.rules,
+            movesLeft: this.movesLeft,
+            attacksLeft: this.attacksLeft
+        });
+    }
     
     @:op(A == B)
     inline static public function equals(lhs :Minion, rhs :Minion) :Bool {
