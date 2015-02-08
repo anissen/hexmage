@@ -21,66 +21,42 @@ class AIPlayer {
         var result = minimax(player, game, 3 /* number of turns to test */);
         var deltaScore = result.score - currentScore;
 
-        // trace('Best actions are ${result.actions} with a result of $result and a delta score of $deltaScore');
-
         // if (deltaScore < 0) {
         //     trace('Score of $deltaScore is not good enough');
         //     return [];
         // }
 
-        // trace('actions: ${result.actions}');
         return result.actions;
     }
 
-    static function get_indent(index :Int) {
-        var s = '';
-        for (i in 0 ... index) s += '-> ';
-        return s;
-    }
-
-    static function indent_trace(index :Int, s :String) {
-        // trace('${get_indent(index)} $s');
-    }
-
     static function minimax(player :Player, game :Game, maxTurns :Int, turn :Int = 0) :BestActionsResult {
-        indent_trace(turn, 'minimax turn: $turn, player: ${game.get_current_player().name}');
-
         if (game.is_game_over() || turn >= maxTurns) {
-            var turn_penalty = -turn;
-            // indent_trace(turn, 'SCORE: ${score_board(player, game) + turn_penalty}');
-            return { score: score_board(player, game) + turn_penalty, actions: [] };
+            // TODO: Choose a different scoring algorithm for self and other player(s)
+            return { score: score_board(player, game) - turn, actions: [] };
         }
 
         var set_of_all_actions = game.get_available_sets_of_actions(2 /* number of actions per turns to test */);
-        indent_trace(turn, 'ACTIONS: $set_of_all_actions');
-
         var bestResult = { score: (game.is_current_player(player) ? -1000 : 1000), actions: [] };
         for (actions in set_of_all_actions) {
-            indent_trace(turn, '· TRYING $actions');
-
             var newGame = game.clone();
             newGame.do_turn(actions); // TODO: Make this return a clone instead?
 
             var result = minimax(player, newGame, maxTurns, turn + 1);
             var score = result.score;
-            indent_trace(turn, 'RESULT: ${result.score} for ${game.get_current_player().name} with $actions');
             
             if (game.is_current_player(player)) {
                 if (result.score > bestResult.score) {
-                    // trace('::: BEST for current player');
                     bestResult.score = result.score;
                     bestResult.actions = actions;
                 }
             } else {
                 if (result.score < bestResult.score) {
-                    // trace('::: BEST for other player');
                     bestResult.score = result.score;
                     bestResult.actions = actions;
                 }
             }
         }
 
-        indent_trace(turn, '== BEST RESULT: ${bestResult.score} for ${game.get_current_player().name} with ${bestResult.actions}');
         return bestResult;
     }
 

@@ -43,10 +43,8 @@ class Game {
     }
 
     public function take_turn() :Void {
-        // trace('${get_current_player().name} has chosen these actions: ${actions}');
         for (action in get_current_player().take_turn(clone())) {
             // TODO: check action available
-            // trace('Doing action: $action');
             do_action(action);
             // TODO: check victory/defeat
             if (has_won(get_current_player())) {
@@ -63,10 +61,8 @@ class Game {
 
     function reset_minion_stats() :Void {
         for (minion in state.board.get_minions_for_player(get_current_player())) {
-            // trace('Resetting stats for $minion');
             minion.movesLeft = minion.moves;
             minion.attacksLeft = minion.attacks;
-            // trace('Minion $minion had stats reset!');
         }
     }
 
