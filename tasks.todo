@@ -1,17 +1,17 @@
 
 Tasks:
 
-  ✔ Make AIPlayer return multiple actions for per turn @done (26-01-15 22:46)
-  ✔ Hardcode max moves, attacks per turn @done (27-01-15 20:28)
-  ☐ Use RuleEngine to filter available actions (e.g. a rule for units can only move once, attack once per turn)
-  ☐ Use minimax algorithm to return the hierarchically best actions
+  ☐ Minimal game
+      ☐ AI vs. human, no deck, no hands, one minion on board each
+      ☐ CLI interface to choose between available actions for human
+  ☐ Implement deck
+  ☐ Implement cards in hand
+  ☐ Implement casting/targeting
+  ☐ Implement avatar
+  ☐ Implement claimed tiles
+  ☐ Implement mana
+ 
+Later:
+    ☐ Make minimal game state with, for each player: { minions :Array, cards_in_hand: Int, cards_in_deck :Int }
 
-
-Minimax fix:
-
-
-    minimax algorithm:
-        take_turn algorithm: 
-            find best/worst actions for turn
-            perform actions
-            end turn
+Inspiration: https://raw.githubusercontent.com/anissen/elements/master/todo.todo
