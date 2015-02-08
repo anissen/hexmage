@@ -51,7 +51,6 @@ class AIPlayer {
             return { score: score_board(player, game) + turn_penalty, actions: [] };
         }
 
-        game.start_turn(); // HACK HACK HACK
         var set_of_all_actions = game.get_available_sets_of_actions(2 /* number of actions per turns to test */);
         indent_trace(turn, 'ACTIONS: $set_of_all_actions');
 
@@ -124,9 +123,9 @@ class TestGame {
         life: 4,
         rules: new Rules(),
         moves: 1,
-        movesLeft: 1,
+        movesLeft: 0,
         attacks: 1,
-        attacksLeft: 1
+        attacksLeft: 0
     });
 
     public static var human_player = new Player({ id: 1, name: 'Human Player', take_turn: HumanPlayer.actions_for_turn });
@@ -256,7 +255,8 @@ class MinimaxTrivialTests extends Mohxa {
                     equal('Move', Type.enumConstructor(attackAndMoveAction[1]), 'Second action is a "Move" action');
 
                     var noAction = sets_of_actions[2];
-                    equal(0, noAction.length, 'No actions');
+                    equal(1, noAction.length, 'No actions');
+                    equal('NoAction', Type.enumConstructor(noAction[0]), 'Action is a "NoAction" action');
                 });
 
                 it('should take the turn', function() {
@@ -382,6 +382,8 @@ class MinimaxTrivialTests2 extends Mohxa {
             describe('AI turn', function() {
                 it('should have the correct actions available', function() {
                     var sets_of_actions = game.get_available_sets_of_actions(3);
+                    trace('sets_of_actions');
+                    trace(sets_of_actions);
                     equal(3, sets_of_actions.length, '3 sets of actions');
 
                     var moveAction = sets_of_actions[0];
@@ -393,7 +395,8 @@ class MinimaxTrivialTests2 extends Mohxa {
                     equal('Attack', Type.enumConstructor(moveAndAttackAction[1]), 'Second action is an "Attack" action');
 
                     var noAction = sets_of_actions[2];
-                    equal(0, noAction.length, 'No actions');
+                    equal(1, noAction.length, 'No actions');
+                    equal('NoAction', Type.enumConstructor(noAction[0]), 'Action is a "NoAction" action');
                 });
 
                 it('should take the turn', function() {
@@ -526,7 +529,8 @@ class MinimaxMultiTurnPlanningTests extends Mohxa {
                     equal('Move', Type.enumConstructor(moveAction[0]), 'Action is a "Move" action');
 
                     var noAction = sets_of_actions[1];
-                    equal(0, noAction.length, 'No actions');
+                    equal(1, noAction.length, 'No actions');
+                    equal('NoAction', Type.enumConstructor(noAction[0]), 'Action is a "NoAction" action');
                 });
 
                 it('should take the turn', function() {
@@ -545,13 +549,13 @@ class MinimaxMultiTurnPlanningTests extends Mohxa {
             });
 
             describe('Human turn', function() {
-                game.start_turn(); // HACK HACK HACK
                 it('should have the correct actions available', function() {
                     var sets_of_actions = game.get_available_sets_of_actions(3);
                     equal(1, sets_of_actions.length, '1 set of actions');
 
                     var noAction = sets_of_actions[0];
-                    equal(0, noAction.length, 'No actions');
+                    equal(1, noAction.length, 'No actions');
+                    equal('NoAction', Type.enumConstructor(noAction[0]), 'Action is a "NoAction" action');
                 });
 
                 it('should take the turn', function() {
@@ -570,7 +574,6 @@ class MinimaxMultiTurnPlanningTests extends Mohxa {
             });
 
             describe('AI turn', function() {
-                game.start_turn(); // HACK HACK HACK (to reset minion stats to get the correct sets of actions)
 
                 it('should have the correct actions available', function() {
                     var set_of_actions = game.get_available_sets_of_actions(3);
@@ -641,7 +644,6 @@ class MinimaxFailingTest extends Mohxa {
             });
 
             describe('Human turn', function() {
-                game.start_turn(); // HACK HACK HACK
                 board.print_board();
                 it('should not take any action', function() {
                     log('Human player is taking the turn');
@@ -655,7 +657,6 @@ class MinimaxFailingTest extends Mohxa {
             });
 
             describe('AI turn', function() {
-                game.start_turn(); // HACK HACK HACK (to reset minion stats to get the correct sets of actions)
                 board.print_board();
 
                 it('should take the correct action', function() {

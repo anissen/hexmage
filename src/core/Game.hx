@@ -24,10 +24,15 @@ class Game {
 
     var listeners :Map<String, Dynamic->Void>;
 
-    public function new(_state :GameState) {
+    public function new(_state :GameState, _isNewGame :Bool = true) {
         state = _state;
         listeners = new Map<String, Dynamic->Void>();
         id = Game.Id++;
+
+        if (_isNewGame) { // TODO: This is not pretty
+            emit('turn_start');
+            start_turn();
+        }
     } 
 
     public function start() {
@@ -38,12 +43,10 @@ class Game {
     }
 
     public function take_turn() :Void {
-        emit('turn_start');
-        start_turn();
         // trace('${get_current_player().name} has chosen these actions: ${actions}');
         for (action in get_current_player().take_turn(clone())) {
             // TODO: check action available
-            trace('Doing action: $action');
+            // trace('Doing action: $action');
             do_action(action);
             // TODO: check victory/defeat
             if (has_won(get_current_player())) {
@@ -53,10 +56,14 @@ class Game {
         }
         emit('turn_end');
         end_turn();
+
+        emit('turn_start');
+        start_turn();
     }
 
     function reset_minion_stats() :Void {
         for (minion in state.board.get_minions_for_player(get_current_player())) {
+            // trace('Resetting stats for $minion');
             minion.movesLeft = minion.moves;
             minion.attacksLeft = minion.attacks;
             // trace('Minion $minion had stats reset!');
@@ -107,7 +114,7 @@ class Game {
             board: state.board.clone_board(),
             players: clone_players(),
             rules: state.rules.copy() // TODO: Probably not enough
-        });
+        }, false);
     }
 
     public function get_state() :GameState {
@@ -130,7 +137,7 @@ class Game {
         return false;
     }
 
-    public function start_turn() :Void {
+    function start_turn() :Void {
         reset_minion_stats();
     }
 
@@ -143,16 +150,11 @@ class Game {
     }
 
     public function do_turn(actions :Array<Action>) :Void {
-        // trace('>>> do_turn for ${get_current_player().name}');
-        // trace('*** do_turn with actions: $actions');
-        start_turn();
-        // trace('>>> >>> start_turn');
         for (action in actions) {
-            // trace('>>> >>> doing action $action');
             do_action(action);
         }
-        // trace('>>> >>> end_turn');
         end_turn();
+        start_turn();
     }
 
     public function has_won(player :Player) :Bool {

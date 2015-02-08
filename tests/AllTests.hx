@@ -7,9 +7,9 @@ import mohxa.Mohxa;
 class AllTests extends Mohxa {
     static function main() {
         var tests = [
-            // new MinimaxTrivialTests(),
-            // new MinimaxTrivialTests2(),
-            // new MinimaxMultiTurnPlanningTests(),
+            new MinimaxTrivialTests(),
+            new MinimaxTrivialTests2(),
+            new MinimaxMultiTurnPlanningTests(),
             new MinimaxFailingTest()
         ];
         var failed = 0;
