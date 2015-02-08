@@ -72,7 +72,7 @@ class Game {
         return RuleEngine.get_available_actions(state, get_current_player());
     }
 
-    public function get_available_sets_of_actions(actionDepthRemaining :Int) :Array<Array<Action>> {
+    function determine_available_sets_of_actions(actionDepthRemaining :Int) :Array<Array<Action>> {
         if (actionDepthRemaining <= 0)
             return [];
 
@@ -81,13 +81,19 @@ class Game {
             var newGame = this.clone();
             newGame.do_action(action);
 
-            var result = newGame.get_available_sets_of_actions(actionDepthRemaining - 1);
+            var result = newGame.determine_available_sets_of_actions(actionDepthRemaining - 1);
             actions.push([action]);
             for (resultActions in result) {
                 actions.push([action].concat(resultActions));
             }
         }
 
+        return actions;
+    }
+
+    public function get_available_sets_of_actions(actionDepthRemaining :Int) :Array<Array<Action>> {
+        var actions = determine_available_sets_of_actions(actionDepthRemaining);
+        actions.push([]); // Include the no-action actions
         return actions;
     }
 

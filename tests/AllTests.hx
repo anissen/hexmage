@@ -6,12 +6,17 @@ import mohxa.Mohxa;
 
 class AllTests extends Mohxa {
     static function main() {
-        var failed = 
-            new MinimaxTrivialTests().failed +
-            new MinimaxTrivialTests2().failed +
-            new MinimaxMultiTurnPlanningTests().failed +
-            new MinimaxFailingTest().failed;
+        var tests = [
+            // new MinimaxTrivialTests(),
+            // new MinimaxTrivialTests2(),
+            // new MinimaxMultiTurnPlanningTests(),
+            new MinimaxFailingTest()
+        ];
+        var failed = 0;
+        for (test in tests) {
+            failed += test.failed;
+        }
         trace('=================================================');
-        trace('Failed: $failed');
+        trace('Failed: $failed (ran ${tests.length} test suite(s))');
     }
 }
