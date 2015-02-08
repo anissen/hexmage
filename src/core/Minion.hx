@@ -45,6 +45,6 @@ abstract Minion(MinionOptions) from MinionOptions to MinionOptions {
 
     @:toString
     inline public function toString() :String {
-        return '[${this.name} (${this.attack}/${this.life}) owner: ${this.player.name}]';
+        return '[${this.name} (${this.attack}/${this.life}, ${this.attacksLeft}/${this.attacks} attacks and ${this.movesLeft}/${this.moves} moves) owner: ${this.player.name}]';
     }
 }

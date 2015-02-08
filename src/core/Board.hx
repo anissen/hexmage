@@ -30,23 +30,6 @@ class Board {
         }
     }
 
-    // public function clone_player(p :Player) :Player {
-    //     return { id: p.id, name: p.name, take_turn: p.take_turn };
-    // }
-
-    // function clone_minion(m :Minion) :Minion {
-    //     return new Minion({ 
-    //         id: m.id, 
-    //         player: clone_player(m.player), 
-    //         name: m.name, 
-    //         attack: m.attack, 
-    //         life: m.life, 
-    //         rules: m.rules,
-    //         movesLeft: m.movesLeft,
-    //         attacksLeft: m.attacksLeft
-    //     });
-    // }
-    
     public function clone_board() :Board {
         function create_tile(x, y) {
             var tile = get_tile({ x: x, y: y });
@@ -65,6 +48,7 @@ class Board {
 
     public function do_action(action :Action) {
         switch (action) {
+            case NoAction:
             case Move(m):
                 var minion = get_minion(m.minionId);
                 // trace('MOVE: $minion moves to ${m.pos}');
@@ -139,7 +123,7 @@ class Board {
             var row = board[y];
             for (x in 0 ... row.length) {
                 var tile = row[x];
-                if (tile.minion != null && tile.minion == minion) return { x: x, y: y };
+                if (tile.minion != null && tile.minion.id == minion.id) return { x: x, y: y };
             }
         }
         throw 'Minion not found on board!';

@@ -21,7 +21,7 @@ class AIPlayer {
         var result = minimax(player, game, 3 /* number of turns to test */);
         var deltaScore = result.score - currentScore;
 
-        trace('Best actions are ${result.actions} with a result of $result and a delta score of $deltaScore');
+        // trace('Best actions are ${result.actions} with a result of $result and a delta score of $deltaScore');
 
         // if (deltaScore < 0) {
         //     trace('Score of $deltaScore is not good enough');
@@ -39,46 +39,25 @@ class AIPlayer {
     }
 
     static function indent_trace(index :Int, s :String) {
-        trace('${get_indent(index)} $s');
+        // trace('${get_indent(index)} $s');
     }
-
-    /*
-    ERROR:
-
-    Test.hx:45: ->  minimax turn: 1, player: Human Player
-    Test.hx:45: -> ->  minimax turn: 2, player: AI Player
-    Test.hx:45: ->  RESULT: -1 for Human Player with [Move({ pos => { x => 2, y => 1 }, minionId => 1 })]
-    Test.hx:45: -> ->  minimax turn: 2, player: AI Player
-    Test.hx:45: ->  RESULT: -1 for Human Player with [Move({ pos => { x => 2, y => 3 }, minionId => 1 })]
-    Test.hx:45: -> ->  minimax turn: 2, player: AI Player
-    Test.hx:45: -> -> ->  minimax turn: 3, player: Human Player
-    Test.hx:45: -> ->  RESULT: 5 for AI Player with [Attack({ victimId => 1, minionId => 0 })]
-    Test.hx:45: -> ->  BEST RESULT: 5 for [Attack({ victimId => 1, minionId => 0 })]
-    Test.hx:45: ->  RESULT: 5 for Human Player with [Move({ pos => { x => 1, y => 2 }, minionId => 1 })]
-    Test.hx:45: ->  BEST RESULT: -1 for [Move({ pos => { x => 2, y => 1 }, minionId => 1 })]
-    */
 
     static function minimax(player :Player, game :Game, maxTurns :Int, turn :Int = 0) :BestActionsResult {
         indent_trace(turn, 'minimax turn: $turn, player: ${game.get_current_player().name}');
 
         if (game.is_game_over() || turn >= maxTurns) {
             var turn_penalty = -turn;
-            indent_trace(turn, 'SCORE: ${score_board(player, game) + turn_penalty}');
+            // indent_trace(turn, 'SCORE: ${score_board(player, game) + turn_penalty}');
             return { score: score_board(player, game) + turn_penalty, actions: [] };
         }
 
+        game.start_turn(); // HACK HACK HACK
         var set_of_all_actions = game.get_available_sets_of_actions(2 /* number of actions per turns to test */);
         indent_trace(turn, 'ACTIONS: $set_of_all_actions');
 
-        if (set_of_all_actions.length == 0) {
-            var turn_penalty = -turn;
-            indent_trace(turn, 'NO ACTIONS: ${score_board(player, game) + turn_penalty}');
-            return { score: score_board(player, game) + turn_penalty, actions: [] };
-        }
-
         var bestResult = { score: (game.is_current_player(player) ? -1000 : 1000), actions: [] };
         for (actions in set_of_all_actions) {
-            // indent_trace(turn, '· TRYING $actions');
+            indent_trace(turn, '· TRYING $actions');
 
             var newGame = game.clone();
             newGame.do_turn(actions); // TODO: Make this return a clone instead?
@@ -86,21 +65,7 @@ class AIPlayer {
             var result = minimax(player, newGame, maxTurns, turn + 1);
             var score = result.score;
             indent_trace(turn, 'RESULT: ${result.score} for ${game.get_current_player().name} with $actions');
-            // if (result.score == 5 && !game.is_current_player(player)) {
-            //     trace('--------------');
-            //     trace('MAYBE ERROR HERE!!');
-            //     trace('minimax turn: $turn, player: ${game.get_current_player().name}');
-            //     trace(result);
-            //     trace('--------------');
-            // }
-            /*
-            |x| |y|
-            AI:
-            | |x|y| -> Move X (good score, e.g. 10)
-            Human:
-            | |-|y| -> Attack Y (bad score, e.g. 2)
-            -> Bad move!
-            */
+            
             if (game.is_current_player(player)) {
                 if (result.score > bestResult.score) {
                     // trace('::: BEST for current player');
@@ -675,36 +640,36 @@ class MinimaxFailingTest extends Mohxa {
                 });
             });
 
-            // describe('Human turn', function() {
-            //     game.start_turn(); // HACK HACK HACK
-            //     board.print_board();
-            //     it('should not take any action', function() {
-            //         log('Human player is taking the turn');
-            //         game.take_turn();
+            describe('Human turn', function() {
+                game.start_turn(); // HACK HACK HACK
+                board.print_board();
+                it('should not take any action', function() {
+                    log('Human player is taking the turn');
+                    game.take_turn();
 
-            //         var unicorn = board.get_minions_for_player(TestGame.human_player)[0];
-            //         var pos = board.get_minion_pos(unicorn);
-            //         equal(1, pos.x, 'AI minion should be at x: 1');
-            //         equal(3, pos.y, 'AI minion should be at y: 3');
-            //     });
-            // });
+                    var unicorn = board.get_minions_for_player(TestGame.human_player)[0];
+                    var pos = board.get_minion_pos(unicorn);
+                    equal(1, pos.x, 'AI minion should be at x: 1');
+                    equal(3, pos.y, 'AI minion should be at y: 3');
+                });
+            });
 
-            // describe('AI turn', function() {
-            //     game.start_turn(); // HACK HACK HACK (to reset minion stats to get the correct sets of actions)
-            //     board.print_board();
+            describe('AI turn', function() {
+                game.start_turn(); // HACK HACK HACK (to reset minion stats to get the correct sets of actions)
+                board.print_board();
 
-            //     it('should take the correct action', function() {
-            //         log('AI player is taking the turn');
-            //         game.take_turn();
+                it('should take the correct action', function() {
+                    log('AI player is taking the turn');
+                    game.take_turn();
 
-            //         var goblin = board.get_minions_for_player(TestGame.ai_player)[0];
-            //         var pos = board.get_minion_pos(goblin);
-            //         equal(0, pos.x, 'AI minion should be at x: 0');
-            //         equal(3, pos.y, 'AI minion should be at y: 3');
+                    var goblin = board.get_minions_for_player(TestGame.ai_player)[0];
+                    var pos = board.get_minion_pos(goblin);
+                    equal(0, pos.x, 'AI minion should be at x: 0');
+                    equal(3, pos.y, 'AI minion should be at y: 3');
 
-            //         equal(true, game.has_won(TestGame.ai_player));
-            //     });
-            // });
+                    equal(true, game.has_won(TestGame.ai_player));
+                });
+            });
         });
 
         run();

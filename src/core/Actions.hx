@@ -6,6 +6,7 @@ typedef AttackAction = { minionId :Int, victimId :Int };
 
 enum Action {
     // EndTurn();
+    NoAction();
     Move(p :MoveAction);
     Attack(a :AttackAction);
 }

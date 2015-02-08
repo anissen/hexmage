@@ -59,6 +59,7 @@ class Game {
         for (minion in state.board.get_minions_for_player(get_current_player())) {
             minion.movesLeft = minion.moves;
             minion.attacksLeft = minion.attacks;
+            // trace('Minion $minion had stats reset!');
         }
     }
 
@@ -93,7 +94,7 @@ class Game {
 
     public function get_available_sets_of_actions(actionDepthRemaining :Int) :Array<Array<Action>> {
         var actions = determine_available_sets_of_actions(actionDepthRemaining);
-        actions.push([]); // Include the no-action actions
+        actions.push([NoAction]); // Include the no-action actions
         return actions;
     }
 
