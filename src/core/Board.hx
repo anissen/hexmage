@@ -59,7 +59,7 @@ class Board {
                 // trace('ATTACK: $minion attacks $victim');
                 attack(a);
                 // trace('... $victim now has ${victim.life} life');
-            case _: trace('Action $action is unhandled!');
+            // case _: trace('Action $action is unhandled!');
         }
     }
     
