@@ -1,4 +1,8 @@
-tests/build.hxml
+
+# tests/build.hxml
+
+tests/run.hxml
+
 #--next
 #-cp src
 #-main Test
