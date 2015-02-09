@@ -2,4 +2,4 @@
 -cp src
 -main tests.SimpleTestGame
 -cpp tests/bin
-#-cmd ./tests/bin/SimpleTestGame
+-cmd open ./tests/bin/SimpleTestGame

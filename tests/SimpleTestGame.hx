@@ -20,10 +20,10 @@ class AIPlayer {
         var result = minimax(player, game, 3 /* number of turns to test */);
         var deltaScore = result.score - currentScore;
 
-        if (deltaScore < 0) {
-            trace('Score of $deltaScore is not good enough');
-            return [];
-        }
+        // if (deltaScore < 0) {
+        //     trace('Score of $deltaScore is not good enough');
+        //     return [];
+        // }
 
         return result.actions;
     }
@@ -84,9 +84,22 @@ class AIPlayer {
 class HumanPlayer {
     static public function actions_for_turn(game :Game) :Array<Action> {
         // return [Move({ minionId: 1, pos: { x: 1, y: 2 } })];
-        return [];
 
-
+        var sets_of_all_actions = game.get_available_sets_of_actions(2 /* number of actions per turns to test */);
+        Sys.println("Available actions:");
+        for (i in 0 ... sets_of_all_actions.length) {
+            Sys.println('[$i] ${sets_of_all_actions[i]}');
+        }
+        while (true) {
+            Sys.println("Select action: ");
+            Sys.print(">>> ");
+            var selection = Sys.stdin().readLine();
+            var actionIndex = Std.parseInt(selection);
+            if (actionIndex != null && actionIndex >= 0 && actionIndex < sets_of_all_actions.length) {
+                return sets_of_all_actions[actionIndex];
+            }
+            Sys.println('$selection is an invalid action index');
+        }
     }
 }
 
@@ -125,14 +138,7 @@ class TestGame {
 
 
 class SimpleTestGame {
-
     static public function main() {
-        var name :String = "?";
-        Sys.println("Please enter your name...");
-        Sys.print(">>> ");
-        name = Sys.stdin().readLine();
-        trace("Your name is " + name);
-
         var tiles = { x: 3, y: 4 };
         function create_tile(x :Int, y :Int) :Tile {
             if (x == 1 && y == 0) return { minion: TestGame.goblin.clone() };
@@ -152,5 +158,8 @@ class SimpleTestGame {
             board.print_board();
             game.take_turn();
         }
+        Sys.println("GAME OVER");
+        board.print_board();
+        Sys.stdin().readLine();
     }
 }
