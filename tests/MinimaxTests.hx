@@ -21,10 +21,10 @@ class AIPlayer {
         var result = minimax(player, game, 3 /* number of turns to test */);
         var deltaScore = result.score - currentScore;
 
-        // if (deltaScore < 0) {
-        //     trace('Score of $deltaScore is not good enough');
-        //     return [];
-        // }
+        if (deltaScore < -5) {
+            trace('Score of $deltaScore is not good enough');
+            return [];
+        }
 
         return result.actions;
     }
@@ -66,7 +66,7 @@ class AIPlayer {
         // score the players own stuff only
         function get_score_for_player(p) {
             var score :Float = 0;
-            var intrinsicMinionScore = 5;
+            var intrinsicMinionScore = 1;
             for (minion in state.board.get_minions_for_player(p)) {
                 score += intrinsicMinionScore + Math.max(minion.attack, 0) + Math.max(minion.life, 0);
             }

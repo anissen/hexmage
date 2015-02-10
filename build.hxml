@@ -1,7 +1,7 @@
 
 # tests/build.hxml
 
-tests/run.hxml
+# tests/run.hxml
 
 #--next
 #-cp src

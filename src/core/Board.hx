@@ -97,6 +97,45 @@ class Board {
             trace(s);
         }
     }
+
+    public function print_board_big() {
+        function fill(text :String = ' ', maxLength :Int = 7) {
+            return StringTools.rpad('', text, maxLength);
+        }
+
+        function fit(text :String, maxLength :Int = 7) {
+            return StringTools.rpad(text.substr(0, maxLength), ' ', maxLength);
+        }
+
+        var s = '\n\nBoard:\n|';
+        for (tile in board[0]) {
+            s += '———————|';
+        }     
+        s += '\n';
+        for (y in 0 ... board.length) {
+            var row = board[y];
+            for (i in 0 ... 3) {
+                s += '|';
+                for (x in 0 ... row.length) {
+                    var tile = row[x];
+                    s += switch (i) {
+                        case 0: (tile.minion != null ? fit(tile.minion.player.name).toUpperCase() : fill());
+                        case 1: (tile.minion != null ? fit(tile.minion.name) : fit(' ($x,$y)'));
+                        case 2: (tile.minion != null ? fit('${tile.minion.attack} / ${tile.minion.life}') : fill());
+                        case _: '?';
+                    };
+                    s += '|';
+                }     
+                s += '\n';
+            }
+            s += '|';
+            for (tile in row) {
+                s += '———————|';
+            }     
+            s += '\n';
+        }
+        trace(s);
+    }
         
     public function get_minions_for_player(player :Player) :Array<Minion> {
         var minions = [];

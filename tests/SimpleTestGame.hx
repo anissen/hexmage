@@ -19,11 +19,15 @@ class AIPlayer {
         var currentScore = score_board(player, game);
         var result = minimax(player, game, 3 /* number of turns to test */);
         var deltaScore = result.score - currentScore;
+        trace('currentScore: $currentScore');
+        trace('result.score: ${result.score}');
+        trace('deltaScore: $deltaScore');
 
-        // if (deltaScore < 0) {
-        //     trace('Score of $deltaScore is not good enough');
-        //     return [];
-        // }
+        if (deltaScore < -5) {
+            trace('Delta score of $deltaScore is not good enough');
+            trace('Considered actions: ${result.actions}');
+            return [];
+        }
 
         return result.actions;
     }
@@ -41,12 +45,14 @@ class AIPlayer {
             newGame.do_turn(actions); // TODO: Make this return a clone instead?
 
             var result = minimax(player, newGame, maxTurns, turn + 1);
-            var score = result.score;
             
             if (game.is_current_player(player)) {
                 if (result.score > bestResult.score) {
                     bestResult.score = result.score;
                     bestResult.actions = actions;
+
+                    if (turn == 0 /*&& result.actions.length > 0*/)
+                        trace(result);
                 }
             } else {
                 if (result.score < bestResult.score) {
@@ -65,7 +71,7 @@ class AIPlayer {
         // score the players own stuff only
         function get_score_for_player(p) {
             var score :Float = 0;
-            var intrinsicMinionScore = 5;
+            var intrinsicMinionScore = 1;
             for (minion in state.board.get_minions_for_player(p)) {
                 score += intrinsicMinionScore + Math.max(minion.attack, 0) + Math.max(minion.life, 0);
             }
@@ -84,6 +90,8 @@ class AIPlayer {
 class HumanPlayer {
     static public function actions_for_turn(game :Game) :Array<Action> {
         // return [Move({ minionId: 1, pos: { x: 1, y: 2 } })];
+        game.get_state().board.print_board_big();
+
 
         var sets_of_all_actions = game.get_available_sets_of_actions(2 /* number of actions per turns to test */);
         Sys.println("Available actions:");
@@ -108,9 +116,21 @@ class TestGame {
     public static var goblin = new Minion({ 
         player: ai_player,
         id: 0,
-        name: 'Goblin 1',
+        name: 'Goblin',
+        attack: 1,
+        life: 2,
+        rules: new Rules(),
+        moves: 1,
+        movesLeft: 0,
+        attacks: 1,
+        attacksLeft: 0
+    });
+    public static var orc = new Minion({ 
+        player: ai_player,
+        id: 1,
+        name: 'Troll',
         attack: 4,
-        life: 4,
+        life: 1,
         rules: new Rules(),
         moves: 1,
         movesLeft: 0,
@@ -121,10 +141,10 @@ class TestGame {
     public static var human_player = new Player({ id: 1, name: 'Human Player', take_turn: HumanPlayer.actions_for_turn });
     public static var unicorn = new Minion({
         player: human_player,
-        id: 1,
+        id: 2,
         name: 'Unicorn',
-        attack: 0,
-        life: 1,
+        attack: 1,
+        life: 6,
         rules: new Rules(), /* [{ trigger: OwnTurnStart, effect: Scripted(plus_one_attack_per_turn) }] */
         moves: 1,
         movesLeft: 0,
@@ -141,7 +161,8 @@ class SimpleTestGame {
     static public function main() {
         var tiles = { x: 3, y: 4 };
         function create_tile(x :Int, y :Int) :Tile {
-            if (x == 1 && y == 0) return { minion: TestGame.goblin.clone() };
+            if (x == 1 && y == 0) return { minion: TestGame.orc.clone() };
+            if (x == 1 && y == 1) return { minion: TestGame.goblin.clone() };
             if (x == 1 && y == 3) return { minion: TestGame.unicorn.clone() };
             return {};
         }
@@ -155,11 +176,10 @@ class SimpleTestGame {
         var board = game.get_state().board;
         
         while (!game.is_game_over()) {
-            board.print_board();
             game.take_turn();
         }
         Sys.println("GAME OVER");
-        board.print_board();
+        board.print_board_big();
         Sys.stdin().readLine();
     }
 }
