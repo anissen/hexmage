@@ -1,9 +1,9 @@
 
 Tasks:
 
-  ☐ Minimal game
-      ☐ AI vs. human, no deck, no hands, one minion on board each
-      ☐ CLI interface to choose between available actions for human
+  ✔ Minimal game @done (10-02-15 19:40)
+      ✔ AI vs. human, no deck, no hands, one minion on board each @done (10-02-15 19:40)
+      ✔ CLI interface to choose between available actions for human @done (10-02-15 19:40)
   ☐ Implement deck
   ☐ Implement cards in hand
   ☐ Implement casting/targeting

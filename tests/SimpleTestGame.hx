@@ -23,7 +23,7 @@ class AIPlayer {
         trace('result.score: ${result.score}');
         trace('deltaScore: $deltaScore');
 
-        if (deltaScore < -5) {
+        if (deltaScore < -4) {
             trace('Delta score of $deltaScore is not good enough');
             trace('Considered actions: ${result.actions}');
             return [];
@@ -88,24 +88,44 @@ class AIPlayer {
 }
 
 class HumanPlayer {
-    static public function actions_for_turn(game :Game) :Array<Action> {
-        // return [Move({ minionId: 1, pos: { x: 1, y: 2 } })];
-        game.get_state().board.print_board_big();
-
-
-        var sets_of_all_actions = game.get_available_sets_of_actions(2 /* number of actions per turns to test */);
-        Sys.println("Available actions:");
-        for (i in 0 ... sets_of_all_actions.length) {
-            Sys.println('[$i] ${sets_of_all_actions[i]}');
+    static public function action_to_string(action :Action) {
+        return switch (action) {
+            case Move(m): 'Move ${TestGame.get_minion(m.minionId).name} to ${m.pos.x}, ${m.pos.y}';
+            case Attack(a): 'Attack ${TestGame.get_minion(a.minionId).name} —> ${TestGame.get_minion(a.victimId).name}';
+            case NoAction: 'No Action';
         }
+    }
+
+    static public function actions_for_turn(game :Game) :Array<Action> {
+        var newGame = game.clone();
+        var actions = [];
         while (true) {
-            Sys.println("Select action: ");
+            newGame.get_state().board.print_board_big();
+
+            var available_actions = newGame.get_available_actions();
+            if (available_actions.length == 0)
+                return actions;
+
+            Sys.println("Available actions:");
+            for (i in 0 ... available_actions.length) {
+                Sys.println('[${i + 1}] ${action_to_string(available_actions[i])}');
+            }
+            var end_turn_index = available_actions.length + 1;
+            Sys.println('[$end_turn_index] End turn');
+
+            Sys.println('Select action (1-$end_turn_index): ');
             Sys.print(">>> ");
             var selection = Sys.stdin().readLine();
             var actionIndex = Std.parseInt(selection);
-            if (actionIndex != null && actionIndex >= 0 && actionIndex < sets_of_all_actions.length) {
-                return sets_of_all_actions[actionIndex];
+            if (actionIndex != null && actionIndex > 0 && actionIndex <= end_turn_index) {
+                if (actionIndex == end_turn_index)
+                    return actions;
+
+                var action = available_actions[actionIndex - 1];
+                newGame.do_action(action);
+                actions.push(action);
             }
+            
             Sys.println('$selection is an invalid action index');
         }
     }
@@ -151,6 +171,26 @@ class TestGame {
         attacks: 1,
         attacksLeft: 0
     });
+    public static var bunny = new Minion({
+        player: human_player,
+        id: 3,
+        name: 'Bunny',
+        attack: 0,
+        life: 1,
+        rules: new Rules(), /* [{ trigger: OwnTurnStart, effect: Scripted(plus_one_attack_per_turn) }] */
+        moves: 1,
+        movesLeft: 0,
+        attacks: 1,
+        attacksLeft: 0
+    });
+
+    public static var minions = [goblin, orc, unicorn, bunny];
+    public static function get_minion(id :Int) {
+        for (minion in minions) {
+            if (minion.id == id) return minion;
+        }
+        return null;
+    }
 }
 
 
@@ -164,6 +204,7 @@ class SimpleTestGame {
             if (x == 1 && y == 0) return { minion: TestGame.orc.clone() };
             if (x == 1 && y == 1) return { minion: TestGame.goblin.clone() };
             if (x == 1 && y == 3) return { minion: TestGame.unicorn.clone() };
+            if (x == 2 && y == 3) return { minion: TestGame.bunny.clone() };
             return {};
         }
 

@@ -21,7 +21,7 @@ class AIPlayer {
         var result = minimax(player, game, 3 /* number of turns to test */);
         var deltaScore = result.score - currentScore;
 
-        if (deltaScore < -5) {
+        if (deltaScore < -4) {
             trace('Score of $deltaScore is not good enough');
             return [];
         }
