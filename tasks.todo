@@ -4,9 +4,13 @@ Tasks:
   ✔ Minimal game @done (10-02-15 19:40)
       ✔ AI vs. human, no deck, no hands, one minion on board each @done (10-02-15 19:40)
       ✔ CLI interface to choose between available actions for human @done (10-02-15 19:40)
+      ✔ Multiple minions @done (10-02-15 20:40)
+  ☐ Implement rules
   ☐ Implement deck
   ☐ Implement cards in hand
-  ☐ Implement casting/targeting
+  ☐ Implement casting minion cards
+  ☐ Implement casting spell cards
+  ☐ Implement targeting spells
   ☐ Implement avatar
   ☐ Implement claimed tiles
   ☐ Implement mana
