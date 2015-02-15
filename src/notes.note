@@ -1,0 +1,84 @@
+
+# Game rules
+
+· Game rules
+· Minion buff rules
+· Minion card rules
+
+
+E.g.
+Game rules: Minions have two moves
+Minion buff rules: Minion cannot move
+Minion card rules: Minion have +1 moves
+
+
+Minion stats to be determined through RuleEngine
+· can move
+· moves
+· can attack
+· attacks
+· can be damaged
+· can be healed
+· life
+
+OR: Minion has a list of Tags, e.g.
+enum Tag {
+    Life(value :Int);
+    Attack(value :Int);
+    CanBeDamaged(value :Bool);
+    //...
+}
+Minion = {
+    tags: Set<Tag> // could be implemented as Map<String, Tag> where string is Type.enumName(Tag)
+}
+
+
+# Card rule handling
+Card rules can be implemented like:
+* Class, implementing some functions, e.g.
+```
+class Unicorn implements Card {
+    public function on_played() {
+        // ...
+    }
+}
+```
+* events, e.g.
+```
+// unicorn setup code, e.g. a class or struct
+// ...
+var card = game.addCard(unicorn);
+card.listen('on_played', function() { /* ... */ }); // event by string
+card.listen(CardEvents.OnPlayed, function() { /* ... */ }); // event by enum
+
+// OR
+var unicorn = {
+    triggers: {
+        on_played: function() {}
+    }
+}
+// ...
+if (card.triggers.on_played != null) card.triggers.on_played();
+```
+
+
+# Rules execution:
+
+1. Run through all triggers
+2. Did any trigger run, if so go to 1.
+
+For instance, a card deals 3 damage to a minion, M, when played (like Lightning Bolt):
+
+[update state]:
+
+1. Run all triggers for 'damage_dealt'
+2. Minion M triggers
+3. [update state]
+4. M dies triggering 'minion_died'
+5. Run all triggers for 'minion_died'
+6. Minion M2 has 'Gets +1/+1 when a friendly minion dies' and triggers,
+7. [update state]
+
+Question: What about an ability that said 'Has an additional attack if an enemy minion has 2 or more attack' at this point?
+Maybe a single `update(trigger :Trigger) :Bool` function, where minion can handle any trigger or ignore trigger
+Should [update state] be run before new event is triggered? (see 2., 3. and 4.)

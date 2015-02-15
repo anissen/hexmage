@@ -6,6 +6,7 @@ Tasks:
       ✔ CLI interface to choose between available actions for human @done (10-02-15 19:40)
       ✔ Multiple minions @done (10-02-15 20:40)
   ☐ Implement rules
+  ☐ Make cards into files
   ☐ Implement deck
   ☐ Implement cards in hand
   ☐ Implement casting minion cards
@@ -16,6 +17,7 @@ Tasks:
   ☐ Implement mana
  
 Later:
-    ☐ Make minimal game state with, for each player: { minions :Array, cards_in_hand: Int, cards_in_deck :Int }
+    ☐ Make minimal game state with, for each player: { minions :Array, cards_in_hand: Int, cards_in_deck :Int } (current player needs concrete list of cards in hand)
+    ☐ Make game state const: http://stackoverflow.com/questions/14556785/what-is-the-syntax-to-declare-const-parameters-and-return-values-in-haxe
 
 Inspiration: https://raw.githubusercontent.com/anissen/elements/master/todo.todo
