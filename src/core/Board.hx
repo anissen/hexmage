@@ -16,19 +16,19 @@ class Board {
         board = [ for (y in 0 ... boardSize.y) [for (x in 0 ... boardSize.x) create_tile(x, y)]];
     }
 
-    public function handle_rules_for_minion(m :Minion /* + event type */) {
-        for (rule in m.rules) {
-            var applicable = switch (rule.trigger) {
-                case OwnTurnStart: true;
-                default: false;
-            };
-            if (!applicable) continue;
-            switch (rule.effect) {
-                case Scripted(f): trace('Doing scripted action'); f(this);
-                default: throw 'Unhandled rule effect!';
-            }
-        }
-    }
+    // public function handle_rules_for_minion(m :Minion /* + event type */) {
+    //     for (rule in m.rules) {
+    //         var applicable = switch (rule.trigger) {
+    //             case OwnTurnStart: true;
+    //             default: false;
+    //         };
+    //         if (!applicable) continue;
+    //         switch (rule.effect) {
+    //             case Scripted(f): trace('Doing scripted action'); f(this);
+    //             default: throw 'Unhandled rule effect!';
+    //         }
+    //     }
+    // }
 
     public function clone_board() :Board {
         function create_tile(x, y) {
@@ -74,8 +74,12 @@ class Board {
     function attack(attackAction :AttackAction) {
         var minion = get_minion(attackAction.minionId);
         var victim = get_minion(attackAction.victimId);
-        victim.life -= minion.attack;
-        minion.life -= victim.attack;
+        // TODO: Should be 
+        // var did_damage = victim.damage(minion /* source */);
+        if (victim.properties.can_be_damaged != false)
+            victim.life -= minion.attack;
+        if (minion.properties.can_be_damaged != false)
+            minion.life -= victim.attack;
         minion.attacksLeft--;
         if (victim.life <= 0) {
             var pos = get_minion_pos(victim);

@@ -80,5 +80,8 @@ For instance, a card deals 3 damage to a minion, M, when played (like Lightning 
 7. [update state]
 
 Question: What about an ability that said 'Has an additional attack if an enemy minion has 2 or more attack' at this point?
-Maybe a single `update(trigger :Trigger) :Bool` function, where minion can handle any trigger or ignore trigger
+Maybe a single `update(trigger :Trigger) :Bool` function, where minion can handle any trigger or ignore trigger --> Might as well use an Always trigger
 Should [update state] be run before new event is triggered? (see 2., 3. and 4.)
+
+Test case:
+Minion has 'Create 0/2 Sheep when killed'. Minion is killed with an area-of-effect spell; the 0/2 Sheep should be created afterwards. That is, the triggered effect should trigger *after* the area-of-effect spell trigger has finished.

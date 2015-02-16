@@ -18,6 +18,7 @@ class RuleEngine {
 
     static function get_moves_for_minion(board :Board, minion :Minion) :Array<Action> {
         if (minion.movesLeft <= 0) return [];
+        // if (!minion.properties.can_move) return [];
 
         var pos = board.get_minion_pos(minion);
         var x = pos.x;

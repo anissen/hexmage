@@ -143,7 +143,8 @@ class TestGame {
         moves: 1,
         movesLeft: 0,
         attacks: 1,
-        attacksLeft: 0
+        attacksLeft: 0,
+        properties: {}
     });
     public static var orc = new Minion({ 
         player: ai_player,
@@ -155,8 +156,18 @@ class TestGame {
         moves: 1,
         movesLeft: 0,
         attacks: 1,
-        attacksLeft: 0
+        attacksLeft: 0,
+        properties: {}
     });
+
+    public static function damage_self_effect(m :Minion) {
+        m.life--;
+    }
+
+    /*
+        Unicorn should have an URANIUM ARMOR that has
+        * Minion is invurnable but loses one life per turn
+    */
 
     public static var human_player = new Player({ id: 1, name: 'Human Player', take_turn: HumanPlayer.actions_for_turn });
     public static var unicorn = new Minion({
@@ -165,11 +176,14 @@ class TestGame {
         name: 'Unicorn',
         attack: 1,
         life: 6,
-        rules: new Rules(), /* [{ trigger: OwnTurnStart, effect: Scripted(plus_one_attack_per_turn) }] */
+        rules: [{ turn_ends: damage_self_effect }],
         moves: 1,
         movesLeft: 0,
         attacks: 1,
-        attacksLeft: 0
+        attacksLeft: 0,
+        properties: {
+            can_be_damaged: false
+        }
     });
     public static var bunny = new Minion({
         player: human_player,
@@ -181,7 +195,8 @@ class TestGame {
         moves: 1,
         movesLeft: 0,
         attacks: 1,
-        attacksLeft: 0
+        attacksLeft: 0,
+        properties: {}
     });
 
     public static var minions = [goblin, orc, unicorn, bunny];

@@ -19,15 +19,15 @@ typedef GameState = {
 
 class Game {
     var state :GameState;
-    static var Id :Int = 0;
-    @:isVar public var id(default, null) :Int;
+    // static var Id :Int = 0;
+    // @:isVar public var id(default, null) :Int;
 
     var listeners :Map<String, Dynamic->Void>;
 
     public function new(_state :GameState, _isNewGame :Bool = true) {
         state = _state;
         listeners = new Map<String, Dynamic->Void>();
-        id = Game.Id++;
+        // id = Game.Id++;
 
         if (_isNewGame) { // TODO: This is not pretty
             emit('turn_start');
@@ -138,6 +138,13 @@ class Game {
     }
 
     function end_turn() :Void {
+        for (minion in state.board.get_minions_for_player(get_current_player())) {
+            for (rule in minion.rules) {
+                if (rule.turn_ends == null) continue;
+                rule.turn_ends(minion);
+            }
+        }
+
         state.players.push(state.players.shift());
     }
 

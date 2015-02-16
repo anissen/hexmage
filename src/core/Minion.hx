@@ -4,8 +4,26 @@ package core;
 
 import core.Rules;
 
+// enum Property {
+//     Life;
+//     Attack;
+//     Moves;
+//     CanMove;
+//     CanBeDamaged;
+// }
+
+typedef Properties = {
+    ?life :Int,
+    ?attack :Int,
+    ?can_be_damaged :Bool,
+    ?can_move :Bool
+    // ...
+};
+
+// There should be a default Property map defined in the ruleset!
+
 typedef MinionOptions = { 
-    player: Player, 
+    player :Player, 
     id :Int, 
     name :String, 
     attack :Int, 
@@ -14,7 +32,8 @@ typedef MinionOptions = {
     moves: Int,
     movesLeft :Int,
     attacks: Int,
-    attacksLeft :Int
+    attacksLeft :Int,
+    properties :Properties
 };
 
 @:forward
@@ -34,7 +53,8 @@ abstract Minion(MinionOptions) from MinionOptions to MinionOptions {
             moves: this.moves,
             movesLeft: this.movesLeft,
             attacks: this.attacks,
-            attacksLeft: this.attacksLeft
+            attacksLeft: this.attacksLeft,
+            properties: this.properties
         });
     }
     

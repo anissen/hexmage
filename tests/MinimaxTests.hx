@@ -101,7 +101,8 @@ class TestGame {
         moves: 1,
         movesLeft: 0,
         attacks: 1,
-        attacksLeft: 0
+        attacksLeft: 0,
+        properties: {}
     });
 
     public static var human_player = new Player({ id: 1, name: 'Human Player', take_turn: HumanPlayer.actions_for_turn });
@@ -115,7 +116,8 @@ class TestGame {
         moves: 0,
         movesLeft: 0,
         attacks: 0,
-        attacksLeft: 0
+        attacksLeft: 0,
+        properties: {}
     });
 }
 
