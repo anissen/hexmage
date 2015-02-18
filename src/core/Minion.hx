@@ -85,13 +85,44 @@ typedef MinionOptions = {
     can_attack :Bool
 };
 
-@:forward
-abstract Minion(MinionOptions) from MinionOptions to MinionOptions {
-    inline public function new(m :MinionOptions) {
-        this = m;
+class Minion {
+    public var player :Player; 
+    public var id :Int; 
+    public var name :String; 
+    public var attack :Int; 
+    public var life :Int; 
+    public var rules :Rules;
+    public var moves: Int;
+    public var movesLeft :Int;
+    public var attacks: Int;
+    public var attacksLeft :Int;
+    public var can_be_damaged :Bool;
+    public var can_move :Bool;
+    public var can_attack :Bool;
+
+    public function new(options :MinionOptions) {
+        player = options.player;
+        id = options.id;
+        name = options.name;
+        attack = options.attack;
+        life = options.life;
+        rules = options.rules;
+        moves = options.moves;
+        movesLeft = options.movesLeft;
+        attacks = options.attacks;
+        attacksLeft = options.attacksLeft;
+        can_be_damaged = options.can_be_damaged;
+        can_move = options.can_move;
+        can_attack = options.can_attack;
     }
 
-    inline public function clone() :Minion {
+    public function damage(amount :Int, source :Minion /* TODO: Should be supertype, Entity */) :Bool {
+        if (!can_be_damaged) return false;
+        life -= amount;
+        return true;
+    }
+
+    public function clone() :Minion {
         return new Minion({ 
             id: this.id, 
             player: this.player.clone(), 
@@ -110,13 +141,11 @@ abstract Minion(MinionOptions) from MinionOptions to MinionOptions {
         });
     }
     
-    @:op(A == B)
-    inline static public function equals(lhs :Minion, rhs :Minion) :Bool {
+    static public function equals(lhs :Minion, rhs :Minion) :Bool {
         return (lhs == null && rhs == null) || (lhs != null && rhs != null && lhs.id == rhs.id);
     }
 
-    @:toString
-    inline public function toString() :String {
+    public function toString() :String {
         return '[${this.name} (${this.attack}/${this.life}, ${this.attacksLeft}/${this.attacks} attacks and ${this.movesLeft}/${this.moves} moves) owner: ${this.player.name}]';
     }
 }
