@@ -74,21 +74,27 @@ class Board {
     function attack(attackAction :AttackAction) {
         var minion = get_minion(attackAction.minionId);
         var victim = get_minion(attackAction.victimId);
-        // TODO: Should be 
-        // var did_damage = victim.damage(minion /* source */);
-        if (victim.can_be_damaged != false)
-            victim.life -= minion.attack;
-        if (minion.can_be_damaged != false)
-            minion.life -= victim.attack;
+
         minion.attacksLeft--;
-        if (victim.life <= 0) {
-            var pos = get_minion_pos(victim);
-            get_tile(pos).minion = null;
+
+        var victim_tool_damage = victim.damage(minion.attack, minion);
+        if (victim_tool_damage) {
+            // queue effect
         }
-        if (minion.life <= 0) {
-            var pos = get_minion_pos(minion);
-            get_tile(pos).minion = null;
+        var minion_tool_damage = minion.damage(victim.attack, victim);
+        if (minion_tool_damage) {
+            // queue effect
         }
+
+        // TODO: Should be handled in response to damage
+        // if (victim.life <= 0) {
+        //     var pos = get_minion_pos(victim);
+        //     get_tile(pos).minion = null;
+        // }
+        // if (minion.life <= 0) {
+        //     var pos = get_minion_pos(minion);
+        //     get_tile(pos).minion = null;
+        // }
     }
 
     public function print_board() {
