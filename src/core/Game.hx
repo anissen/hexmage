@@ -149,7 +149,11 @@ class Game {
     }
 
     public function do_action(action :Action) :Void {
-        state.board.do_action(action);
+        switch (action) {
+            case NoAction:
+            case Move(m): move(m);
+            case Attack(a): attack(a);
+        }
     }
 
     public function do_turn(actions :Array<Action>) :Void {
@@ -158,6 +162,40 @@ class Game {
         }
         end_turn();
         start_turn();
+    }
+    
+    function move(moveAction :MoveAction) {
+        var minion = state.board.get_minion(moveAction.minionId);
+        var currentPos = state.board.get_minion_pos(minion);
+        state.board.get_tile(currentPos).minion = null;
+        state.board.get_tile(moveAction.pos).minion = minion;
+        minion.movesLeft--;
+    }
+    
+    function attack(attackAction :AttackAction) {
+        var minion = state.board.get_minion(attackAction.minionId);
+        var victim = state.board.get_minion(attackAction.victimId);
+
+        minion.attacksLeft--;
+
+        var victim_tool_damage = victim.damage(minion.attack, minion);
+        if (victim_tool_damage) {
+            // queue effect
+        }
+        var minion_tool_damage = minion.damage(victim.attack, victim);
+        if (minion_tool_damage) {
+            // queue effect
+        }
+
+        // TODO: Should be handled in response to damage
+        // if (victim.life <= 0) {
+        //     var pos = get_minion_pos(victim);
+        //     get_tile(pos).minion = null;
+        // }
+        // if (minion.life <= 0) {
+        //     var pos = get_minion_pos(minion);
+        //     get_tile(pos).minion = null;
+        // }
     }
 
     public function has_won(player :Player) :Bool {

@@ -46,57 +46,6 @@ class Board {
         return boardSize;
     }
 
-    public function do_action(action :Action) {
-        switch (action) {
-            case NoAction:
-            case Move(m):
-                var minion = get_minion(m.minionId);
-                // trace('MOVE: $minion moves to ${m.pos}');
-                move(m);
-            case Attack(a):
-                var minion = get_minion(a.minionId);
-                var victim = get_minion(a.victimId);
-                // trace('ATTACK: $minion attacks $victim');
-                attack(a);
-                // trace('... $victim now has ${victim.life} life');
-            // case _: trace('Action $action is unhandled!');
-        }
-    }
-    
-    function move(moveAction :MoveAction) {
-        var minion = get_minion(moveAction.minionId);
-        var currentPos = get_minion_pos(minion);
-        get_tile(currentPos).minion = null;
-        get_tile(moveAction.pos).minion = minion;
-        minion.movesLeft--;
-    }
-    
-    function attack(attackAction :AttackAction) {
-        var minion = get_minion(attackAction.minionId);
-        var victim = get_minion(attackAction.victimId);
-
-        minion.attacksLeft--;
-
-        var victim_tool_damage = victim.damage(minion.attack, minion);
-        if (victim_tool_damage) {
-            // queue effect
-        }
-        var minion_tool_damage = minion.damage(victim.attack, victim);
-        if (minion_tool_damage) {
-            // queue effect
-        }
-
-        // TODO: Should be handled in response to damage
-        // if (victim.life <= 0) {
-        //     var pos = get_minion_pos(victim);
-        //     get_tile(pos).minion = null;
-        // }
-        // if (minion.life <= 0) {
-        //     var pos = get_minion_pos(minion);
-        //     get_tile(pos).minion = null;
-        // }
-    }
-
     public function print_board() {
         trace("Board:");
         for (row in board) {
@@ -117,6 +66,8 @@ class Board {
             return StringTools.rpad(text.substr(0, maxLength), ' ', maxLength);
         }
 
+        var playerColors = [red(), green()];
+
         var s = '\n\nBoard:\n|';
         for (tile in board[0]) {
             s += '———————|';
@@ -128,13 +79,16 @@ class Board {
                 s += '|';
                 for (x in 0 ... row.length) {
                     var tile = row[x];
+                    if (tile.minion != null) {
+                        s += playerColors[tile.minion.player.id];
+                    }
                     s += switch (i) {
                         case 0: (tile.minion != null ? fit(tile.minion.player.name).toUpperCase() : fill());
-                        case 1: (tile.minion != null ? fit(tile.minion.name) : fit(' ($x,$y)'));
+                        case 1: (tile.minion != null ? fit(tile.minion.name) : darkgrey() + fit(' ($x,$y)'));
                         case 2: (tile.minion != null ? fit('${tile.minion.attack} / ${tile.minion.life}') : fill());
                         case _: '?';
                     };
-                    s += '|';
+                    s += reset() + '|';
                 }     
                 s += '\n';
             }
@@ -177,4 +131,14 @@ class Board {
         }
         throw 'Minion not found on board!';
     }
+
+    // Colors: http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
+    static function reset()    { return "\033[0m";  }
+    static function yellow()   { return "\033[93m"; }
+    static function green()    { return "\033[92m"; }
+    static function red()      { return "\033[91m"; }
+    static function bright()   { return "\033[1m";  }
+    static function dim()      { return "\033[2m";  }
+    static function darkgrey()      { return "\033[90m";  }
+    static function yellow_bg()      { return "\033[47m";  }
 }
