@@ -17,8 +17,7 @@ class RuleEngine {
     }
 
     static function get_moves_for_minion(board :Board, minion :Minion) :Array<Action> {
-        if (minion.movesLeft <= 0) return [];
-        // if (!minion.properties.can_move) return [];
+        if (!minion.can_move || minion.movesLeft <= 0) return [];
 
         var pos = board.get_minion_pos(minion);
         var x = pos.x;
@@ -38,7 +37,7 @@ class RuleEngine {
     }
 
     static function get_attacks_for_minion(board :Board, minion :Minion) :Array<Action> {
-        if (minion.attacksLeft <= 0) return [];
+        if (!minion.can_attack || minion.attacksLeft <= 0) return [];
 
         var pos = board.get_minion_pos(minion);
         var x = pos.x;

@@ -76,9 +76,9 @@ class Board {
         var victim = get_minion(attackAction.victimId);
         // TODO: Should be 
         // var did_damage = victim.damage(minion /* source */);
-        if (victim.properties.can_be_damaged != false)
+        if (victim.can_be_damaged != false)
             victim.life -= minion.attack;
-        if (minion.properties.can_be_damaged != false)
+        if (minion.can_be_damaged != false)
             minion.life -= victim.attack;
         minion.attacksLeft--;
         if (victim.life <= 0) {

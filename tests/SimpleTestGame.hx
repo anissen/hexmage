@@ -144,7 +144,9 @@ class TestGame {
         movesLeft: 0,
         attacks: 1,
         attacksLeft: 0,
-        properties: {}
+        can_be_damaged: true,
+        can_move: true,
+        can_attack: true
     });
     public static var orc = new Minion({ 
         player: ai_player,
@@ -157,7 +159,9 @@ class TestGame {
         movesLeft: 0,
         attacks: 1,
         attacksLeft: 0,
-        properties: {}
+        can_be_damaged: true,
+        can_move: true,
+        can_attack: true
     });
 
     public static function damage_self_effect(m :Minion) {
@@ -181,9 +185,9 @@ class TestGame {
         movesLeft: 0,
         attacks: 1,
         attacksLeft: 0,
-        properties: {
-            can_be_damaged: false
-        }
+        can_be_damaged: false, // armor
+        can_move: true,
+        can_attack: true
     });
     public static var bunny = new Minion({
         player: human_player,
@@ -196,7 +200,9 @@ class TestGame {
         movesLeft: 0,
         attacks: 1,
         attacksLeft: 0,
-        properties: {}
+        can_be_damaged: true,
+        can_move: true,
+        can_attack: true
     });
 
     public static var minions = [goblin, orc, unicorn, bunny];

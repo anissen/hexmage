@@ -102,7 +102,9 @@ class TestGame {
         movesLeft: 0,
         attacks: 1,
         attacksLeft: 0,
-        properties: {}
+        can_be_damaged: true,
+        can_move: true,
+        can_attack: true
     });
 
     public static var human_player = new Player({ id: 1, name: 'Human Player', take_turn: HumanPlayer.actions_for_turn });
@@ -117,7 +119,9 @@ class TestGame {
         movesLeft: 0,
         attacks: 0,
         attacksLeft: 0,
-        properties: {}
+        can_be_damaged: true,
+        can_move: true,
+        can_attack: true
     });
 }
 

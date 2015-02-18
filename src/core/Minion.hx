@@ -12,13 +12,60 @@ import core.Rules;
 //     CanBeDamaged;
 // }
 
+/*
+class Tag {
+    var _value :Int;
+    public var value(get, set) :Int;
+    
+    var _enabled :Bool;
+    public var enabled(get, set) :Bool;
+    
+    var listeners :List<Int -> Void>;
+
+    public function new(_value :Int, _enabled :Bool = true) {
+        this._value = _value;
+        this._enabled = _enabled;
+        listeners = new List<Int -> Void>();
+    }
+    
+    public function get_value() :Int {
+        return (_enabled ? _value : 0);
+    }
+
+    public function set_value(_value :Int) :Int {
+        if (this._value == _value) return _value;
+        this._value = _value;
+        for (listener in listeners)
+            listener(value);
+        return _value;
+    }
+
+    public function get_enabled() :Bool {
+        return this._enabled;
+    }
+
+    public function set_enabled(_enabled :Bool) :Bool {
+        if (this._enabled == _enabled) return enabled;
+        this._enabled = _enabled;
+        for (listener in listeners)
+            listener(value);
+        return _enabled;
+    }
+
+    public function listen(listener :Int -> Void) {
+        listeners.add(listener);
+    }
+}
+
 typedef Properties = {
     ?life :Int,
     ?attack :Int,
     ?can_be_damaged :Bool,
-    ?can_move :Bool
+    ?can_move :Bool,
     // ...
+    moves: Tag
 };
+*/
 
 // There should be a default Property map defined in the ruleset!
 
@@ -33,7 +80,9 @@ typedef MinionOptions = {
     movesLeft :Int,
     attacks: Int,
     attacksLeft :Int,
-    properties :Properties
+    can_be_damaged :Bool,
+    can_move :Bool,
+    can_attack :Bool
 };
 
 @:forward
@@ -54,7 +103,10 @@ abstract Minion(MinionOptions) from MinionOptions to MinionOptions {
             movesLeft: this.movesLeft,
             attacks: this.attacks,
             attacksLeft: this.attacksLeft,
-            properties: this.properties
+            can_be_damaged: this.can_be_damaged,
+            can_move: this.can_move,
+            can_attack: this.can_attack
+            // properties: this.properties
         });
     }
     
