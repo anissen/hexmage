@@ -85,3 +85,49 @@ Should [update state] be run before new event is triggered? (see 2., 3. and 4.)
 
 Test case:
 Minion has 'Create 0/2 Sheep when killed'. Minion is killed with an area-of-effect spell; the 0/2 Sheep should be created afterwards. That is, the triggered effect should trigger *after* the area-of-effect spell trigger has finished.
+
+
+Idea: Game tags that can be listened to, e.g.
+
+class GameTag {
+    var listeners;
+    var entity;
+    var value;
+
+    public function new(entity :Entity, value :Int) {
+        this.entity = entity; // is entity required?
+        this.value = value;
+    }
+    
+    public function listen(func :GameTag -> Void) {
+        listeners.push_back(func);
+    }
+    
+    public function set(value :Int) {
+        if (value == this.value) return;
+        
+        this.value = value;
+        for (listener in listeners) {
+            listener(this);
+        }
+    }
+}
+
+Push/pop changes to game tags, e.g. (newest change to oldest change)
+* Minion gets its moves doubled (e.g. spell): Push 3
+* Minion has +1 moves (intrinsinc property): Push 1
+* Minions have 2 moves as default (game rule): Push 2
+Default: 0
+=> Moves: 0 + 2 + 1 + 3 = 6
+
+* Minion gets its moves doubled (e.g. spell): Push 3
+* Minion cannot move (e.g. spell): Pop all changes
+* Minion has +1 moves (intrinsinc property): Push 1
+* Minions have 2 moves as default (game rule): Push 2
+Default: 0
+=> Moves: 0
+
+Changes = [2, 1, 3];
+
+
+OR simply save current minion move count + a "can move"-property
