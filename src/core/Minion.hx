@@ -141,8 +141,8 @@ class Minion {
         });
     }
     
-    static public function equals(lhs :Minion, rhs :Minion) :Bool {
-        return (lhs == null && rhs == null) || (lhs != null && rhs != null && lhs.id == rhs.id);
+    public function equals(other :Minion) :Bool {
+        return (other != null && other.id == id);
     }
 
     public function toString() :String {

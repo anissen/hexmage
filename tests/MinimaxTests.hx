@@ -131,7 +131,7 @@ class MinimaxTrivialTests extends Mohxa {
     public function new() {
         super();
 
-        this.use_colors = false;
+        this.use_colors = true;
 
         var tiles = { x: 1, y: 2 };
         function create_tile(x :Int, y :Int) :Tile {
@@ -168,7 +168,7 @@ class MinimaxTrivialTests extends Mohxa {
                 });
 
                 it('should have a minion of type "goblin"', function() {
-                    equal(true, minions[0] == TestGame.goblin, 'Is of type "goblin"');
+                    equal(true, minions[0].equals(TestGame.goblin), 'Is of type "goblin"');
                 });
 
                 ai_minion = minions[0];
@@ -194,7 +194,7 @@ class MinimaxTrivialTests extends Mohxa {
                 });
 
                 it('should have a minion of type "unicorn"', function() {
-                    equal(true, minions[0] == TestGame.unicorn, 'Is of type "unicorn"');
+                    equal(true, minions[0].equals(TestGame.unicorn), 'Is of type "unicorn"');
                 });
 
                 human_minion = minions[0];
@@ -272,7 +272,7 @@ class MinimaxTrivialTests2 extends Mohxa {
     public function new() {
         super();
 
-        this.use_colors = false;
+        this.use_colors = true;
 
         var tiles = { x: 1, y: 3 };
         function create_tile(x :Int, y :Int) :Tile {
@@ -309,7 +309,7 @@ class MinimaxTrivialTests2 extends Mohxa {
                 });
 
                 it('should have a minion of type "goblin"', function() {
-                    equal(true, minions[0] == TestGame.goblin, 'Is of type "goblin"');
+                    equal(true, minions[0].equals(TestGame.goblin), 'Is of type "goblin"');
                 });
 
                 ai_minion = minions[0];
@@ -335,7 +335,7 @@ class MinimaxTrivialTests2 extends Mohxa {
                 });
 
                 it('should have a minion of type "unicorn"', function() {
-                    equal(true, minions[0] == TestGame.unicorn, 'Is of type "unicorn"');
+                    equal(true, minions[0].equals(TestGame.unicorn), 'Is of type "unicorn"');
                 });
 
                 human_minion = minions[0];
@@ -411,7 +411,7 @@ class MinimaxMultiTurnPlanningTests extends Mohxa {
     public function new() {
         super();
 
-        this.use_colors = false;
+        this.use_colors = true;
 
         /*
         [0] (0, 0), goblin
@@ -448,7 +448,7 @@ class MinimaxMultiTurnPlanningTests extends Mohxa {
                 });
 
                 it('should have a minion of type "goblin"', function() {
-                    equal(true, minions[0] == TestGame.goblin, 'Is of type "goblin"');
+                    equal(true, minions[0].equals(TestGame.goblin), 'Is of type "goblin"');
                 });
 
                 ai_minion = minions[0];
@@ -474,7 +474,7 @@ class MinimaxMultiTurnPlanningTests extends Mohxa {
                 });
 
                 it('should have a minion of type "unicorn"', function() {
-                    equal(true, minions[0] == TestGame.unicorn, 'Is of type "unicorn"');
+                    equal(true, minions[0].equals(TestGame.unicorn), 'Is of type "unicorn"');
                 });
 
                 human_minion = minions[0];
@@ -581,7 +581,7 @@ class MinimaxFailingTest extends Mohxa {
     public function new() {
         super();
 
-        this.use_colors = false;
+        this.use_colors = true;
 
         /*
         [ ][ ]

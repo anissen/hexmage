@@ -192,14 +192,14 @@ class Game {
         }
 
         // TODO: Should be handled in response to damage
-        // if (victim.life <= 0) {
-        //     var pos = get_minion_pos(victim);
-        //     get_tile(pos).minion = null;
-        // }
-        // if (minion.life <= 0) {
-        //     var pos = get_minion_pos(minion);
-        //     get_tile(pos).minion = null;
-        // }
+        if (victim.life <= 0) {
+            var pos = get_minion_pos(victim);
+            state.board.get_tile(pos).minion = null;
+        }
+        if (minion.life <= 0) {
+            var pos = get_minion_pos(minion);
+            state.board.get_tile(pos).minion = null;
+        }
     }
 
     public function has_won(player :Player) :Bool {
