@@ -35,7 +35,7 @@ class AIPlayer {
             return { score: score_board(player, game) - turn, actions: [] };
         }
 
-        var set_of_all_actions = game.get_available_sets_of_actions(2 /* number of actions per turns to test */);
+        var set_of_all_actions = game.get_nested_actions(2 /* number of actions per turns to test */);
         var bestResult = { score: (game.is_current_player(player) ? -1000 : 1000), actions: [] };
         for (actions in set_of_all_actions) {
             var newGame = game.clone();
@@ -61,20 +61,18 @@ class AIPlayer {
     }
 
     static function score_board(player :Player, game :Game) :Int {
-        var state = game.get_state();
-
         // score the players own stuff only
         function get_score_for_player(p) {
             var score :Float = 0;
             var intrinsicMinionScore = 1;
-            for (minion in state.board.get_minions_for_player(p)) {
+            for (minion in game.get_minions_for_player(p)) {
                 score += intrinsicMinionScore + Math.max(minion.attack, 0) + Math.max(minion.life, 0);
             }
             return score;
         }
         
         var score = get_score_for_player(player);
-        for (p in state.players) {
+        for (p in game.get_players()) {
             if (p.id == player.id) continue;
             score -= get_score_for_player(p);
         }
@@ -151,11 +149,10 @@ class MinimaxTrivialTests extends Mohxa {
 
         log('Minimax Trivial Tests');
         describe('Board setup', function() {
-            var board = game.get_state().board;
-            board.print_board();
+            game.print();
 
             it('should be the correct size', function() {
-                var size = board.get_board_size();
+                var size = game.get_board_size();
                 equal(1, size.x, '1 tile wide');
                 equal(2, size.y, '2 tiles height');
             });
@@ -164,7 +161,7 @@ class MinimaxTrivialTests extends Mohxa {
             var human_minion;
 
             describe('AI player', function() {
-                var minions = board.get_minions_for_player(TestGame.ai_player);
+                var minions = game.get_minions_for_player(TestGame.ai_player);
 
                 it('should start with one minion', function() {
                     equal(1, minions.length, '1 minion');
@@ -183,14 +180,14 @@ class MinimaxTrivialTests extends Mohxa {
                 });
 
                 it('should be positioned at (0, 0)', function() {
-                    var pos = board.get_minion_pos(ai_minion);
+                    var pos = game.get_minion_pos(ai_minion);
                     equal(0, pos.x, 'x: 0');
                     equal(0, pos.y, 'y: 0');
                 });
             });
 
             describe('Human player', function() {
-                var minions = board.get_minions_for_player(TestGame.human_player);
+                var minions = game.get_minions_for_player(TestGame.human_player);
 
                 it('should start with one minion', function() {
                     equal(1, minions.length, '1 minion');
@@ -209,7 +206,7 @@ class MinimaxTrivialTests extends Mohxa {
                 });
 
                 it('should be positioned at (0, 1)', function() {
-                    var pos = board.get_minion_pos(human_minion);
+                    var pos = game.get_minion_pos(human_minion);
                     equal(0, pos.x, 'x: 0');
                     equal(1, pos.y, 'y: 1');
                 });
@@ -221,7 +218,7 @@ class MinimaxTrivialTests extends Mohxa {
 
             describe('AI turn', function() {
                 it('should have the correct actions available', function() {
-                    var sets_of_actions = game.get_available_sets_of_actions(3);
+                    var sets_of_actions = game.get_nested_actions(3);
                     equal(3, sets_of_actions.length, '3 sets of actions');
 
                     var attackAction = sets_of_actions[0];
@@ -246,12 +243,12 @@ class MinimaxTrivialTests extends Mohxa {
                     game.take_turn();
 
                     it('should have changed the board state', function() {
-                        var ai_minons_changed = board.get_minions_for_player(TestGame.ai_player);
+                        var ai_minons_changed = game.get_minions_for_player(TestGame.ai_player);
                         equal(1, ai_minons_changed.length, 'AI player should have 1 minion');
                         equal(0, ai_minons_changed[0].attacksLeft, 'AI minion should have 0 attacks left');
                         equal(1, ai_minons_changed[0].movesLeft, 'AI minion should have 1 moves left');
 
-                        equal(0, board.get_minions_for_player(TestGame.human_player).length, 'Human player should have 0 minions');
+                        equal(0, game.get_minions_for_player(TestGame.human_player).length, 'Human player should have 0 minions');
                     });
 
                     it('should be game over', function() {
@@ -293,11 +290,10 @@ class MinimaxTrivialTests2 extends Mohxa {
 
         log('Minimax Trivial Tests 2');
         describe('Board setup', function() {
-            var board = game.get_state().board;
-            board.print_board();
+            game.print();
 
             it('should be the correct size', function() {
-                var size = board.get_board_size();
+                var size = game.get_board_size();
                 equal(1, size.x, '1 tile wide');
                 equal(3, size.y, '3 tiles height');
             });
@@ -306,7 +302,7 @@ class MinimaxTrivialTests2 extends Mohxa {
             var human_minion;
 
             describe('AI player', function() {
-                var minions = board.get_minions_for_player(TestGame.ai_player);
+                var minions = game.get_minions_for_player(TestGame.ai_player);
 
                 it('should start with one minion', function() {
                     equal(1, minions.length, '1 minion');
@@ -325,14 +321,14 @@ class MinimaxTrivialTests2 extends Mohxa {
                 });
 
                 it('should be positioned at (0, 0)', function() {
-                    var pos = board.get_minion_pos(ai_minion);
+                    var pos = game.get_minion_pos(ai_minion);
                     equal(0, pos.x, 'x: 0');
                     equal(0, pos.y, 'y: 0');
                 });
             });
 
             describe('Human player', function() {
-                var minions = board.get_minions_for_player(TestGame.human_player);
+                var minions = game.get_minions_for_player(TestGame.human_player);
 
                 it('should start with one minion', function() {
                     equal(1, minions.length, '1 minion');
@@ -351,7 +347,7 @@ class MinimaxTrivialTests2 extends Mohxa {
                 });
 
                 it('should be positioned at (0, 2)', function() {
-                    var pos = board.get_minion_pos(human_minion);
+                    var pos = game.get_minion_pos(human_minion);
                     equal(0, pos.x, 'x: 0');
                     equal(2, pos.y, 'y: 2');
                 });
@@ -363,7 +359,7 @@ class MinimaxTrivialTests2 extends Mohxa {
 
             describe('AI turn', function() {
                 it('should have the correct actions available', function() {
-                    var sets_of_actions = game.get_available_sets_of_actions(3);
+                    var sets_of_actions = game.get_nested_actions(3);
                     trace('sets_of_actions');
                     trace(sets_of_actions);
                     equal(3, sets_of_actions.length, '3 sets of actions');
@@ -386,12 +382,12 @@ class MinimaxTrivialTests2 extends Mohxa {
                     game.take_turn();
 
                     it('should have changed the board state', function() {
-                        var ai_minons_changed = board.get_minions_for_player(TestGame.ai_player);
+                        var ai_minons_changed = game.get_minions_for_player(TestGame.ai_player);
                         equal(1, ai_minons_changed.length, 'AI player should have 1 minion');
                         equal(0, ai_minons_changed[0].attacksLeft, 'AI minion should have 0 attacks left');
                         equal(0, ai_minons_changed[0].movesLeft, 'AI minion should have 0 moves left');
 
-                        equal(0, board.get_minions_for_player(TestGame.human_player).length, 'Human player should have 0 minions');
+                        equal(0, game.get_minions_for_player(TestGame.human_player).length, 'Human player should have 0 minions');
                     });
 
                     it('should be game over', function() {
@@ -439,14 +435,13 @@ class MinimaxMultiTurnPlanningTests extends Mohxa {
 
         log('MinimaxMultiTurnPlanningTests');
         describe('Board setup', function() {
-            var board = game.get_state().board;
-            board.print_board();
+            game.print();
 
             var ai_minion;
             var human_minion;
 
             describe('AI player', function() {
-                var minions = board.get_minions_for_player(TestGame.ai_player);
+                var minions = game.get_minions_for_player(TestGame.ai_player);
 
                 it('should start with one minion', function() {
                     equal(1, minions.length, '1 minion');
@@ -465,14 +460,14 @@ class MinimaxMultiTurnPlanningTests extends Mohxa {
                 });
 
                 it('should be positioned at (0, 0)', function() {
-                    var pos = board.get_minion_pos(ai_minion);
+                    var pos = game.get_minion_pos(ai_minion);
                     equal(0, pos.x, 'x: 0');
                     equal(0, pos.y, 'y: 0');
                 });
             });
 
             describe('Human player', function() {
-                var minions = board.get_minions_for_player(TestGame.human_player);
+                var minions = game.get_minions_for_player(TestGame.human_player);
 
                 it('should start with one minion', function() {
                     equal(1, minions.length, '1 minion');
@@ -491,7 +486,7 @@ class MinimaxMultiTurnPlanningTests extends Mohxa {
                 });
 
                 it('should be positioned at (0, 3)', function() {
-                    var pos = board.get_minion_pos(human_minion);
+                    var pos = game.get_minion_pos(human_minion);
                     equal(0, pos.x, 'x: 0');
                     equal(3, pos.y, 'y: 3');
                 });
@@ -503,7 +498,7 @@ class MinimaxMultiTurnPlanningTests extends Mohxa {
 
             describe('AI turn', function() {
                 it('should have the correct actions available', function() {
-                    var sets_of_actions = game.get_available_sets_of_actions(3);
+                    var sets_of_actions = game.get_nested_actions(3);
                     equal(2, sets_of_actions.length, '2 set of actions');
 
                     var moveAction = sets_of_actions[0];
@@ -520,10 +515,10 @@ class MinimaxMultiTurnPlanningTests extends Mohxa {
                     game.take_turn();
 
                     it('should have changed the board state', function() {
-                        var ai_minons_changed = board.get_minions_for_player(TestGame.ai_player);
+                        var ai_minons_changed = game.get_minions_for_player(TestGame.ai_player);
                         equal(1, ai_minons_changed.length, 'AI player should have 1 minion');
                         equal(0, ai_minons_changed[0].movesLeft, 'AI minion should have 0 moves left');
-                        var pos = board.get_minion_pos(ai_minons_changed[0]);
+                        var pos = game.get_minion_pos(ai_minons_changed[0]);
                         equal(0, pos.x, 'AI minion should be at x: 0');
                         equal(1, pos.y, 'AI minion should be at y: 1');
                     });
@@ -532,7 +527,7 @@ class MinimaxMultiTurnPlanningTests extends Mohxa {
 
             describe('Human turn', function() {
                 it('should have the correct actions available', function() {
-                    var sets_of_actions = game.get_available_sets_of_actions(3);
+                    var sets_of_actions = game.get_nested_actions(3);
                     equal(1, sets_of_actions.length, '1 set of actions');
 
                     var noAction = sets_of_actions[0];
@@ -545,10 +540,10 @@ class MinimaxMultiTurnPlanningTests extends Mohxa {
                     game.take_turn();
 
                     it('should not have moved the minion', function() {
-                        var human_minons_changed = board.get_minions_for_player(TestGame.human_player);
+                        var human_minons_changed = game.get_minions_for_player(TestGame.human_player);
                         equal(1, human_minons_changed.length, 'Human player should have 1 minion');
                         equal(0, human_minons_changed[0].movesLeft, 'Human minion should have 0 moves left');
-                        var pos = board.get_minion_pos(human_minons_changed[0]);
+                        var pos = game.get_minion_pos(human_minons_changed[0]);
                         equal(0, pos.x, 'Human minion should be at x: 0');
                         equal(3, pos.y, 'Human minion should be at y: 3');
                     });
@@ -558,7 +553,7 @@ class MinimaxMultiTurnPlanningTests extends Mohxa {
             describe('AI turn', function() {
 
                 it('should have the correct actions available', function() {
-                    var set_of_actions = game.get_available_sets_of_actions(3);
+                    var set_of_actions = game.get_nested_actions(3);
                     equal(4, set_of_actions.length, '4 set of actions');
                 });
 
@@ -567,9 +562,9 @@ class MinimaxMultiTurnPlanningTests extends Mohxa {
                     game.take_turn();
 
                     it('should have changed the board state', function() {
-                        var ai_minons_changed = board.get_minions_for_player(TestGame.ai_player);
+                        var ai_minons_changed = game.get_minions_for_player(TestGame.ai_player);
                         equal(1, ai_minons_changed.length, 'AI player should have 1 minion');
-                        equal(0, board.get_minions_for_player(TestGame.human_player).length, 'Human should have 0 minions');
+                        equal(0, game.get_minions_for_player(TestGame.human_player).length, 'Human should have 0 minions');
                     });
                 });
             });
@@ -610,43 +605,42 @@ class MinimaxFailingTest extends Mohxa {
 
         log('FailingTest');
         describe('Board setup', function() {
-            var board = game.get_state().board;
-            board.print_board();
+            game.print();
 
             describe('AI turn', function() {
                 it('should take the correct action', function() {
                     log('AI player is taking the turn');
                     game.take_turn();
-                    board.print_board();
-                    var goblin = board.get_minions_for_player(TestGame.ai_player)[0];
-                    var pos = board.get_minion_pos(goblin);
+                    game.print();
+                    var goblin = game.get_minions_for_player(TestGame.ai_player)[0];
+                    var pos = game.get_minion_pos(goblin);
                     equal(0, pos.x, 'AI minion should be at x: 0');
                     equal(2, pos.y, 'AI minion should be at y: 2');
                 });
             });
 
             describe('Human turn', function() {
-                board.print_board();
+                game.print();
                 it('should not take any action', function() {
                     log('Human player is taking the turn');
                     game.take_turn();
 
-                    var unicorn = board.get_minions_for_player(TestGame.human_player)[0];
-                    var pos = board.get_minion_pos(unicorn);
+                    var unicorn = game.get_minions_for_player(TestGame.human_player)[0];
+                    var pos = game.get_minion_pos(unicorn);
                     equal(1, pos.x, 'AI minion should be at x: 1');
                     equal(3, pos.y, 'AI minion should be at y: 3');
                 });
             });
 
             describe('AI turn', function() {
-                board.print_board();
+                game.print();
 
                 it('should take the correct action', function() {
                     log('AI player is taking the turn');
                     game.take_turn();
 
-                    var goblin = board.get_minions_for_player(TestGame.ai_player)[0];
-                    var pos = board.get_minion_pos(goblin);
+                    var goblin = game.get_minions_for_player(TestGame.ai_player)[0];
+                    var pos = game.get_minion_pos(goblin);
                     equal(0, pos.x, 'AI minion should be at x: 0');
                     equal(3, pos.y, 'AI minion should be at y: 3');
 

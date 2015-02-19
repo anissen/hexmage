@@ -160,3 +160,21 @@ function handle_event(event) {
         case Move(m): Tween(m.minion, m.pos).onComplete(process_events);
     }
 }
+
+OR
+
+let the user of game listen to events with a callback to proceed, e.g.
+
+game.listen('move', function(event, proceed) {
+    Tween(m.minion, m.pos).onComplete(proceed);
+});
+
+
+# Ideal Game interface
+
+class Game {
+    Array<Action> get_actions();
+    Array<Action> get_nested_actions();
+    Game try_action();
+    Game take_turn(Array<Action> actions);
+}

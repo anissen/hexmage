@@ -38,7 +38,7 @@ class AIPlayer {
             return { score: score_board(player, game) - turn, actions: [] };
         }
 
-        var set_of_all_actions = game.get_available_sets_of_actions(2 /* number of actions per turns to test */);
+        var set_of_all_actions = game.get_nested_actions(2 /* number of actions per turns to test */);
         var bestResult = { score: (game.is_current_player(player) ? -1000 : 1000), actions: [] };
         for (actions in set_of_all_actions) {
             var newGame = game.clone();
@@ -66,20 +66,18 @@ class AIPlayer {
     }
 
     static function score_board(player :Player, game :Game) :Int {
-        var state = game.get_state();
-
         // score the players own stuff only
         function get_score_for_player(p) {
             var score :Float = 0;
             var intrinsicMinionScore = 1;
-            for (minion in state.board.get_minions_for_player(p)) {
+            for (minion in game.get_minions_for_player(p)) {
                 score += intrinsicMinionScore + Math.max(minion.attack, 0) + Math.max(minion.life, 0);
             }
             return score;
         }
         
         var score = get_score_for_player(player);
-        for (p in state.players) {
+        for (p in game.get_players()) {
             if (p.id == player.id) continue;
             score -= get_score_for_player(p);
         }
@@ -100,9 +98,9 @@ class HumanPlayer {
         var newGame = game.clone();
         var actions = [];
         while (true) {
-            newGame.get_state().board.print_board_big();
+            newGame.print();
 
-            var available_actions = newGame.get_available_actions();
+            var available_actions = newGame.get_actions();
             if (available_actions.length == 0)
                 return actions;
 
@@ -235,13 +233,12 @@ class SimpleTestGame {
             rules: new Rules()
         };
         var game = new Game(gameState);
-        var board = game.get_state().board;
         
         while (!game.is_game_over()) {
             game.take_turn();
         }
         Sys.println("GAME OVER");
-        board.print_board_big();
+        game.print();
         Sys.stdin().readLine();
     }
 }

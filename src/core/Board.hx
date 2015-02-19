@@ -46,7 +46,7 @@ class Board {
         return boardSize;
     }
 
-    public function print_board() {
+    public function print() {
         trace("Board:");
         for (row in board) {
             var s = "";
@@ -57,7 +57,7 @@ class Board {
         }
     }
 
-    public function print_board_big() {
+    public function print_big() {
         function fill(text :String = ' ', maxLength :Int = 7) {
             return StringTools.rpad('', text, maxLength);
         }

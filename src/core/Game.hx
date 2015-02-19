@@ -72,7 +72,7 @@ class Game {
         listener(data);
     }
 
-    public function get_available_actions() :Array<Action> {
+    public function get_actions() :Array<Action> {
         return RuleEngine.get_available_actions(state, get_current_player());
     }
 
@@ -81,7 +81,7 @@ class Game {
             return [];
 
         var actions :Array<Array<Action>> = [];
-        for (action in get_available_actions()) {
+        for (action in get_actions()) {
             var newGame = this.clone();
             newGame.do_action(action);
 
@@ -95,7 +95,7 @@ class Game {
         return actions;
     }
 
-    public function get_available_sets_of_actions(actionDepthRemaining :Int) :Array<Array<Action>> {
+    public function get_nested_actions(actionDepthRemaining :Int) :Array<Array<Action>> {
         var actions = determine_available_sets_of_actions(actionDepthRemaining);
         actions.push([NoAction]); // Include the no-action actions
         return actions;
@@ -113,13 +113,17 @@ class Game {
         }, false);
     }
 
-    public function get_state() :GameState {
-        return state;
+    // public function get_state() :GameState {
+    //     return state;
+    // }
+
+    public function get_players() :Array<Player> {
+        return clone_players();
     }
 
     public function get_current_player() :Player {
         return state.players[0];
-    } 
+    }
 
     public function is_current_player(player :Player) :Bool {
         return get_current_player().id == player.id;
@@ -209,6 +213,22 @@ class Game {
 
     public function listen(key :String, func: Dynamic->Void) {
         listeners.set(key, func);
+    }
+
+    public function get_minions_for_player(player :Player) :Array<Minion> {
+        return state.board.get_minions_for_player(player);
+    }
+
+    public function get_board_size() :Point {
+        return state.board.get_board_size();
+    }
+
+    public function get_minion_pos(m :Minion) :Point {
+        return state.board.get_minion_pos(m);
+    }
+
+    public function print() {
+        state.board.print_big();
     }
 }
 
