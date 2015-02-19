@@ -131,3 +131,32 @@ Changes = [2, 1, 3];
 
 
 OR simply save current minion move count + a "can move"-property
+
+
+# Actions & events
+
+Actions are input from the player/AI
+An Action can trigger a sequence of Events resulting from that action.
+An Event is an in-game operation, e.g. minion move, minion takes damage, card drawn, card played, turn started, turn ended etc.. 
+Events are meant to be queried from Game by the GUI until the list is exhausted, e.g.
+
+while (game.has_events()) {
+    var event = game.pop_next_event();
+    handle_event(event);
+} 
+
+Could also be handled outside of a loop to allow the UI to wait until event handling is completed, then proceeding, e.g.
+
+function process_events() {
+    if (game.has_events()) {
+        var event = game.pop_next_event();
+        handle_event(event);
+    }
+}
+
+function handle_event(event) {
+    // do event handling, e.g.
+    switch (event) {
+        case Move(m): Tween(m.minion, m.pos).onComplete(process_events);
+    }
+}
