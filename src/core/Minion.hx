@@ -82,7 +82,8 @@ typedef MinionOptions = {
     attacksLeft :Int,
     can_be_damaged :Bool,
     can_move :Bool,
-    can_attack :Bool
+    can_attack :Bool,
+    ?on_death: Minion -> Void
 };
 
 class Minion {
@@ -99,6 +100,7 @@ class Minion {
     public var can_be_damaged :Bool;
     public var can_move :Bool;
     public var can_attack :Bool;
+    public var on_death :Minion -> Void;
 
     public function new(options :MinionOptions) {
         player = options.player;
@@ -114,6 +116,7 @@ class Minion {
         can_be_damaged = options.can_be_damaged;
         can_move = options.can_move;
         can_attack = options.can_attack;
+        on_death = options.on_death;
     }
 
     public function damage(amount :Int, source :Minion /* TODO: Should be supertype, Entity */) :Bool {
@@ -136,8 +139,8 @@ class Minion {
             attacksLeft: this.attacksLeft,
             can_be_damaged: this.can_be_damaged,
             can_move: this.can_move,
-            can_attack: this.can_attack
-            // properties: this.properties
+            can_attack: this.can_attack,
+            on_death: this.on_death
         });
     }
     

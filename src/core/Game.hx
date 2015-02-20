@@ -19,7 +19,7 @@ typedef GameState = {
 
 class Game {
     var state :GameState;
-    // static var Id :Int = 0;
+    static public var Id :Int = 0;
     // @:isVar public var id(default, null) :Int;
 
     var listeners :Map<String, Dynamic->Void>;
@@ -27,7 +27,7 @@ class Game {
     public function new(_state :GameState, _isNewGame :Bool = true) {
         state = _state;
         listeners = new Map<String, Dynamic->Void>();
-        // id = Game.Id++;
+        Id++;
 
         if (_isNewGame) { // TODO: This is not pretty
             emit('turn_start');
@@ -194,10 +194,14 @@ class Game {
         // TODO: Should be handled in response to damage
         if (victim.life <= 0) {
             var pos = get_minion_pos(victim);
+            if (victim.on_death != null)
+                victim.on_death(victim);
             state.board.get_tile(pos).minion = null;
         }
         if (minion.life <= 0) {
             var pos = get_minion_pos(minion);
+            if (minion.on_death != null)
+                minion.on_death(minion);
             state.board.get_tile(pos).minion = null;
         }
     }

@@ -14,7 +14,6 @@ typedef BestActionsResult = { score :Int, actions :Array<Action> };
 // TODO: Refactor this (the minimax algorithm) out from here and MinimaxTests
 class AIPlayer {
     static public function actions_for_turn(game :Game) :Array<Action> {
-
         var player = game.get_current_player();
         var currentScore = score_board(player, game);
         var result = minimax(player, game, 3 /* number of turns to test */);
@@ -39,7 +38,10 @@ class AIPlayer {
         }
 
         var set_of_all_actions = game.get_nested_actions(2 /* number of actions per turns to test */);
+        // trace('AI has ${set_of_all_actions.length} sets of actions to choose between');
         var bestResult = { score: (game.is_current_player(player) ? -1000 : 1000), actions: [] };
+        // TODO: Actions should be tested in a tree to avoid many similar cases, e.g.
+        // [[Move 1 to X, Move 2 to Y], [Move 1 to X, Move 2 to Z], ...]
         for (actions in set_of_all_actions) {
             var newGame = game.clone();
             newGame.do_turn(actions); // TODO: Make this return a clone instead?
@@ -122,6 +124,7 @@ class HumanPlayer {
                 var action = available_actions[actionIndex - 1];
                 newGame.do_action(action);
                 actions.push(action);
+                continue;
             }
             
             Sys.println('$selection is an invalid action index');
@@ -200,7 +203,10 @@ class TestGame {
         attacksLeft: 0,
         can_be_damaged: true,
         can_move: true,
-        can_attack: true
+        can_attack: true,
+        on_death: function(self :Minion) {
+            //trace('I died! :(');
+        }
     });
 
     public static var minions = [goblin, orc, unicorn, bunny];
@@ -235,6 +241,7 @@ class SimpleTestGame {
         var game = new Game(gameState);
         
         while (!game.is_game_over()) {
+            trace('Game ID: ${Game.Id}');
             game.take_turn();
         }
         Sys.println("GAME OVER");
