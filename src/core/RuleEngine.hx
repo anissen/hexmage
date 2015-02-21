@@ -37,7 +37,7 @@ class RuleEngine {
     }
 
     static function get_attacks_for_minion(board :Board, minion :Minion) :Array<Action> {
-        if (!minion.can_attack || minion.attacksLeft <= 0) return [];
+        if (!minion.can_attack || minion.attacksLeft <= 0 || minion.attack <= 0) return [];
 
         var pos = board.get_minion_pos(minion);
         var x = pos.x;
