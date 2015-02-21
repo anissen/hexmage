@@ -9,6 +9,7 @@ import core.Rules;
 import core.Actions;
 import core.Player;
 import core.Minimax;
+import cards.*;
 
 class AIPlayer {
     static public function actions_for_turn(game :Game) :Array<Action> {
@@ -88,83 +89,46 @@ class HumanPlayer {
 }
 
 class TestGame {
-    public static var ai_player = new Player({ id: 0, name: 'AI Player', take_turn: AIPlayer.actions_for_turn });
+    public static var ai_player = new Player({
+        id: 0,
+        name: 'AI Player',
+        take_turn: AIPlayer.actions_for_turn
+    });
     public static var goblin = new Minion({ 
         player: ai_player,
-        id: 0,
         name: 'Goblin',
         attack: 1,
-        life: 2,
-        rules: new Rules(),
-        moves: 1,
-        movesLeft: 0,
-        attacks: 1,
-        attacksLeft: 0,
-        can_be_damaged: true,
-        can_move: true,
-        can_attack: true
+        life: 2
     });
-    public static var orc = new Minion({ 
+    public static var troll = new Minion({ 
         player: ai_player,
-        id: 1,
         name: 'Troll',
         attack: 4,
-        life: 1,
-        rules: new Rules(),
-        moves: 1,
-        movesLeft: 0,
-        attacks: 1,
-        attacksLeft: 0,
-        can_be_damaged: true,
-        can_move: true,
-        can_attack: true
+        life: 1
     });
-
-    public static function damage_self_effect(m :Minion) {
-        m.life--;
-    }
 
     /*
         Unicorn should have an URANIUM ARMOR that has
         * Minion is invurnable but loses one life per turn
     */
 
-    public static var human_player = new Player({ id: 1, name: 'Human Player', take_turn: HumanPlayer.actions_for_turn });
-    public static var unicorn = new Minion({
-        player: human_player,
-        id: 2,
-        name: 'Unicorn',
-        attack: 1,
-        life: 6,
-        rules: [{ turn_ends: damage_self_effect }],
-        moves: 1,
-        movesLeft: 0,
-        attacks: 1,
-        attacksLeft: 0,
-        can_be_damaged: false, // armor
-        can_move: true,
-        can_attack: true
+    public static var human_player = new Player({ 
+        id: 1,
+        name: 'Human Player',
+        take_turn: HumanPlayer.actions_for_turn 
     });
-    public static var bunny = new Minion({
-        player: human_player,
-        id: 3,
-        name: 'Bunny',
-        attack: 0,
-        life: 1,
-        rules: new Rules(), /* [{ trigger: OwnTurnStart, effect: Scripted(plus_one_attack_per_turn) }] */
-        moves: 1,
-        movesLeft: 0,
-        attacks: 1,
-        attacksLeft: 0,
-        can_be_damaged: true,
-        can_move: true,
-        can_attack: true,
-        on_death: function(self :Minion) {
-            //trace('I died! :(');
-        }
+    public static var unicorn = new Unicorn({
+        player: human_player
     });
 
-    public static var minions = [goblin, orc, unicorn, bunny];
+    public static var bunny = new Minion({
+        player: human_player,
+        name: 'Bunny',
+        attack: 0,
+        life: 1
+    });
+
+    public static var minions = [goblin, troll, unicorn, bunny];
     public static function get_minion(id :Int) {
         for (minion in minions) {
             if (minion.id == id) return minion;
@@ -174,14 +138,14 @@ class TestGame {
 }
 
 
-// ---------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------
 
 
 class SimpleTestGame {
     static public function main() {
         var tiles = { x: 3, y: 4 };
         function create_tile(x :Int, y :Int) :Tile {
-            if (x == 1 && y == 0) return { minion: TestGame.orc.clone() };
+            if (x == 1 && y == 0) return { minion: TestGame.troll.clone() };
             if (x == 1 && y == 1) return { minion: TestGame.goblin.clone() };
             if (x == 1 && y == 3) return { minion: TestGame.unicorn.clone() };
             if (x == 2 && y == 3) return { minion: TestGame.bunny.clone() };
@@ -196,9 +160,10 @@ class SimpleTestGame {
         var game = new Game(gameState);
         
         while (!game.is_game_over()) {
-            trace('Game ID: ${Game.Id}');
+            // trace('Game ID: ${Game.Id}');
             game.take_turn();
         }
+
         Sys.println("GAME OVER");
         game.print();
         Sys.stdin().readLine();

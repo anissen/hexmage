@@ -34,38 +34,28 @@ class HumanPlayer {
 }
 
 class TestGame {
-    public static var ai_player = new Player({ id: 0, name: 'AI Player', take_turn: AIPlayer.actions_for_turn });
+    public static var ai_player = new Player({
+        id: 0,
+        name: 'AI Player',
+        take_turn: AIPlayer.actions_for_turn
+    });
     public static var goblin = new Minion({ 
         player: ai_player,
-        id: 0,
         name: 'Goblin 1',
         attack: 4,
-        life: 4,
-        rules: new Rules(),
-        moves: 1,
-        movesLeft: 0,
-        attacks: 1,
-        attacksLeft: 0,
-        can_be_damaged: true,
-        can_move: true,
-        can_attack: true
+        life: 4
     });
 
-    public static var human_player = new Player({ id: 1, name: 'Human Player', take_turn: HumanPlayer.actions_for_turn });
+    public static var human_player = new Player({ 
+        id: 1,
+        name: 'Human Player',
+        take_turn: HumanPlayer.actions_for_turn 
+    });
     public static var unicorn = new Minion({
         player: human_player,
-        id: 1,
         name: 'Unicorn',
         attack: 0,
-        life: 1,
-        rules: new Rules(), /* [{ trigger: OwnTurnStart, effect: Scripted(plus_one_attack_per_turn) }] */
-        moves: 0,
-        movesLeft: 0,
-        attacks: 0,
-        attacksLeft: 0,
-        can_be_damaged: true,
-        can_move: true,
-        can_attack: true
+        life: 1
     });
 }
 
@@ -147,8 +137,8 @@ class MinimaxTrivialTests extends Mohxa {
                 it('should have correct properties', function() {
                     equal(0, human_minion.attack, '0 attack value');
                     equal(1, human_minion.life, '1 life');
-                    equal(0, human_minion.movesLeft, '0 move left');
-                    equal(0, human_minion.attacksLeft, '0 attack left');
+                    equal(1, human_minion.movesLeft, '1 move left');
+                    equal(1, human_minion.attacksLeft, '1 attack left');
                 });
 
                 it('should be positioned at (0, 1)', function() {
@@ -288,8 +278,8 @@ class MinimaxTrivialTests2 extends Mohxa {
                 it('should have correct properties', function() {
                     equal(0, human_minion.attack, '0 attack value');
                     equal(1, human_minion.life, '1 life');
-                    equal(0, human_minion.movesLeft, '0 move left');
-                    equal(0, human_minion.attacksLeft, '0 attack left');
+                    equal(1, human_minion.movesLeft, '1 move left');
+                    equal(1, human_minion.attacksLeft, '1 attack left');
                 });
 
                 it('should be positioned at (0, 2)', function() {
@@ -427,8 +417,8 @@ class MinimaxMultiTurnPlanningTests extends Mohxa {
                 it('should have correct properties', function() {
                     equal(0, human_minion.attack, '0 attack value');
                     equal(1, human_minion.life, '1 life');
-                    equal(0, human_minion.movesLeft, '0 move left');
-                    equal(0, human_minion.attacksLeft, '0 attack left');
+                    equal(1, human_minion.movesLeft, '1 move left');
+                    equal(1, human_minion.attacksLeft, '1 attack left');
                 });
 
                 it('should be positioned at (0, 3)', function() {
@@ -474,9 +464,13 @@ class MinimaxMultiTurnPlanningTests extends Mohxa {
             describe('Human turn', function() {
                 it('should have the correct actions available', function() {
                     var sets_of_actions = game.get_nested_actions(3);
-                    equal(1, sets_of_actions.length, '1 set of actions');
+                    equal(2, sets_of_actions.length, '2 set of actions');
 
-                    var noAction = sets_of_actions[0];
+                    var moveAction = sets_of_actions[0];
+                    equal(1, moveAction.length, 'One action');
+                    equal('Move', Type.enumConstructor(moveAction[0]), 'Action is a "Move" action');
+
+                    var noAction = sets_of_actions[1];
                     equal(1, noAction.length, 'No actions');
                     equal('NoAction', Type.enumConstructor(noAction[0]), 'Action is a "NoAction" action');
                 });
@@ -488,7 +482,7 @@ class MinimaxMultiTurnPlanningTests extends Mohxa {
                     it('should not have moved the minion', function() {
                         var human_minons_changed = game.get_minions_for_player(TestGame.human_player);
                         equal(1, human_minons_changed.length, 'Human player should have 1 minion');
-                        equal(0, human_minons_changed[0].movesLeft, 'Human minion should have 0 moves left');
+                        equal(1, human_minons_changed[0].movesLeft, 'Human minion should have 1 move left');
                         var pos = game.get_minion_pos(human_minons_changed[0]);
                         equal(0, pos.x, 'Human minion should be at x: 0');
                         equal(3, pos.y, 'Human minion should be at y: 3');
