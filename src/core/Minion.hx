@@ -105,7 +105,7 @@ class Minion {
     public var on_death :Minion -> Void;
 
     public function new(options :MinionOptions) {
-        id               = (options.id != null ? options.id : ++Id);
+        id               = (options.id != null ? options.id : Id++);
 
         player           = options.player;
         name             = options.name;
@@ -152,6 +152,6 @@ class Minion {
     }
 
     public function toString() :String {
-        return '[${this.name} (${this.attack}/${this.life}, ${this.attacksLeft}/${this.attacks} attacks and ${this.movesLeft}/${this.moves} moves) owner: ${this.player.name}]';
+        return '[$name ($attack/$life, $attacksLeft/$attacks attacks and $movesLeft/$moves moves) owner: ${player.name}]';
     }
 }

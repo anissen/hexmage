@@ -9,6 +9,7 @@ import core.Rules;
 import core.Actions;
 import core.Player;
 import core.Minimax;
+import core.Deck;
 import cards.*;
 
 class AIPlayer {
@@ -92,6 +93,7 @@ class TestGame {
     public static var ai_player = new Player({
         id: 0,
         name: 'AI Player',
+        deck: new Deck({ name: 'No Deck', cards: [] }),
         take_turn: AIPlayer.actions_for_turn
     });
     public static var goblin = new Minion({ 
@@ -115,6 +117,7 @@ class TestGame {
     public static var human_player = new Player({ 
         id: 1,
         name: 'Human Player',
+        deck: new Deck({ name: 'No Deck', cards: [] }),
         take_turn: HumanPlayer.actions_for_turn 
     });
     public static var unicorn = new Unicorn({

@@ -1,26 +1,39 @@
 
 package core;
 
-typedef PlayerOptions = { id :Int, name :String, ?take_turn :Game->Array<core.Actions.Action> };
+import core.Actions;
+
+typedef PlayerOptions = { 
+    ?id :Int,
+    name :String,
+    deck :Deck,
+    ?take_turn :Game -> Array<Action>
+};
+
 typedef Players = Array<Player>;
 
-@:forward
-abstract Player(PlayerOptions) from PlayerOptions to PlayerOptions {
-    inline public function new(p :PlayerOptions) {
-        this = p;
-    }
-
-    inline public function clone() {
-        return { id: this.id, name: this.name, take_turn: this.take_turn };
-    }
+class Player {
+    static var Id :Int = 0;
     
-    @:op(A == B)
-    inline static public function equals(lhs :Player, rhs :Player) :Bool {
-        return (lhs == null && rhs == null) || (lhs != null && rhs != null && lhs.id == rhs.id);
+    public var id :Int;
+    public var name :String;
+    public var deck :Deck;
+    public var take_turn :Game -> Array<Action>;
+
+    public function new(options :PlayerOptions) {
+        id = (options.id != null ? options.id : Id++);
+
+        name = options.name;
+        deck = options.deck;
+        take_turn = options.take_turn;
     }
 
-    @:toString
-    inline public function toString() :String {
-        return '[${this.name}, id: ${this.id}]';
+    public function clone() {
+        return new Player({ 
+            id: this.id, 
+            name: this.name, 
+            deck: this.deck, 
+            take_turn: this.take_turn
+        });
     }
 }
