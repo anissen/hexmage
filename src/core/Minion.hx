@@ -70,25 +70,27 @@ typedef Properties = {
 // There should be a default Property map defined in the ruleset!
 
 typedef MinionOptions = { 
+    ?id :Int, 
     player :Player, 
-    id :Int, 
     name :String, 
-    attack :Int, 
-    life :Int, 
-    rules :Rules,
-    moves: Int,
-    movesLeft :Int,
-    attacks: Int,
-    attacksLeft :Int,
-    can_be_damaged :Bool,
-    can_move :Bool,
-    can_attack :Bool,
+    ?attack :Int, 
+    ?life :Int, 
+    ?rules :Rules,
+    ?moves: Int,
+    ?movesLeft :Int,
+    ?attacks: Int,
+    ?attacksLeft :Int,
+    ?can_be_damaged :Bool,
+    ?can_move :Bool,
+    ?can_attack :Bool,
     ?on_death: Minion -> Void
 };
 
 class Minion {
+    static var Id :Int = 0;
+    public var id :Int;
+
     public var player :Player; 
-    public var id :Int; 
     public var name :String; 
     public var attack :Int; 
     public var life :Int; 
@@ -103,20 +105,21 @@ class Minion {
     public var on_death :Minion -> Void;
 
     public function new(options :MinionOptions) {
-        player = options.player;
-        id = options.id;
-        name = options.name;
-        attack = options.attack;
-        life = options.life;
-        rules = options.rules;
-        moves = options.moves;
-        movesLeft = options.movesLeft;
-        attacks = options.attacks;
-        attacksLeft = options.attacksLeft;
-        can_be_damaged = options.can_be_damaged;
-        can_move = options.can_move;
-        can_attack = options.can_attack;
-        on_death = options.on_death;
+        id               = (options.id != null ? options.id : ++Id);
+
+        player           = options.player;
+        name             = options.name;
+        attack           = (options.attack != null ? options.attack : 1);
+        life             = (options.life != null ? options.life : 1);
+        rules            = (options.rules != null ? options.rules : []);
+        moves            = (options.moves != null ? options.moves : 1);
+        movesLeft        = (options.movesLeft != null ? options.movesLeft : 1);
+        attacks          = (options.attacks != null ? options.attacks : 1);
+        attacksLeft      = (options.attacksLeft != null ? options.attacksLeft : 1);
+        can_be_damaged   = (options.can_be_damaged != null ? options.can_be_damaged : true);
+        can_move         = (options.can_move != null ? options.can_move : true);
+        can_attack       = (options.can_attack != null ? options.can_attack : true);
+        on_death         = options.on_death;
     }
 
     public function damage(amount :Int, source :Minion /* TODO: Should be supertype, Entity */) :Bool {
@@ -127,8 +130,8 @@ class Minion {
 
     public function clone() :Minion {
         return new Minion({ 
-            id: this.id, 
-            player: this.player.clone(), 
+            id: this.id,
+            player: this.player, // TODO: Is clone() necessesary here?
             name: this.name, 
             attack: this.attack, 
             life: this.life, 
