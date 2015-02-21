@@ -8,6 +8,7 @@ import core.RuleEngine;
 import core.Rules;
 import core.Actions;
 import core.Player;
+import core.Minimax;
 
 import mohxa.Mohxa;
 
@@ -15,68 +16,13 @@ typedef BestActionsResult = { score :Int, actions :Array<Action> };
 
 class AIPlayer {
     static public function actions_for_turn(game :Game) :Array<Action> {
+        var minimax = new Minimax({
+            max_turn_depth: 3,
+            max_action_depth: 2,
+            min_delta_score: -4
+        });
 
-        var player = game.get_current_player();
-        var currentScore = score_board(player, game);
-        var result = minimax(player, game, 3 /* number of turns to test */);
-        var deltaScore = result.score - currentScore;
-
-        if (deltaScore < -4) {
-            trace('Score of $deltaScore is not good enough');
-            return [];
-        }
-
-        return result.actions;
-    }
-
-    static function minimax(player :Player, game :Game, maxTurns :Int, turn :Int = 0) :BestActionsResult {
-        if (game.is_game_over() || turn >= maxTurns) {
-            // TODO: Choose a different scoring algorithm for self and other player(s)
-            return { score: score_board(player, game) - turn, actions: [] };
-        }
-
-        var set_of_all_actions = game.get_nested_actions(2 /* number of actions per turns to test */);
-        var bestResult = { score: (game.is_current_player(player) ? -1000 : 1000), actions: [] };
-        for (actions in set_of_all_actions) {
-            var newGame = game.clone();
-            newGame.do_turn(actions); // TODO: Make this return a clone instead?
-
-            var result = minimax(player, newGame, maxTurns, turn + 1);
-            var score = result.score;
-            
-            if (game.is_current_player(player)) {
-                if (result.score > bestResult.score) {
-                    bestResult.score = result.score;
-                    bestResult.actions = actions;
-                }
-            } else {
-                if (result.score < bestResult.score) {
-                    bestResult.score = result.score;
-                    bestResult.actions = actions;
-                }
-            }
-        }
-
-        return bestResult;
-    }
-
-    static function score_board(player :Player, game :Game) :Int {
-        // score the players own stuff only
-        function get_score_for_player(p) {
-            var score :Float = 0;
-            var intrinsicMinionScore = 1;
-            for (minion in game.get_minions_for_player(p)) {
-                score += intrinsicMinionScore + Math.max(minion.attack, 0) + Math.max(minion.life, 0);
-            }
-            return score;
-        }
-        
-        var score = get_score_for_player(player);
-        for (p in game.get_players()) {
-            if (p.id == player.id) continue;
-            score -= get_score_for_player(p);
-        }
-        return Math.round(score);
+        return minimax.get_best_actions(game);
     }
 }
 

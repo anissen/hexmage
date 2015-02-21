@@ -8,63 +8,18 @@ import core.RuleEngine;
 import core.Rules;
 import core.Actions;
 import core.Player;
+import core.Minimax;
 
-typedef BestActionsResult = { score :Int, actions :Array<Action> };
-
-// TODO: Refactor this (the minimax algorithm) out from here and MinimaxTests
 class AIPlayer {
     static public function actions_for_turn(game :Game) :Array<Action> {
-        var player = game.get_current_player();
-        var currentScore = score_board(player, game);
-        var result = minimax(player, game, 3 /* number of turns to test */);
-        var deltaScore = result.score - currentScore;
-        trace('currentScore: $currentScore');
-        trace('result.score: ${result.score}');
-        trace('deltaScore: $deltaScore');
+        var minimax = new Minimax({
+            max_turn_depth: 3,
+            max_action_depth: 2,
+            score_function: score_board,
+            min_delta_score: -4
+        });
 
-        if (deltaScore < -4) {
-            trace('Delta score of $deltaScore is not good enough');
-            trace('Considered actions: ${result.actions}');
-            return [];
-        }
-
-        return result.actions;
-    }
-
-    static function minimax(player :Player, game :Game, maxTurns :Int, turn :Int = 0) :BestActionsResult {
-        if (game.is_game_over() || turn >= maxTurns) {
-            // TODO: Choose a different scoring algorithm for self and other player(s)
-            return { score: score_board(player, game) - turn, actions: [] };
-        }
-
-        var set_of_all_actions = game.get_nested_actions(2 /* number of actions per turns to test */);
-        // trace('AI has ${set_of_all_actions.length} sets of actions to choose between');
-        var bestResult = { score: (game.is_current_player(player) ? -1000 : 1000), actions: [] };
-        // TODO: Actions should be tested in a tree to avoid many similar cases, e.g.
-        // [[Move 1 to X, Move 2 to Y], [Move 1 to X, Move 2 to Z], ...]
-        for (actions in set_of_all_actions) {
-            var newGame = game.clone();
-            newGame.do_turn(actions); // TODO: Make this return a clone instead?
-
-            var result = minimax(player, newGame, maxTurns, turn + 1);
-            
-            if (game.is_current_player(player)) {
-                if (result.score > bestResult.score) {
-                    bestResult.score = result.score;
-                    bestResult.actions = actions;
-
-                    if (turn == 0 /*&& result.actions.length > 0*/)
-                        trace(result);
-                }
-            } else {
-                if (result.score < bestResult.score) {
-                    bestResult.score = result.score;
-                    bestResult.actions = actions;
-                }
-            }
-        }
-
-        return bestResult;
+        return minimax.get_best_actions(game);
     }
 
     static function score_board(player :Player, game :Game) :Int {
