@@ -66,6 +66,16 @@ class Game {
         }
     }
 
+    function draw_cards() :Void {
+        var player = get_current_player();
+        var card = player.deck.draw();
+        if (card == null) {
+            // player is out of cards!
+            return;
+        }
+        player.hand.push(card);
+    }
+
     function emit(key :String, ?data :Dynamic) :Void {
         if (!listeners.exists(key)) return;
         var listener = listeners.get(key);
@@ -109,7 +119,7 @@ class Game {
         return new Game({
             board: state.board.clone_board(),
             players: clone_players(),
-            rules: state.rules.copy() // TODO: Probably not enough
+            rules: state.rules // TODO: Should clone rules list
         }, false);
     }
 
@@ -139,6 +149,7 @@ class Game {
 
     function start_turn() :Void {
         reset_minion_stats();
+        draw_cards();
     }
 
     function end_turn() :Void {
@@ -157,6 +168,7 @@ class Game {
             case NoAction:
             case Move(m): move(m);
             case Attack(a): attack(a);
+            case PlayCard(c): playCard(c);
         }
     }
 
@@ -204,6 +216,36 @@ class Game {
                 minion.on_death(minion);
             state.board.get_tile(pos).minion = null;
         }
+    }
+
+    function playCard(playCardAction :PlayCardAction) {
+        // remove from hand
+        var player = get_current_player();
+        // trace('player.hand');
+        // trace(player.hand);
+        // trace('playCardAction');
+        // trace(playCardAction);
+        player.hand.remove(playCardAction.card);
+
+        // handle
+        switch (playCardAction.card.type) {
+            case MinionCard(minion): playMinion(minion, playCardAction.target);
+        }
+    }
+
+    function playMinion(minion :Minion, target :Point) {
+        // trace('playMinion');
+        // trace('minion');
+        // if (minion == null) {
+        //     trace('playMinion -> Minion is null!!');
+        //     return;
+        // }
+        // trace(minion); // Seg fault!
+        // trace('target');
+        // trace(target);
+        // trace(state.board.get_tile(target));
+        minion.player = get_current_player();
+        state.board.get_tile(target).minion = minion;
     }
 
     public function has_won(player :Player) :Bool {

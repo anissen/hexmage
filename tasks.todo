@@ -7,6 +7,7 @@ Tasks:
       ✔ Multiple minions @done (10-02-15 20:40)
   ☐ Implement rules
   ☐ Make cards into files
+  ☐ Make map into file
   ☐ Implement deck
   ☐ Implement cards in hand
   ☐ Implement casting minion cards
@@ -18,6 +19,14 @@ Tasks:
  
 Later:
     ☐ Make minimal game state with, for each player: { minions :Array, cards_in_hand: Int, cards_in_deck :Int } (current player needs concrete list of cards in hand)
+    ☐ Replace arrays with Vector for performance
     ☐ Make game state const: http://stackoverflow.com/questions/14556785/what-is-the-syntax-to-declare-const-parameters-and-return-values-in-haxe
 
 Inspiration: https://raw.githubusercontent.com/anissen/elements/master/todo.todo
+
+
+
+Today:
+    ✔ Move minimax algorithm out @done (21-02-15 11:38)
+    ✔ Move card data out @done (21-02-15 12:27)
+    ☐ Make it possible to play cards

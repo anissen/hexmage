@@ -22,13 +22,21 @@ class Deck {
     }
 
     public function draw() :Null<Card> {
-        return null;
+        return cards.pop();
     }
 
     public function clone() :Deck {
         return new Deck({
             name: name,
-            cards: cards
+            cards: cards.copy() // TODO: This is probably not enough, use clone_cards()
         });
     }
+
+    // function clone_cards() {
+    //     var clonedCards = [];
+    //     for (card in cards) {
+    //         clonedCards.push(card.clone());
+    //     }
+    //     return clonedCards;
+    // }
 }

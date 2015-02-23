@@ -71,7 +71,7 @@ typedef Properties = {
 
 typedef MinionOptions = { 
     ?id :Int, 
-    player :Player, 
+    ?player :Player, 
     name :String, 
     ?attack :Int, 
     ?life :Int, 
@@ -151,7 +151,7 @@ class Minion {
         return (other != null && other.id == id);
     }
 
-    public function toString() :String {
-        return '[$name ($attack/$life, $attacksLeft/$attacks attacks and $movesLeft/$moves moves) owner: ${player.name}]';
-    }
+    // public function toString() :String {
+    //     return '[$name ($attack/$life, $attacksLeft/$attacks attacks and $movesLeft/$moves moves) owner: ${player.name}]';
+    // }
 }

@@ -9,6 +9,9 @@ class RuleEngine {
     static public function get_available_actions(state :GameState, player :Player) :Array<Action> {
         var board = state.board;
         var actions = [];
+        for (card in player.hand) {
+            actions = actions.concat(get_card_plays_for_player(player, card));
+        }
         for (minion in board.get_minions_for_player(player)) {
             actions = actions.concat(get_attacks_for_minion(board, minion));
             actions = actions.concat(get_moves_for_minion(board, minion));
@@ -55,5 +58,9 @@ class RuleEngine {
         add_attack(x - 1, y);
         add_attack(x + 1, y);
         return attacks;
+    }
+
+    static function get_card_plays_for_player(player :Player, card :Card) :Array<Action> {
+        return [PlayCard({ card: card, target: { x: 0, y: 0} })];
     }
 }

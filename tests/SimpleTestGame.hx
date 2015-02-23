@@ -49,6 +49,7 @@ class HumanPlayer {
         return switch (action) {
             case Move(m): 'Move ${TestGame.get_minion(m.minionId).name} to ${m.pos.x}, ${m.pos.y}';
             case Attack(a): 'Attack ${TestGame.get_minion(a.minionId).name} —> ${TestGame.get_minion(a.victimId).name}';
+            case PlayCard(c): 'Play ${c.card.name} to ${c.target.x}, ${c.target.y}';
             case NoAction: 'No Action';
         }
     }
@@ -114,14 +115,29 @@ class TestGame {
         * Minion is invurnable but loses one life per turn
     */
 
+    // public static var human_deck = new Deck({ 
+    //     name: 'Test Deck', 
+    //     cards: [
+    //         new Unicorn({ player: human_player }),
+    //     ]
+    // });
+
     public static var human_player = new Player({ 
         id: 1,
         name: 'Human Player',
-        deck: new Deck({ name: 'No Deck', cards: [] }),
+        deck: new Deck({ 
+            name: 'Test Deck', 
+            cards: [
+                new Unicorn(),
+            ]
+        }),
         take_turn: HumanPlayer.actions_for_turn 
     });
-    public static var unicorn = new Unicorn({
-        player: human_player
+    public static var unicorn = new Minion({
+        player: human_player,
+        name: 'Unicorn',
+        attack: 1,
+        life: 6
     });
 
     public static var bunny = new Minion({
@@ -157,7 +173,7 @@ class SimpleTestGame {
 
         var gameState = {
             board: new Board(tiles.x, tiles.y, create_tile), // TODO: Make from a core.Map
-            players: [TestGame.ai_player, TestGame.human_player],
+            players: [TestGame.human_player, TestGame.ai_player],
             rules: new Rules()
         };
         var game = new Game(gameState);

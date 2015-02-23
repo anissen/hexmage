@@ -4,7 +4,7 @@ package core;
 import core.Minion;
 
 enum CardType {
-    MinionCard(minionClass :Class<Minion>);
+    MinionCard(minion :Minion); // TODO: Should be minion ID instead of Minion
 }
 
 typedef CardOptions = { 
@@ -21,6 +21,8 @@ new Card({
 });
 */
 
+typedef Cards = Array<Card>;
+
 class Card {
     public var name :String; 
     public var cost :Int;
@@ -32,8 +34,12 @@ class Card {
         type = options.type;
     }
 
-    // public function play(player :Player, ?targets :Array<Point>) {
-    //     throw 'Cannot play an empty card';
+    // public function clone() {
+    //     return new Card({
+    //         name: name,
+    //         cost: cost,
+    //         type: type
+    //     });
     // }
 }
 
