@@ -7,7 +7,7 @@ import core.Card;
 typedef PlayerOptions = { 
     ?id :Int,
     name :String,
-    deck :Deck,
+    ?deck :Deck,
     ?take_turn :Game -> Actions,
     ?hand :Cards
 };
@@ -27,7 +27,7 @@ class Player {
         id = (options.id != null ? options.id : Id++);
 
         name = options.name;
-        deck = options.deck;
+        deck = (options.deck != null ? options.deck : new Deck());
         take_turn = options.take_turn;
         hand = (options.hand != null ? options.hand : []);
     }

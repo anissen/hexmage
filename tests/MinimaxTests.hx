@@ -137,8 +137,8 @@ class MinimaxTrivialTests extends Mohxa {
                 it('should have correct properties', function() {
                     equal(0, human_minion.attack, '0 attack value');
                     equal(1, human_minion.life, '1 life');
-                    equal(1, human_minion.movesLeft, '1 move left');
-                    equal(1, human_minion.attacksLeft, '1 attack left');
+                    equal(0, human_minion.movesLeft, '0 moves left');
+                    equal(0, human_minion.attacksLeft, '0 attacks left');
                 });
 
                 it('should be positioned at (0, 1)', function() {
@@ -278,8 +278,8 @@ class MinimaxTrivialTests2 extends Mohxa {
                 it('should have correct properties', function() {
                     equal(0, human_minion.attack, '0 attack value');
                     equal(1, human_minion.life, '1 life');
-                    equal(1, human_minion.movesLeft, '1 move left');
-                    equal(1, human_minion.attacksLeft, '1 attack left');
+                    equal(0, human_minion.movesLeft, '0 moves left');
+                    equal(0, human_minion.attacksLeft, '0 attacks left');
                 });
 
                 it('should be positioned at (0, 2)', function() {
@@ -417,8 +417,8 @@ class MinimaxMultiTurnPlanningTests extends Mohxa {
                 it('should have correct properties', function() {
                     equal(0, human_minion.attack, '0 attack value');
                     equal(1, human_minion.life, '1 life');
-                    equal(1, human_minion.movesLeft, '1 move left');
-                    equal(1, human_minion.attacksLeft, '1 attack left');
+                    equal(0, human_minion.movesLeft, '0 moves left');
+                    equal(0, human_minion.attacksLeft, '0 attacks left');
                 });
 
                 it('should be positioned at (0, 3)', function() {

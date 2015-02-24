@@ -12,7 +12,12 @@ class Deck {
     public var name :String; 
     var cards :Array<Card>;
 
-    public function new(options :DeckOptions) {
+    public function new(?options :DeckOptions) {
+        if (options == null) {
+            name = 'No name';
+            cards = [];
+            return;
+        }
         name = options.name;
         cards = options.cards;
     }
