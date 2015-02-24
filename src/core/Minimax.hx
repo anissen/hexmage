@@ -19,6 +19,7 @@ typedef MinimaxOptions = {
 }
 
 class Minimax {
+    public var actions_tested :Int;
     var max_turn_depth :Int;
     var max_action_depth :Int;
     var score_function :Player -> Game -> Int;
@@ -29,9 +30,11 @@ class Minimax {
         max_action_depth = (options.max_action_depth != null ? options.max_action_depth : 2);
         score_function   = (options.score_function   != null ? options.score_function : default_score_function);
         min_delta_score  = (options.min_delta_score  != null ? options.min_delta_score : -1000);
+        actions_tested = 0;
     }
 
     public function get_best_actions(game :Game) :Array<Action> {
+        actions_tested = 0;
         var player = game.get_current_player();
         var currentScore = score_function(player, game);
         var result = minimax(player, game);
@@ -50,6 +53,8 @@ class Minimax {
     }
 
     function minimax(player :Player, game :Game, turn :Int = 0) :BestActionsResult {
+        actions_tested++;
+
         if (game.is_game_over() || turn >= max_turn_depth) {
             // TODO: Choose a different scoring algorithm for self and other player(s)
             return { score: score_function(player, game) - turn, actions: [] };

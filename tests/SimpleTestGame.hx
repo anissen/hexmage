@@ -21,7 +21,9 @@ class AIPlayer {
             min_delta_score: -4
         });
 
-        return minimax.get_best_actions(game);
+        var actions = minimax.get_best_actions(game);
+        trace('AI tested ${minimax.actions_tested} different sets of actions');
+        return actions;
     }
 
     static function score_board(player :Player, game :Game) :Int {
