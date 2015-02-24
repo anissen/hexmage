@@ -45,10 +45,10 @@ class AIPlayer {
 }
 
 class HumanPlayer {
-    static public function action_to_string(action :Action) {
+    static public function action_to_string(action :Action, game :Game) {
         return switch (action) {
-            case Move(m): 'Move ${TestGame.get_minion(m.minionId).name} to ${m.pos.x}, ${m.pos.y}';
-            case Attack(a): 'Attack ${TestGame.get_minion(a.minionId).name} —> ${TestGame.get_minion(a.victimId).name}';
+            case Move(m): 'Move ${game.get_minion(m.minionId).name} to ${m.pos.x}, ${m.pos.y}';
+            case Attack(a): 'Attack ${game.get_minion(a.minionId).name} —> ${game.get_minion(a.victimId).name}';
             case PlayCard(c): 'Play ${c.card.name} to ${c.target.x}, ${c.target.y}';
             case NoAction: 'No Action';
         }
@@ -66,7 +66,8 @@ class HumanPlayer {
 
             Sys.println("Available actions:");
             for (i in 0 ... available_actions.length) {
-                Sys.println('[${i + 1}] ${action_to_string(available_actions[i])}');
+                // trace(available_actions[i]);
+                Sys.println('[${i + 1}] ${action_to_string(available_actions[i], newGame)}');
             }
             var end_turn_index = available_actions.length + 1;
             Sys.println('[$end_turn_index] End turn');
@@ -115,13 +116,6 @@ class TestGame {
         * Minion is invurnable but loses one life per turn
     */
 
-    // public static var human_deck = new Deck({ 
-    //     name: 'Test Deck', 
-    //     cards: [
-    //         new Unicorn({ player: human_player }),
-    //     ]
-    // });
-
     public static var human_player = new Player({ 
         id: 1,
         name: 'Human Player',
@@ -133,11 +127,11 @@ class TestGame {
         }),
         take_turn: HumanPlayer.actions_for_turn 
     });
-    public static var unicorn = new Minion({
+    public static var teddy = new Minion({
         player: human_player,
-        name: 'Unicorn',
-        attack: 1,
-        life: 6
+        name: 'Teddybear',
+        attack: 3,
+        life: 3
     });
 
     public static var bunny = new Minion({
@@ -146,14 +140,6 @@ class TestGame {
         attack: 0,
         life: 1
     });
-
-    public static var minions = [goblin, troll, unicorn, bunny];
-    public static function get_minion(id :Int) {
-        for (minion in minions) {
-            if (minion.id == id) return minion;
-        }
-        return null;
-    }
 }
 
 
@@ -166,7 +152,7 @@ class SimpleTestGame {
         function create_tile(x :Int, y :Int) :Tile {
             if (x == 1 && y == 0) return { minion: TestGame.troll.clone() };
             if (x == 1 && y == 1) return { minion: TestGame.goblin.clone() };
-            if (x == 1 && y == 3) return { minion: TestGame.unicorn.clone() };
+            if (x == 1 && y == 3) return { minion: TestGame.teddy.clone() };
             if (x == 2 && y == 3) return { minion: TestGame.bunny.clone() };
             return {};
         }

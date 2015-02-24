@@ -219,12 +219,7 @@ class Game {
     }
 
     function playCard(playCardAction :PlayCardAction) {
-        // remove from hand
         var player = get_current_player();
-        // trace('player.hand');
-        // trace(player.hand);
-        // trace('playCardAction');
-        // trace(playCardAction);
         player.hand.remove(playCardAction.card);
 
         // handle
@@ -234,16 +229,6 @@ class Game {
     }
 
     function playMinion(minion :Minion, target :Point) {
-        // trace('playMinion');
-        // trace('minion');
-        // if (minion == null) {
-        //     trace('playMinion -> Minion is null!!');
-        //     return;
-        // }
-        // trace(minion); // Seg fault!
-        // trace('target');
-        // trace(target);
-        // trace(state.board.get_tile(target));
         minion.player = get_current_player();
         state.board.get_tile(target).minion = minion;
     }
@@ -271,6 +256,10 @@ class Game {
 
     public function get_minion_pos(m :Minion) :Point {
         return state.board.get_minion_pos(m);
+    }
+
+    public function get_minion(id :Int) :Null<Minion> {
+        return state.board.get_minion(id);   
     }
 
     public function print() {
