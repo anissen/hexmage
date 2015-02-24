@@ -10,6 +10,8 @@ import core.Actions;
 import core.Player;
 import core.Minimax;
 import core.Deck;
+import core.CardLibrary;
+import core.MinionLibrary;
 import cards.*;
 
 class AIPlayer {
@@ -93,75 +95,72 @@ class HumanPlayer {
     }
 }
 
-class TestGame {
-    public static var ai_player = new Player({
-        id: 0,
-        name: 'AI Player',
-        deck: new Deck({ name: 'No Deck', cards: [] }),
-        take_turn: AIPlayer.actions_for_turn
-    });
-    public static var goblin = new Minion({ 
-        player: ai_player,
-        name: 'Goblin',
-        attack: 1,
-        life: 2
-    });
-    public static var troll = new Minion({ 
-        player: ai_player,
-        name: 'Troll',
-        attack: 4,
-        life: 1
-    });
-
-    /*
-        Unicorn should have an URANIUM ARMOR that has
-        * Minion is invurnable but loses one life per turn
-    */
-
-    public static var human_player = new Player({ 
-        id: 1,
-        name: 'Human Player',
-        deck: new Deck({ 
-            name: 'Test Deck', 
-            cards: [
-                new Unicorn(),
-            ]
-        }),
-        take_turn: HumanPlayer.actions_for_turn 
-    });
-    public static var teddy = new Minion({
-        player: human_player,
-        name: 'Teddybear',
-        attack: 3,
-        life: 3
-    });
-
-    public static var bunny = new Minion({
-        player: human_player,
-        name: 'Bunny',
-        attack: 0,
-        life: 1
-    });
-}
-
 
 // ---------------------------------------------------------------------------------------------------
 
 
 class SimpleTestGame {
     static public function main() {
+        CardLibrary.add(new Unicorn());
+
+        MinionLibrary.add(new Minion({ 
+            name: 'Goblin',
+            attack: 1,
+            life: 2
+        }));
+
+        MinionLibrary.add(new Minion({ 
+            name: 'Troll',
+            attack: 4,
+            life: 1
+        }));
+
+        MinionLibrary.add(new Minion({ 
+            name: 'Teddybear',
+            attack: 2,
+            life: 2
+        }));
+
+        MinionLibrary.add(new Minion({
+            name: 'Bunny',
+            attack: 0,
+            life: 1
+        }));
+
+        var ai_player = new Player({
+            name: 'AI Player',
+            take_turn: AIPlayer.actions_for_turn
+        });
+
+        /*
+            Unicorn should have an URANIUM ARMOR that has
+            * Minion is invurnable but loses one life per turn
+        */
+
+        var human_player = new Player({ 
+            name: 'Human Player',
+            deck: new Deck({ 
+                name: 'Test Deck', 
+                cards: [
+                    CardLibrary.create('Unicorn'),
+                    CardLibrary.create('Unicorn')
+                ]
+            }),
+            take_turn: HumanPlayer.actions_for_turn 
+        });
+
         var tiles = { x: 3, y: 4 };
         function create_tile(x :Int, y :Int) :Tile {
-            if (x == 1 && y == 0) return { minion: TestGame.troll.clone() };
-            if (x == 1 && y == 1) return { minion: TestGame.goblin.clone() };
-            if (x == 1 && y == 3) return { minion: TestGame.teddy.clone() };
-            if (x == 2 && y == 3) return { minion: TestGame.bunny.clone() };
+            if (x == 1 && y == 0) return { minion: MinionLibrary.create('Troll', ai_player) };
+            if (x == 1 && y == 1) return { minion: MinionLibrary.create('Goblin', ai_player) };
+            if (x == 1 && y == 3) return { minion: MinionLibrary.create('Teddybear', human_player) };
+            if (x == 2 && y == 3) return { minion: MinionLibrary.create('Bunny', human_player) };
             return {};
         }
 
         var gameState = {
             board: new Board(tiles.x, tiles.y, create_tile), // TODO: Make from a core.Map
-            players: [TestGame.human_player, TestGame.ai_player],
+            players: [human_player, ai_player],
             rules: new Rules()
         };
         var game = new Game(gameState);

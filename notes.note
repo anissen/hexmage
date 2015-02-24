@@ -178,3 +178,21 @@ class Game {
     Game try_action();
     Game take_turn(Array<Action> actions);
 }
+
+
+# Minimal state
+
+Constants:
+* Map
+* Players
+    * Id, name
+* Minion templates
+* Card templates
+* ?
+
+Game state:
+* Deck, array of cards
+* Hand, array of cards
+* Minions on board
+* ?
+

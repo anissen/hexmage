@@ -13,7 +13,7 @@ class Unicorn extends Card {
             life: 6
         });
         super({ 
-            name: 'Unicorn!',
+            name: 'Unicorn',
             cost: 3,
             type: MinionCard(minion) // TODO: Should be class<Minion> instead of Minion
         });

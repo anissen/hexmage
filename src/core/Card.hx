@@ -34,13 +34,13 @@ class Card {
         type = options.type;
     }
 
-    // public function clone() {
-    //     return new Card({
-    //         name: name,
-    //         cost: cost,
-    //         type: type
-    //     });
-    // }
+    public function clone() {
+        return new Card({
+            name: name,
+            cost: cost,
+            type: type
+        });
+    }
 }
 
 /*
