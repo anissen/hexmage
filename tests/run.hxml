@@ -1,5 +1,7 @@
 -cp tests
 -cp src
 -main tests.SimpleTestGame
--cpp tests/bin
--cmd open ./tests/bin/SimpleTestGame
+-neko tests/bin/SimpleTestGame.n
+# -cmd open ./tests/bin/SimpleTestGame.n
+# -cpp tests/bin
+# -cmd open ./tests/bin/SimpleTestGame
