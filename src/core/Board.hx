@@ -42,6 +42,20 @@ class Board {
         return board[pos.y][pos.x];
     }
 
+    public function filter_tiles(func :Tile -> Bool) :Array<{ tile: Tile, pos :Point }> {
+        var tiles = [];
+        for (y in 0 ... board.length) {
+            var row = board[y];
+            for (x in 0 ... row.length) {
+                var tile = row[x];
+                if (func(tile)) {
+                    tiles.push({ tile: tile, pos: { x: x, y: y } });
+                }
+            }
+        }
+        return tiles;
+    }
+
     public function get_board_size() :Point {
         return boardSize;
     }

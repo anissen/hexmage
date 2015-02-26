@@ -10,7 +10,7 @@ class RuleEngine {
         var board = state.board;
         var actions = [];
         for (card in player.hand) {
-            actions = actions.concat(get_card_plays_for_player(player, card));
+            actions = actions.concat(get_card_plays_for_player(board, player, card));
         }
         for (minion in board.get_minions_for_player(player)) {
             actions = actions.concat(get_attacks_for_minion(board, minion));
@@ -60,7 +60,13 @@ class RuleEngine {
         return attacks;
     }
 
-    static function get_card_plays_for_player(player :Player, card :Card) :Array<Action> {
-        return [PlayCard({ card: card, target: { x: 0, y: 0} })];
+    static function get_card_plays_for_player(board :Board, player :Player, card :Card) :Array<Action> {
+        // dummy action: find first free tile
+        var empty_tiles = board.filter_tiles(function(tile) {
+            return (tile.minion == null);
+        });
+        if (empty_tiles.length == 0) return [];
+        var tile = empty_tiles[0];
+        return [PlayCard({ card: card, target: tile.pos })];
     }
 }
