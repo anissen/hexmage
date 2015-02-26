@@ -15,7 +15,6 @@ class CardLibrary {
     }
 
     static public function create(id :String) {
-        trace(cards);
         var card = cards.get(id);
         if (card == null)
             throw 'Card with ID: $id does not exist!';

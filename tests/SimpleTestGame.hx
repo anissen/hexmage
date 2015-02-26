@@ -17,7 +17,7 @@ import cards.*;
 class AIPlayer {
     static public function actions_for_turn(game :Game) :Array<Action> {
         var minimax = new Minimax({
-            max_turn_depth: 3,
+            max_turn_depth: 1,
             max_action_depth: 2,
             score_function: score_board,
             min_delta_score: -4
@@ -129,7 +129,13 @@ class SimpleTestGame {
 
         var ai_player = new Player({
             name: 'AI Player',
-            take_turn: AIPlayer.actions_for_turn
+            take_turn: AIPlayer.actions_for_turn,
+            deck: new Deck({ 
+                name: 'AI Test Deck', 
+                cards: [
+                    CardLibrary.create('Unicorn')
+                ]
+            })
         });
 
         /*
@@ -146,6 +152,9 @@ class SimpleTestGame {
                     CardLibrary.create('Unicorn')
                 ]
             }),
+            hand: [
+                CardLibrary.create('Unicorn')
+            ],
             take_turn: HumanPlayer.actions_for_turn 
         });
 
