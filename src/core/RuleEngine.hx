@@ -50,7 +50,7 @@ class RuleEngine {
             if (newx < 0 || newx >= board.get_board_size().x) return;
             if (newy < 0 || newy >= board.get_board_size().y) return;
             var other = board.get_tile({ x: newx, y: newy }).minion;
-            if (other == null || other.player == minion.player) return;
+            if (other == null || other.player.id == minion.player.id) return;
             attacks.push(Attack({ minionId: minion.id, victimId: other.id }));
         }
         add_attack(x, y - 1);

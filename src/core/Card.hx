@@ -4,7 +4,7 @@ package core;
 import core.Minion;
 
 enum CardType {
-    MinionCard(minion :Minion); // TODO: Should be minion ID instead of Minion
+    MinionCard(minionId :String); // TODO: Should be minion ID instead of Minion
 }
 
 typedef CardOptions = { 

@@ -25,6 +25,7 @@ class AIPlayer {
 
         var actions = minimax.get_best_actions(game);
         trace('AI tested ${minimax.actions_tested} different sets of actions');
+        trace('AI chose $actions');
         return actions;
     }
 
@@ -125,6 +126,12 @@ class SimpleTestGame {
             name: 'Bunny',
             attack: 0,
             life: 1
+        }));
+
+        MinionLibrary.add(new Minion({
+            name: 'Unicorn',
+            attack: 1,
+            life: 6
         }));
 
         var ai_player = new Player({

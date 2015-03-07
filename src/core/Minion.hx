@@ -128,6 +128,13 @@ class Minion {
         return true;
     }
 
+    public function createNew(player :Player) :Minion {
+        var minion = clone();
+        minion.id = Id++;
+        minion.player = player;
+        return minion;
+    }
+
     public function clone() :Minion {
         return new Minion({ 
             id: this.id,

@@ -1,6 +1,7 @@
 
 package core;
 
+import core.MinionLibrary;
 import core.Player;
 import core.Actions;
 
@@ -224,13 +225,12 @@ class Game {
 
         // handle
         switch (playCardAction.card.type) {
-            case MinionCard(minion): playMinion(minion, playCardAction.target);
+            case MinionCard(minionId): playMinion(minionId, playCardAction.target);
         }
     }
 
-    function playMinion(minion :Minion, target :Point) {
-        minion.player = get_current_player();
-        state.board.get_tile(target).minion = minion;
+    function playMinion(minionId :String, target :Point) {
+        state.board.get_tile(target).minion = MinionLibrary.create(minionId, get_current_player());
     }
 
     public function has_won(player :Player) :Bool {

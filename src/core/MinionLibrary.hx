@@ -14,12 +14,10 @@ class MinionLibrary {
         minions.set(minion.name, minion);
     }
 
-    static public function create(id :String, ?player :Player) {
+    static public function create(id :String, player :Player) {
         var minion = minions.get(id);
         if (minion == null)
-            throw 'Minion with ID: ${minion.name} does not exist!';
-        if (player != null) // HACK
-            minion.player = player;
-        return minion;
+            throw 'Minion with ID: "$id" does not exist!';
+        return minion.createNew(player);
     }
 }
