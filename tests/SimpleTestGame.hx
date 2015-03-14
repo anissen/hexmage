@@ -131,7 +131,22 @@ class SimpleTestGame {
         MinionLibrary.add(new Minion({
             name: 'Unicorn',
             attack: 1,
-            life: 6
+            life: 2,
+            on_death: function() {
+                return DrawCards(1);
+            },
+            on_event: [
+                CardDrawn => function() { 
+                    trace('Unicorn handles CardDrawn event!!!');
+                    return [ Print("Unicorn saw that a card was drawn!") ]; 
+                }
+            ]
+            // effect: function(event) {
+            //     return switch (event) {
+            //         case Death(minionId) && minionId == id: DrawCard;
+            //         default: null;
+            //     }
+            // }
         }));
 
         var ai_player = new Player({

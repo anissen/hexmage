@@ -4,6 +4,7 @@ package core;
 import core.MinionLibrary;
 import core.Player;
 import core.Actions;
+import core.Rules;
 
 typedef GameState = {
     var board :Board;
@@ -23,11 +24,14 @@ class Game {
     static public var Id :Int = 0;
     // @:isVar public var id(default, null) :Int;
 
+    var commandQueue :Commands;
+
     var listeners :Map<String, Dynamic->Void>;
 
     public function new(_state :GameState, _isNewGame :Bool = true) {
         state = _state;
         listeners = new Map<String, Dynamic->Void>();
+        commandQueue = new Commands();
         Id++;
 
         if (_isNewGame) { // TODO: This is not pretty
@@ -75,6 +79,13 @@ class Game {
             return;
         }
         player.hand.push(card);
+
+        // EMIT CardDrawn:
+        for (minion in state.board.get_minions()) {
+            // commandQueue
+            trace('handle CardDrawn for ${minion.name}');
+            commandQueue = commandQueue.concat(minion.handle_event(CardDrawn));
+        }
     }
 
     function emit(key :String, ?data :Dynamic) :Void {
@@ -154,12 +165,12 @@ class Game {
     }
 
     function end_turn() :Void {
-        for (minion in state.board.get_minions_for_player(get_current_player())) {
-            for (rule in minion.rules) {
-                if (rule.turn_ends == null) continue;
-                rule.turn_ends(minion);
-            }
-        }
+        // for (minion in state.board.get_minions_for_player(get_current_player())) {
+        //     for (rule in minion.rules) {
+        //         if (rule.turn_ends == null) continue;
+        //         rule.turn_ends(minion);
+        //     }
+        // }
 
         state.players.push(state.players.shift());
     }
@@ -208,13 +219,13 @@ class Game {
         if (victim.life <= 0) {
             var pos = get_minion_pos(victim);
             if (victim.on_death != null)
-                victim.on_death(victim);
+                victim.on_death();
             state.board.get_tile(pos).minion = null;
         }
         if (minion.life <= 0) {
             var pos = get_minion_pos(minion);
             if (minion.on_death != null)
-                minion.on_death(minion);
+                minion.on_death();
             state.board.get_tile(pos).minion = null;
         }
     }

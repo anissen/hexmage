@@ -83,7 +83,8 @@ typedef MinionOptions = {
     ?can_be_damaged :Bool,
     ?can_move :Bool,
     ?can_attack :Bool,
-    ?on_death: Minion -> Void
+    ?on_death :Void -> Command,
+    ?on_event :Map<Event, Void -> Commands>
 };
 
 class Minion {
@@ -102,7 +103,9 @@ class Minion {
     public var can_be_damaged :Bool;
     public var can_move :Bool;
     public var can_attack :Bool;
-    public var on_death :Minion -> Void;
+    public var on_death :Void -> Command;
+
+    public var on_event :Map<Event, Void -> Commands>;
 
     public function new(options :MinionOptions) {
         id               = (options.id != null ? options.id : Id++);
@@ -120,6 +123,14 @@ class Minion {
         can_move         = (options.can_move != null ? options.can_move : true);
         can_attack       = (options.can_attack != null ? options.can_attack : true);
         on_death         = options.on_death;
+
+        on_event = (options.on_event != null ? options.on_event : new Map<Event, Void -> Commands>());
+    }
+
+    public function handle_event(event :Event) :Commands {
+        var event_func = on_event.get(event);
+        if (event_func == null) return [];
+        return event_func();
     }
 
     public function damage(amount :Int, source :Minion /* TODO: Should be supertype, Entity */) :Bool {
@@ -150,7 +161,8 @@ class Minion {
             can_be_damaged: this.can_be_damaged,
             can_move: this.can_move,
             can_attack: this.can_attack,
-            on_death: this.on_death
+            on_death: this.on_death,
+            on_event: this.on_event
         });
     }
     

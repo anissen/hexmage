@@ -114,6 +114,16 @@ class Board {
         }
         trace(s);
     }
+
+    public function get_minions() :Array<Minion> {
+        var minions = [];
+        for (row in board) {
+            for (tile in row) {
+                if (tile.minion != null) minions.push(tile.minion);
+            }
+        }
+        return minions;
+    }
         
     public function get_minions_for_player(player :Player) :Array<Minion> {
         var minions = [];
