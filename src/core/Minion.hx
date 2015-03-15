@@ -83,7 +83,7 @@ typedef MinionOptions = {
     ?can_be_damaged :Bool,
     ?can_move :Bool,
     ?can_attack :Bool,
-    ?on_death :Void -> Command,
+    ?on_death :Void -> Commands,
     ?on_event :Map<Event, Void -> Commands>
 };
 
@@ -103,7 +103,7 @@ class Minion {
     public var can_be_damaged :Bool;
     public var can_move :Bool;
     public var can_attack :Bool;
-    public var on_death :Void -> Command;
+    public var on_death :Void -> Commands;
 
     public var on_event :Map<Event, Void -> Commands>;
 

@@ -72,6 +72,7 @@ class Game {
     }
 
     function draw_cards() :Void {
+        trace('draw_cards');
         var player = get_current_player();
         var card = player.deck.draw();
         if (card == null) {
@@ -83,8 +84,19 @@ class Game {
         // EMIT CardDrawn:
         for (minion in state.board.get_minions()) {
             // commandQueue
-            trace('handle CardDrawn for ${minion.name}');
-            commandQueue = commandQueue.concat(minion.handle_event(CardDrawn));
+            //commandQueue = commandQueue.concat(minion.handle_event(CardDrawn));
+            handle_commands(minion.handle_event(CardDrawn));
+        }
+    }
+
+    function handle_commands(commands :Commands) :Void {
+        for (command in commands) {
+            switch (command) {
+                case Print(s): trace('handle_commands: Print "$s"');
+                case DrawCards(count): 
+                    trace('handle_commands: Draw $count card(s)'); 
+                    for (i in 0 ... count) draw_cards();
+            }
         }
     }
 
@@ -219,13 +231,13 @@ class Game {
         if (victim.life <= 0) {
             var pos = get_minion_pos(victim);
             if (victim.on_death != null)
-                victim.on_death();
+                handle_commands(victim.on_death());
             state.board.get_tile(pos).minion = null;
         }
         if (minion.life <= 0) {
             var pos = get_minion_pos(minion);
             if (minion.on_death != null)
-                minion.on_death();
+                handle_commands(minion.on_death());
             state.board.get_tile(pos).minion = null;
         }
     }

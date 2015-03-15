@@ -133,11 +133,11 @@ class SimpleTestGame {
             attack: 1,
             life: 2,
             on_death: function() {
-                return DrawCards(1);
+                trace('Unicorn::on_death!');
+                return [ DrawCards(1) ];
             },
             on_event: [
                 CardDrawn => function() { 
-                    trace('Unicorn handles CardDrawn event!!!');
                     return [ Print("Unicorn saw that a card was drawn!") ]; 
                 }
             ]
