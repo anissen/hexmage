@@ -1,0 +1,35 @@
+{
+    flow : {
+        build : {
+            android : {
+                sdk: '/usr/local/Cellar/android-sdk/r21.1/',
+                ant_path: '/usr/local/Cellar/ant/1.9.4/bin/ant'
+            }
+        }
+    },
+
+    project : {
+        name : 'Hexmage',
+        version : '0.0.1',
+        author : 'Anders Nissen',
+
+        app : {
+            name : 'Hexmage',
+            package : 'com.andersnissen.hexmage',
+            main : 'game.Main',
+            mobile : {
+                orientation : 'portrait'
+            }
+        },
+
+        build : {
+            dependencies : {
+                luxe : '*'
+            }
+        },
+
+        files : {
+            assets : 'assets/'
+        }
+    }
+}
