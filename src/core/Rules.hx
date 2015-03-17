@@ -19,6 +19,7 @@ typedef Commands = Array<Command>;
 
 enum Event {
     CardDrawn;
+    SelfEntered;
 }
 typedef Events = Array<Event>;
 

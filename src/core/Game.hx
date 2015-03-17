@@ -253,7 +253,9 @@ class Game {
     }
 
     function playMinion(minionId :String, target :Point) {
-        state.board.get_tile(target).minion = MinionLibrary.create(minionId, get_current_player());
+        var minion = MinionLibrary.create(minionId, get_current_player());
+        state.board.get_tile(target).minion = minion;
+        handle_commands(minion.handle_event(SelfEntered));
     }
 
     public function has_won(player :Player) :Bool {

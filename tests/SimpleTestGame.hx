@@ -132,13 +132,16 @@ class SimpleTestGame {
             name: 'Unicorn',
             attack: 1,
             life: 2,
-            on_death: function() {
-                trace('Unicorn::on_death!');
-                return [ DrawCards(1) ];
-            },
+            // on_death: function() {
+            //     trace('Unicorn::on_death!');
+            //     return [ DrawCards(1) ];
+            // },
             on_event: [
-                CardDrawn => function() { 
-                    return [ Print("Unicorn saw that a card was drawn!") ]; 
+                // CardDrawn => function() { 
+                //     return [ Print("Unicorn saw that a card was drawn!") ]; 
+                // },
+                SelfEntered => function() {
+                    return [ DrawCards(1) ];
                 }
             ]
             // effect: function(event) {
