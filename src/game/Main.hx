@@ -2,12 +2,15 @@
 package game;
 
 import luxe.States;
+import luxe.tween.Actuate;
 import game.states.*;
 
 class Main extends luxe.Game {
     static var states :States;
 
     override function ready() {
+        Actuate.defaultEase = luxe.tween.easing.Quad.easeInOut;
+
         states = new States({ name: 'state_machine' });
         states.add(new TitleScreenState());
         // states.add(new MenuScreenState());

@@ -31,12 +31,12 @@ class TitleScreenState extends State {
         background = new Visual({
             pos: new Vector(0, Luxe.screen.h),
             size: Luxe.screen.size.clone(),
-            color: new ColorHSV(0, 1, 0.1),
+            color: new ColorHSV(0, 1, 0.2),
             scene: scene
         });
 
         titleText = new Text({
-            pos: new Vector(Luxe.screen.w / 2, Luxe.screen.mid.y),
+            pos: Luxe.screen.mid.clone(),
             text: 'This is the title screen.\n\nPress Enter',
             color: new Color(1, 1, 1, 0),
             align: TextAlign.center,
@@ -47,11 +47,8 @@ class TitleScreenState extends State {
 
         Actuate
             .tween(background.pos, 0.3, { y: 0 })
-            .ease(luxe.tween.easing.Quad.easeInOut)
             .onComplete(function() {
-                 Actuate
-                    .tween(titleText.color, 0.3, { a: 1 })
-                    .ease(luxe.tween.easing.Quad.easeInOut);
+                 Actuate.tween(titleText.color, 0.3, { a: 1 });
             });
     }
 
@@ -59,7 +56,6 @@ class TitleScreenState extends State {
         trace("LEAVE TitleState");
         Actuate
             .tween(background.pos, 0.3, { y: -Luxe.screen.h })
-            .ease(luxe.tween.easing.Quad.easeInOut)
             .onComplete(function() {
                 scene.empty();
             });
