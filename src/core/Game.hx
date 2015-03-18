@@ -287,6 +287,14 @@ class Game {
         return state.board.get_minion(id);   
     }
 
+    public function get_minions() :Array<Minion> {
+        return state.board.get_minions();   
+    }
+
+    // public function get_tile(pos :Point) :Board.Tile {
+    //     return state.board.get_tile(pos);
+    // }
+
     public function print() {
         state.board.print_big();
     }

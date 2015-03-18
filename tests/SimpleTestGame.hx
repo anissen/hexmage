@@ -102,6 +102,10 @@ class HumanPlayer {
 
 class SimpleTestGame {
     static public function main() {
+        play();
+    }
+
+    static public function create_game() :Game {
         CardLibrary.add(new Unicorn());
 
         MinionLibrary.add(new Minion({ 
@@ -197,8 +201,11 @@ class SimpleTestGame {
             players: [human_player, ai_player],
             rules: new Rules()
         };
-        var game = new Game(gameState);
-        
+        return new Game(gameState);
+    }
+
+    static public function play() {
+        var game = create_game();
         while (!game.is_game_over()) {
             // trace('Game ID: ${Game.Id}');
             game.take_turn();
