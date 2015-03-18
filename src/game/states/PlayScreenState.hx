@@ -26,7 +26,20 @@ class PlayScreenState extends State {
 
     override function onenter<T>(_value :T) {
         trace("ENTER PlayScreenState");
+        setup();
+    }
 
+    override function onleave<T>(_value :T) {
+        trace("LEAVE PlayScreenState");
+        cleanup();
+    }
+
+    function reset() {
+        cleanup();
+        setup();
+    }
+
+    function setup() {
         background = new Visual({
             pos: new Vector(0, 0),
             size: Luxe.screen.size.clone(),
@@ -34,31 +47,38 @@ class PlayScreenState extends State {
             scene: scene
         });
 
-        var text = new Text({
-            pos: Luxe.screen.mid.clone(),
-            text: 'This is the PLAY screen.',
-            color: new Color(1, 1, 1, 0),
-            align: TextAlign.center,
-            align_vertical: TextAlign.center,
-            scene: scene,
-            parent: background
-        });
-
-
+        var tileSize = 140;
         Actuate
             .tween(background.color, 0.3, { h: 240, s: 0.5, v: 0.7 })
             .onComplete(function() {
-                Actuate.tween(text.color, 0.3, { a: 1 });
+                for (y in 0 ... 4) {
+                    for (x in 0 ... 4) {
+                        var tile = new luxe.Sprite({
+                            pos: new Vector(180 + tileSize / 2 + x * (tileSize + 10), 20 + tileSize / 2 + y * (tileSize + 10)),
+                            color: new ColorHSV(360 * Math.random(), 0.5, 0.5),
+                            size: new Vector(tileSize, tileSize),
+                            scale: new Vector(0, 0),
+                            scene: scene
+                        });
+                        tile.rotation_z = -25 + 50 * Math.random();
+                        Actuate
+                            .tween(tile, 0.2, { rotation_z: 0 })
+                            .delay((y * 4 + x) / 20);
+                        Actuate
+                            .tween(tile.scale, 0.2, { x: 1, y: 1 })
+                            .delay((y * 4 + x) / 20);
+                    }
+                }
             });
     }
 
-    override function onleave<T>(_value :T) {
-        trace("LEAVE PlayScreenState");
+    function cleanup() {
         scene.empty();
     }
     
     override function onkeyup(e :KeyEvent) {
         switch (e.keycode) {
+            case Key.key_r: reset();
             case Key.escape: Main.switch_to_state('TitleScreenState');
         }
     }

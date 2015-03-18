@@ -16,9 +16,9 @@ class Main extends luxe.Game {
         // states.add(new MenuScreenState());
         states.add(new PlayScreenState());
 
-        states.set('TitleScreenState');
-        // states.set('PlayScreenState');
-        // states.set('MenuScreenState');
+        // switch_to_state('TitleScreenState');
+        switch_to_state('PlayScreenState');
+        // switch_to_state('MenuScreenState');
     }
 
     static public function switch_to_state(state :String) {

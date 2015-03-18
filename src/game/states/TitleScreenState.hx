@@ -48,7 +48,7 @@ class TitleScreenState extends State {
         Actuate
             .tween(background.pos, 0.3, { y: 0 })
             .onComplete(function() {
-                 Actuate.tween(titleText.color, 0.3, { a: 1 });
+                Actuate.tween(titleText.color, 0.3, { a: 1 });
             });
     }
 
