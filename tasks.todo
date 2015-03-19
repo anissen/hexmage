@@ -8,9 +8,9 @@ Tasks:
   ☐ Implement rules
   ☐ Make cards into files
   ☐ Make map into file
-  ☐ Implement deck
-  ☐ Implement cards in hand
-  ☐ Implement casting minion cards
+  ✔ Implement deck @done (19-03-15 21:31)
+  ✔ Implement cards in hand @done (19-03-15 21:31)
+  ✔ Implement casting minion cards @done (19-03-15 21:31)
   ☐ Implement casting spell cards
   ☐ Implement targeting spells
   ☐ Implement avatar

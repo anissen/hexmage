@@ -11,6 +11,27 @@ import luxe.Text;
 import luxe.tween.Actuate;
 import luxe.Vector;
 import luxe.Visual;
+import luxe.Component;
+
+class MoveIndicator extends Component {
+    public var pulse_speed :Float = 1;
+    public var pulse_size :Float = 1.1;
+    var initial_scale :Vector;
+    var visual :Visual;
+
+    override function init() {
+        initial_scale = entity.scale.clone();
+        Actuate
+            .tween(entity.scale, pulse_speed, { x: pulse_size, y: pulse_size })
+            .reflect()
+            .repeat();
+    }
+
+    override function onremoved() {
+        Actuate
+            .tween(entity.scale, 0.3, { x: initial_scale.x, y: initial_scale.y });
+    }
+}
 
 class PlayScreenState extends State {
     var scene :Scene;
@@ -55,6 +76,7 @@ class PlayScreenState extends State {
             scene: scene
         });
 
+        var id_to_minion = new Map();
         var boardSize = game.get_board_size();
         var tileSize = 140;
         Actuate
@@ -88,8 +110,10 @@ class PlayScreenState extends State {
                         geometry: Luxe.draw.circle({ r: 60 }),
                         scene: scene
                     });
+                    id_to_minion[m.id] = minion;
+
                     new Text({
-                        text: m.name,
+                        text: '${m.name}\n${m.attack}/${m.life}',
                         color: new Color(1, 1, 1, 1),
                         align: TextAlign.center,
                         align_vertical: TextAlign.center,
@@ -98,17 +122,28 @@ class PlayScreenState extends State {
                         parent: minion
                     });
                 }
+
+                var actions = game.get_actions();
+                for (action in actions) {
+                    switch (action) {
+                        case Move(m):
+                            var minion = id_to_minion[m.minionId];
+                            if (!minion.has('MoveIndicator'))
+                                minion.add(new MoveIndicator({ name: 'MoveIndicator' }));
+                        case _:
+                    }
+                }
             });
     }
 
     function cleanup() {
         scene.empty();
     }
-    
+
     override function onkeyup(e :KeyEvent) {
         switch (e.keycode) {
             case Key.key_r: reset();
-            case Key.escape: Main.switch_to_state('TitleScreenState');
+            case Key.escape: Luxe.shutdown(); //Main.switch_to_state('TitleScreenState');
         }
     }
 }
