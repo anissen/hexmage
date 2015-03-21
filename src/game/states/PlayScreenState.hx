@@ -4,6 +4,8 @@ package game.states;
 import luxe.Color;
 import luxe.Input.KeyEvent;
 import luxe.Input.Key;
+import luxe.Input.MouseEvent;
+import luxe.Input.MouseButton;
 import luxe.Scene;
 import luxe.Sprite;
 import luxe.States;
@@ -12,6 +14,77 @@ import luxe.tween.Actuate;
 import luxe.Vector;
 import luxe.Visual;
 import luxe.Component;
+
+typedef ButtonOptions = {
+    > luxe.options.SpriteOptions,
+    text :String,
+    text_color :Color,
+    callback :Void->Void
+}
+
+class Button extends Sprite {
+    var text :Text;
+    var callback :Void->Void;
+
+    public function new(options :ButtonOptions) {
+        super(options);
+
+        text = new Text({
+            pos: Vector.Multiply(this.size, 0.5),
+            text: options.text,
+            color: options.text_color,
+            align: TextAlign.center,
+            align_vertical: TextAlign.center,
+            parent: this
+        });
+
+        callback = options.callback;
+    }
+
+    override public function onmousedown(e :MouseEvent) {
+        if (e.button == MouseButton.left && point_inside(e.pos)) callback();
+    }
+}
+
+/*
+class PlayerTurnActions {
+    static public function actions_for_turn(game :Game) :Array<Action> {
+        var newGame = game.clone();
+        var actions = [];
+        while (true) {
+            newGame.print();
+
+            var available_actions = newGame.get_actions();
+            if (available_actions.length == 0)
+                return actions;
+
+            Sys.println("Available actions:");
+            for (i in 0 ... available_actions.length) {
+                // trace(available_actions[i]);
+                Sys.println('[${i + 1}] ${action_to_string(available_actions[i], newGame)}');
+            }
+            var end_turn_index = available_actions.length + 1;
+            Sys.println('[$end_turn_index] End turn');
+
+            Sys.println('Select action (1-$end_turn_index): ');
+            Sys.print(">>> ");
+            var selection = Sys.stdin().readLine();
+            var actionIndex = Std.parseInt(selection);
+            if (actionIndex != null && actionIndex > 0 && actionIndex <= end_turn_index) {
+                if (actionIndex == end_turn_index)
+                    return actions;
+
+                var action = available_actions[actionIndex - 1];
+                newGame.do_action(action);
+                actions.push(action);
+                continue;
+            }
+
+            Sys.println('$selection is an invalid action index');
+        }
+    }
+}
+*/
 
 class MoveIndicator extends Component {
     public var pulse_speed :Float = 1;
@@ -37,11 +110,12 @@ class PlayScreenState extends State {
     var scene :Scene;
     var background :Visual;
     var game :core.Game;
+    var actions :core.Actions.Actions;
 
     public function new() {
         super({ name: 'PlayScreenState' });
         scene = new Scene('PlayScreenScene');
-        game = tests.SimpleTestGame.create_game();
+        game = tests.SimpleTestGame.create_game(take_turn);
     }
 
     override function init() {
@@ -134,6 +208,34 @@ class PlayScreenState extends State {
                     }
                 }
             });
+
+        var buttonWidth  = 150;
+        var buttonHeight = 50;
+        new Button({
+            centered: false,
+            pos: Vector.Subtract(Luxe.screen.size, new Vector(buttonWidth + 20, buttonHeight + 20)),
+            size: new Vector(buttonWidth, buttonHeight),
+            color: new Color(0, 0, 0),
+            text: 'End Turn',
+            text_color: new Color(1, 1, 1),
+            callback: function() {
+                trace('End Turn pressed!');
+                game.take_turn();
+            }
+        });
+
+        // TODO:
+        // · Make minions clickable
+        // · Show possible moves when clicked
+        // · Perform a move by clicking on a tile
+        // · Append the move action to "actions"
+        // · Update state (e.g. by reacting to a Moved-event)
+    }
+
+    function take_turn(game :core.Game) :core.Actions.Actions {
+        var turn_actions = actions.copy();
+        actions = [];
+        return turn_actions;
     }
 
     function cleanup() {

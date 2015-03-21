@@ -39,7 +39,7 @@ class AIPlayer {
             }
             return score;
         }
-        
+
         var score = get_score_for_player(player);
         for (p in game.get_players()) {
             if (p.id == player.id) continue;
@@ -90,7 +90,7 @@ class HumanPlayer {
                 actions.push(action);
                 continue;
             }
-            
+
             Sys.println('$selection is an invalid action index');
         }
     }
@@ -105,22 +105,22 @@ class SimpleTestGame {
         play();
     }
 
-    static public function create_game() :Game {
+    static public function create_game(?take_turn_function :Game->Array<Action>) :Game {
         CardLibrary.add(new Unicorn());
 
-        MinionLibrary.add(new Minion({ 
+        MinionLibrary.add(new Minion({
             name: 'Goblin',
             attack: 1,
             life: 2
         }));
 
-        MinionLibrary.add(new Minion({ 
+        MinionLibrary.add(new Minion({
             name: 'Troll',
             attack: 4,
             life: 1
         }));
 
-        MinionLibrary.add(new Minion({ 
+        MinionLibrary.add(new Minion({
             name: 'Teddybear',
             attack: 2,
             life: 2
@@ -141,8 +141,8 @@ class SimpleTestGame {
             //     return [ DrawCards(1) ];
             // },
             on_event: [
-                // CardDrawn => function() { 
-                //     return [ Print("Unicorn saw that a card was drawn!") ]; 
+                // CardDrawn => function() {
+                //     return [ Print("Unicorn saw that a card was drawn!") ];
                 // },
                 SelfEntered => function() {
                     return [ DrawCards(1) ];
@@ -159,8 +159,8 @@ class SimpleTestGame {
         var ai_player = new Player({
             name: 'AI Player',
             take_turn: AIPlayer.actions_for_turn,
-            deck: new Deck({ 
-                name: 'AI Test Deck', 
+            deck: new Deck({
+                name: 'AI Test Deck',
                 cards: [
                     CardLibrary.create('Unicorn')
                 ]
@@ -172,10 +172,10 @@ class SimpleTestGame {
             * Minion is invurnable but loses one life per turn
         */
 
-        var human_player = new Player({ 
+        var human_player = new Player({
             name: 'Human Player',
-            deck: new Deck({ 
-                name: 'Test Deck', 
+            deck: new Deck({
+                name: 'Test Deck',
                 cards: [
                     CardLibrary.create('Unicorn'),
                     CardLibrary.create('Unicorn')
@@ -184,7 +184,7 @@ class SimpleTestGame {
             hand: [
                 CardLibrary.create('Unicorn')
             ],
-            take_turn: HumanPlayer.actions_for_turn 
+            take_turn: (take_turn_function != null ? take_turn_function : HumanPlayer.actions_for_turn)
         });
 
         var tiles = { x: 3, y: 4 };
