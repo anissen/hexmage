@@ -14,6 +14,8 @@ import luxe.tween.Actuate;
 import luxe.Vector;
 import luxe.Visual;
 import luxe.Component;
+import game.entities.MinionEntity;
+import game.components.OnClick;
 
 typedef ButtonOptions = {
     > luxe.options.SpriteOptions,
@@ -24,7 +26,6 @@ typedef ButtonOptions = {
 
 class Button extends Sprite {
     var text :Text;
-    var callback :Void->Void;
 
     public function new(options :ButtonOptions) {
         super(options);
@@ -37,12 +38,7 @@ class Button extends Sprite {
             align_vertical: TextAlign.center,
             parent: this
         });
-
-        callback = options.callback;
-    }
-
-    override public function onmousedown(e :MouseEvent) {
-        if (e.button == MouseButton.left && point_inside(e.pos)) callback();
+        text.add(new OnClick(options.callback));
     }
 }
 
@@ -90,7 +86,6 @@ class MoveIndicator extends Component {
     public var pulse_speed :Float = 1;
     public var pulse_size :Float = 1.1;
     var initial_scale :Vector;
-    var visual :Visual;
 
     override function init() {
         initial_scale = entity.scale.clone();
@@ -177,24 +172,26 @@ class PlayScreenState extends State {
                 }
 
                 var minions = game.get_minions();
-                for (m in minions) {
-                    var pos = game.get_minion_pos(m);
-                    var minion = new Visual({
+                for (minion in minions) {
+                    var pos = game.get_minion_pos(minion);
+                    var minionEntity = new MinionEntity({
+                        minion: minion,
                         pos: tile_to_pos(pos.x, pos.y),
-                        color: new ColorHSV(100 * m.player.id, 0.8, 0.8),
-                        geometry: Luxe.draw.circle({ r: 60 }),
                         scene: scene
                     });
-                    id_to_minion[m.id] = minion;
+                    id_to_minion[minion.id] = minionEntity;
+                    minionEntity.events.listen('clicked', function(data :ClickedEventData) {
+                        trace('${data.minion.name} was clicked!');
+                    });
 
                     new Text({
-                        text: '${m.name}\n${m.attack}/${m.life}',
+                        text: '${minion.name}\n${minion.attack}/${minion.life}',
                         color: new Color(1, 1, 1, 1),
                         align: TextAlign.center,
                         align_vertical: TextAlign.center,
                         point_size: 20,
                         scene: scene,
-                        parent: minion
+                        parent: minionEntity
                     });
                 }
 
@@ -231,6 +228,10 @@ class PlayScreenState extends State {
         // · Perform a move by clicking on a tile
         // · Append the move action to "actions"
         // · Update state (e.g. by reacting to a Moved-event)
+    }
+
+    function minion_clicked(minion :MinionEntity) {
+
     }
 
     function take_turn(game :core.Game) :core.Actions.Actions {
