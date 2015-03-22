@@ -13,9 +13,16 @@ class RuleEngine {
             actions = actions.concat(get_card_plays_for_player(board, player, card));
         }
         for (minion in board.get_minions_for_player(player)) {
-            actions = actions.concat(get_attacks_for_minion(board, minion));
-            actions = actions.concat(get_moves_for_minion(board, minion));
+            actions = get_available_actions_for_minion(state, minion);
         }
+        return actions;
+    }
+
+    static public function get_available_actions_for_minion(state :GameState, minion :Minion) :Array<Action> {
+        var board = state.board;
+        var actions = [];
+        actions = actions.concat(get_attacks_for_minion(board, minion));
+        actions = actions.concat(get_moves_for_minion(board, minion));
         return actions;
     }
 

@@ -77,6 +77,8 @@ class MoveIndicator extends Component {
     }
 }
 
+typedef CanMoveToEventData = { entity :MinionEntity, minion :core.Minion, pos :core.Point };
+
 class PlayScreenState extends State {
     var scene :Scene;
     var background :Visual;
@@ -156,9 +158,8 @@ class PlayScreenState extends State {
                         scene: scene
                     });
                     id_to_minion[minion.id] = minionEntity;
-                    minionEntity.events.listen('clicked', function(data :ClickedEventData) {
-                        trace('${data.minion.name} was clicked!');
-                    });
+                    minionEntity.events.listen('clicked', minion_clicked);
+                    minionEntity.events.listen('can_move_to', minion_can_move_to);
 
                     new Text({
                         text: '${minion.name}\n${minion.attack}/${minion.life}',
@@ -199,15 +200,32 @@ class PlayScreenState extends State {
         });
 
         // TODO:
-        // · Make minions clickable
+        // x Make minions clickable
         // · Show possible moves when clicked
         // · Perform a move by clicking on a tile
         // · Append the move action to "actions"
         // · Update state (e.g. by reacting to a Moved-event)
     }
 
-    function minion_clicked(minion :MinionEntity) {
+    function minion_clicked(data :ClickedEventData) {
+        trace('${data.minion.name} was clicked!');
+        // events for moves
+        var minion_actions = game.get_actions_for_minion(data.minion);
+        for (action in minion_actions) {
+            switch action {
+                case Move(m): data.entity.events.fire('can_move_to', { entity: data.entity, minion: data.minion, pos: m.pos });
+                case _:
+            }
+        }
+    }
 
+    function minion_can_move_to(data :CanMoveToEventData) {
+        new Sprite({
+            pos: tile_to_pos(data.pos.x, data.pos.y),
+            color: new Color(1, 1, 1),
+            geometry: Luxe.draw.circle({ r: 20 }),
+            scene: scene
+        });
     }
 
     function take_turn(game :core.Game) :core.Actions.Actions {

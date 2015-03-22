@@ -38,7 +38,7 @@ class Game {
             emit('turn_start');
             start_turn();
         }
-    } 
+    }
 
     public function start() {
         var maxTurns = 1; // TEMPORARY, for testing
@@ -93,8 +93,8 @@ class Game {
         for (command in commands) {
             switch (command) {
                 case Print(s): trace('handle_commands: Print "$s"');
-                case DrawCards(count): 
-                    trace('handle_commands: Draw $count card(s)'); 
+                case DrawCards(count):
+                    trace('handle_commands: Draw $count card(s)');
                     for (i in 0 ... count) draw_cards();
             }
         }
@@ -104,6 +104,10 @@ class Game {
         if (!listeners.exists(key)) return;
         var listener = listeners.get(key);
         listener(data);
+    }
+
+    public function get_actions_for_minion(minion :Minion) :Array<Action> {
+        return RuleEngine.get_available_actions_for_minion(state, minion);
     }
 
     public function get_actions() :Array<Action> {
@@ -203,7 +207,7 @@ class Game {
         end_turn();
         start_turn();
     }
-    
+
     function move(moveAction :MoveAction) {
         var minion = state.board.get_minion(moveAction.minionId);
         var currentPos = state.board.get_minion_pos(minion);
@@ -211,7 +215,7 @@ class Game {
         state.board.get_tile(moveAction.pos).minion = minion;
         minion.movesLeft--;
     }
-    
+
     function attack(attackAction :AttackAction) {
         var minion = state.board.get_minion(attackAction.minionId);
         var victim = state.board.get_minion(attackAction.victimId);
@@ -284,11 +288,11 @@ class Game {
     }
 
     public function get_minion(id :Int) :Null<Minion> {
-        return state.board.get_minion(id);   
+        return state.board.get_minion(id);
     }
 
     public function get_minions() :Array<Minion> {
-        return state.board.get_minions();   
+        return state.board.get_minions();
     }
 
     // public function get_tile(pos :Point) :Board.Tile {
@@ -299,4 +303,3 @@ class Game {
         state.board.print_big();
     }
 }
-
