@@ -115,6 +115,7 @@ class PlayScreenState extends State {
     public function new() {
         super({ name: 'PlayScreenState' });
         scene = new Scene('PlayScreenScene');
+        actions = [];
         game = tests.SimpleTestGame.create_game(take_turn);
     }
 
