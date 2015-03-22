@@ -9,7 +9,6 @@ import luxe.Input.MouseButton;
 
 class OnClick extends Component {
     var visual :Visual;
-    //var sprite :Sprite;
     var callback :Void->Void;
 
     public function new(callback :Void->Void) {
