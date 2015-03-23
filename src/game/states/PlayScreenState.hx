@@ -17,6 +17,7 @@ import luxe.Component;
 
 import game.entities.Button;
 import game.entities.MinionEntity;
+import game.components.OnClick;
 
 /*
 class PlayerTurnActions {
@@ -90,6 +91,9 @@ class PlayScreenState extends State {
         scene = new Scene('PlayScreenScene');
         actions = [];
         game = tests.SimpleTestGame.create_game(take_turn);
+        /*game.listen(core.Rules.Event.MinionMoved, function (movedData :core.Rules.Event.MinionMoved) {
+
+        });*/
     }
 
     override function init() {
@@ -201,9 +205,9 @@ class PlayScreenState extends State {
 
         // TODO:
         // x Make minions clickable
-        // · Show possible moves when clicked
-        // · Perform a move by clicking on a tile
-        // · Append the move action to "actions"
+        // x Show possible moves when clicked
+        // x Perform a move by clicking on a tile
+        // x Append the move action to "actions"
         // · Update state (e.g. by reacting to a Moved-event)
     }
 
@@ -220,12 +224,18 @@ class PlayScreenState extends State {
     }
 
     function minion_can_move_to(data :CanMoveToEventData) {
-        new Sprite({
+        var moveDot = new Sprite({
             pos: tile_to_pos(data.pos.x, data.pos.y),
             color: new Color(1, 1, 1),
             geometry: Luxe.draw.circle({ r: 20 }),
             scene: scene
         });
+        moveDot.add(new OnClick(function() {
+            var action = core.Actions.Action.Move({ minionId: data.minion.id, pos: data.pos });
+            actions.push(action);
+            game.do_action(action);
+            reset(); // HACK HACK HACK
+        }));
     }
 
     function take_turn(game :core.Game) :core.Actions.Actions {
