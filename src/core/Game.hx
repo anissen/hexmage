@@ -26,16 +26,16 @@ class Game {
 
     var commandQueue :Commands;
 
-    var listeners :Map<String, Dynamic->Void>;
+    var listeners :Map<Event, Dynamic->Void>;
 
     public function new(_state :GameState, _isNewGame :Bool = true) {
         state = _state;
-        listeners = new Map<String, Dynamic->Void>();
+        listeners = new Map<Event, Dynamic->Void>();
         commandQueue = new Commands();
         Id++;
 
         if (_isNewGame) { // TODO: This is not pretty
-            emit('turn_start');
+            emit(TurnStarted);
             start_turn();
         }
     }
@@ -53,14 +53,14 @@ class Game {
             do_action(action);
             // TODO: check victory/defeat
             if (has_won(get_current_player())) {
-                emit('won_game');
+                emit(GameOver);
                 return;
             }
         }
-        emit('turn_end');
+        emit(TurnEnded);
         end_turn();
 
-        emit('turn_start');
+        emit(TurnStarted);
         start_turn();
     }
 
@@ -72,7 +72,7 @@ class Game {
     }
 
     function draw_cards() :Void {
-        trace('draw_cards');
+        //trace('draw_cards');
         var player = get_current_player();
         var card = player.deck.draw();
         if (card == null) {
@@ -100,10 +100,10 @@ class Game {
         }
     }
 
-    function emit(key :String, ?data :Dynamic) :Void {
-        if (!listeners.exists(key)) return;
-        var listener = listeners.get(key);
-        listener(data);
+    function emit(event :Event, ?eventData :Event) :Void {
+        if (!listeners.exists(event)) return;
+        var listener = listeners.get(event);
+        listener(eventData);
     }
 
     public function get_actions_for_minion(minion :Minion) :Array<Action> {
@@ -214,6 +214,7 @@ class Game {
         state.board.get_tile(currentPos).minion = null;
         state.board.get_tile(moveAction.pos).minion = minion;
         minion.movesLeft--;
+        emit(MinionMoved(), MinionMoved({ minionId: moveAction.minionId, from: currentPos, to: moveAction.pos }));
     }
 
     function attack(attackAction :AttackAction) {
@@ -271,8 +272,8 @@ class Game {
         return true;
     }
 
-    public function listen(key :String, func: Dynamic->Void) {
-        listeners.set(key, func);
+    public function listen(event :Event, func: Dynamic->Void) {
+        listeners.set(event, func);
     }
 
     public function get_minions_for_player(player :Player) :Array<Minion> {

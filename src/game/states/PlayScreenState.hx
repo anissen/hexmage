@@ -91,9 +91,12 @@ class PlayScreenState extends State {
         scene = new Scene('PlayScreenScene');
         actions = [];
         game = tests.SimpleTestGame.create_game(take_turn);
-        /*game.listen(core.Rules.Event.MinionMoved, function (movedData :core.Rules.Event.MinionMoved) {
-
-        });*/
+        game.listen(core.Rules.Event.MinionMoved(), function (event :core.Rules.Event) {
+            switch event {
+                case core.Rules.Event.MinionMoved(movedData): trace('Minion moved!');
+                case _:
+            }
+        });
     }
 
     override function init() {

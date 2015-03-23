@@ -17,9 +17,15 @@ enum Command {
 }
 typedef Commands = Array<Command>;
 
+typedef MoveEventData = { minionId :Int, from :Point, to :Point };
+
 enum Event {
+    TurnStarted;
+    TurnEnded;
+    GameOver;
     CardDrawn;
     SelfEntered;
+    MinionMoved(?data :MoveEventData);
 }
 typedef Events = Array<Event>;
 
