@@ -15,6 +15,8 @@ import luxe.Vector;
 import luxe.Visual;
 import luxe.Component;
 
+import core.Events;
+
 import game.entities.Button;
 import game.entities.MinionEntity;
 import game.components.OnClick;
@@ -45,14 +47,19 @@ class PlayScreenState extends State {
     var background :Visual;
     var game :core.Game;
     var actions :core.Actions.Actions;
+    var minionMap :Map<Int, MinionEntity>;
 
     public function new() {
         super({ name: 'PlayScreenState' });
         scene = new Scene('PlayScreenScene');
+        minionMap = new Map();
         actions = [];
         game = tests.SimpleTestGame.create_game(take_turn);
-        game.listen(core.Rules.Event.MinionMoved, function (event :core.Rules.MinionMovedEventData) {
-            trace('Minion with ID ${event.minionId} moved from ${event.from} to ${event.to}!');
+        game.listen(Event.MinionMoved, function (event :MinionMovedEventData) {
+            //trace('Minion with ID ${event.minionId} moved from ${event.from} to ${event.to}!');
+            var minionEntity = id_to_minion_entity(event.minionId);
+            var newPos = tile_to_pos(event.to.x, event.to.y);
+            luxe.tween.Actuate.tween(minionEntity.pos, 0.8, { x: newPos.x, y: newPos.y });
         });
     }
 
@@ -75,6 +82,10 @@ class PlayScreenState extends State {
         setup();
     }
 
+    function id_to_minion_entity(id :Int) :MinionEntity {
+        return minionMap[id];
+    }
+
     function tile_to_pos(x, y) :Vector {
         var tileSize = 140;
         return new Vector(180 + tileSize / 2 + x * (tileSize + 10), 20 + tileSize / 2 + y * (tileSize + 10));
@@ -88,7 +99,6 @@ class PlayScreenState extends State {
             scene: scene
         });
 
-        var id_to_minion = new Map();
         var boardSize = game.get_board_size();
         var tileSize = 140;
         Actuate
@@ -121,7 +131,7 @@ class PlayScreenState extends State {
                         pos: tile_to_pos(pos.x, pos.y),
                         scene: scene
                     });
-                    id_to_minion[minion.id] = minionEntity;
+                    minionMap[minion.id] = minionEntity;
                     minionEntity.events.listen('clicked', minion_clicked);
                     minionEntity.events.listen('can_move_to', minion_can_move_to);
 
@@ -140,7 +150,7 @@ class PlayScreenState extends State {
                 for (action in actions) {
                     switch (action) {
                         case Move(m):
-                            var minion = id_to_minion[m.minionId];
+                            var minion = minionMap[m.minionId];
                             if (!minion.has('MoveIndicator'))
                                 minion.add(new MoveIndicator({ name: 'MoveIndicator' }));
                         case _:
@@ -194,7 +204,7 @@ class PlayScreenState extends State {
             var action = core.Actions.Action.Move({ minionId: data.minion.id, pos: data.pos });
             actions.push(action);
             game.do_action(action);
-            reset(); // HACK HACK HACK
+            //reset(); // HACK HACK HACK
         }));
     }
 

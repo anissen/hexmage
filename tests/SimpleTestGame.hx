@@ -5,7 +5,6 @@ import core.Game;
 import core.Minion;
 import core.Board;
 import core.RuleEngine;
-import core.Rules;
 import core.Actions;
 import core.Player;
 import core.Minimax;
@@ -198,8 +197,8 @@ class SimpleTestGame {
 
         var gameState = {
             board: new Board(tiles.x, tiles.y, create_tile), // TODO: Make from a core.Map
-            players: [human_player, ai_player],
-            rules: new Rules()
+            players: [human_player, ai_player]
+            //rules: new Rules()
         };
         return new Game(gameState);
     }

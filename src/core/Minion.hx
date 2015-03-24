@@ -2,7 +2,7 @@
 
 package core;
 
-import core.Rules;
+import core.Events;
 
 // enum Property {
 //     Life;
@@ -16,10 +16,10 @@ import core.Rules;
 class Tag {
     var _value :Int;
     public var value(get, set) :Int;
-    
+
     var _enabled :Bool;
     public var enabled(get, set) :Bool;
-    
+
     var listeners :List<Int -> Void>;
 
     public function new(_value :Int, _enabled :Bool = true) {
@@ -27,7 +27,7 @@ class Tag {
         this._enabled = _enabled;
         listeners = new List<Int -> Void>();
     }
-    
+
     public function get_value() :Int {
         return (_enabled ? _value : 0);
     }
@@ -69,13 +69,13 @@ typedef Properties = {
 
 // There should be a default Property map defined in the ruleset!
 
-typedef MinionOptions = { 
-    ?id :Int, 
-    ?player :Player, 
-    name :String, 
-    ?attack :Int, 
-    ?life :Int, 
-    ?rules :Rules,
+typedef MinionOptions = {
+    ?id :Int,
+    ?player :Player,
+    name :String,
+    ?attack :Int,
+    ?life :Int,
+    //?rules :Rules,
     ?moves: Int,
     ?movesLeft :Int,
     ?attacks: Int,
@@ -83,7 +83,7 @@ typedef MinionOptions = {
     ?can_be_damaged :Bool,
     ?can_move :Bool,
     ?can_attack :Bool,
-    ?on_death :Void -> Commands,
+    //?on_death :Void -> Commands,
     ?on_event :Map<Event, Void -> Commands>
 };
 
@@ -91,11 +91,11 @@ class Minion {
     static var Id :Int = 0;
     public var id :Int;
 
-    public var player :Player; 
-    public var name :String; 
-    public var attack :Int; 
-    public var life :Int; 
-    public var rules :Rules;
+    public var player :Player;
+    public var name :String;
+    public var attack :Int;
+    public var life :Int;
+    //public var rules :Rules;
     public var moves: Int;
     public var movesLeft :Int;
     public var attacks: Int;
@@ -103,7 +103,7 @@ class Minion {
     public var can_be_damaged :Bool;
     public var can_move :Bool;
     public var can_attack :Bool;
-    public var on_death :Void -> Commands;
+    //public var on_death :Void -> Commands;
 
     public var on_event :Map<Event, Void -> Commands>;
 
@@ -114,7 +114,7 @@ class Minion {
         name             = options.name;
         attack           = (options.attack != null ? options.attack : 1);
         life             = (options.life != null ? options.life : 1);
-        rules            = (options.rules != null ? options.rules : []);
+        //rules            = (options.rules != null ? options.rules : []);
         moves            = (options.moves != null ? options.moves : 1);
         movesLeft        = (options.movesLeft != null ? options.movesLeft : 0);
         attacks          = (options.attacks != null ? options.attacks : 1);
@@ -122,7 +122,7 @@ class Minion {
         can_be_damaged   = (options.can_be_damaged != null ? options.can_be_damaged : true);
         can_move         = (options.can_move != null ? options.can_move : true);
         can_attack       = (options.can_attack != null ? options.can_attack : true);
-        on_death         = options.on_death;
+        //on_death         = options.on_death;
 
         on_event = (options.on_event != null ? options.on_event : new Map<Event, Void -> Commands>());
     }
@@ -147,13 +147,13 @@ class Minion {
     }
 
     public function clone() :Minion {
-        return new Minion({ 
+        return new Minion({
             id: this.id,
             player: this.player, // TODO: Is clone() necessesary here?
-            name: this.name, 
-            attack: this.attack, 
-            life: this.life, 
-            rules: this.rules,
+            name: this.name,
+            attack: this.attack,
+            life: this.life,
+            //rules: this.rules,
             moves: this.moves,
             movesLeft: this.movesLeft,
             attacks: this.attacks,
@@ -161,11 +161,11 @@ class Minion {
             can_be_damaged: this.can_be_damaged,
             can_move: this.can_move,
             can_attack: this.can_attack,
-            on_death: this.on_death,
+            //on_death: this.on_death,
             on_event: this.on_event
         });
     }
-    
+
     public function equals(other :Minion) :Bool {
         return (other != null && other.id == id);
     }

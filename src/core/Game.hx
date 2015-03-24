@@ -4,20 +4,12 @@ package core;
 import core.MinionLibrary;
 import core.Player;
 import core.Actions;
-import core.Rules;
+import core.Events;
 
 typedef GameState = {
     var board :Board;
     var players :Players; // includes deck
-    var rules :Rules;
 };
-
-// enum Event {
-//     Move();
-//     Attack();
-//     StartTurn();
-//     EndTurn();
-// }
 
 class Game {
     var state :GameState;
@@ -146,8 +138,8 @@ class Game {
     public function clone() :Game {
         return new Game({
             board: state.board.clone_board(),
-            players: clone_players(),
-            rules: state.rules // TODO: Should clone rules list
+            players: clone_players()
+            //rules: state.rules // TODO: Should clone rules list
         }, false);
     }
 
@@ -235,14 +227,13 @@ class Game {
         // TODO: Should be handled in response to damage
         if (victim.life <= 0) {
             var pos = get_minion_pos(victim);
-            if (victim.on_death != null)
-                handle_commands(victim.on_death());
+            //if (victim.on_death != null)
+            //    handle_commands(victim.on_death());
             state.board.get_tile(pos).minion = null;
         }
         if (minion.life <= 0) {
             var pos = get_minion_pos(minion);
-            if (minion.on_death != null)
-                handle_commands(minion.on_death());
+            //handle_commands(minion.handle_event(MinionDied, { minionId: minion.id }));
             state.board.get_tile(pos).minion = null;
         }
     }
