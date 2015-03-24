@@ -200,6 +200,11 @@ class Game {
         start_turn();
     }
 
+    public function do_end_turn() :Void {
+        end_turn();
+        start_turn();
+    }
+
     function move(moveAction :MoveAction) {
         var minion = state.board.get_minion(moveAction.minionId);
         var currentPos = state.board.get_minion_pos(minion);

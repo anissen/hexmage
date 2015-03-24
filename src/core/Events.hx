@@ -2,6 +2,7 @@
 package core;
 
 typedef MinionMovedEventData = { minionId :Int, from :Point, to :Point };
+typedef MinionDiedEventData = { minionId :Int };
 
 enum Event {
     TurnStarted;

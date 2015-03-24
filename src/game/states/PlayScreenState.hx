@@ -61,6 +61,11 @@ class PlayScreenState extends State {
             var newPos = tile_to_pos(event.to.x, event.to.y);
             luxe.tween.Actuate.tween(minionEntity.pos, 0.8, { x: newPos.x, y: newPos.y });
         });
+        game.listen(Event.MinionDied, function (event :MinionDiedEventData) {
+            var minionEntity = id_to_minion_entity(event.minionId);
+            minionMap.remove(event.minionId);
+            minionEntity.destroy();
+        });
     }
 
     override function init() {
@@ -169,7 +174,7 @@ class PlayScreenState extends State {
             text_color: new Color(1, 1, 1),
             callback: function() {
                 trace('End Turn pressed!');
-                game.take_turn();
+                game.do_end_turn();
             }
         });
 
@@ -178,7 +183,7 @@ class PlayScreenState extends State {
         // x Show possible moves when clicked
         // x Perform a move by clicking on a tile
         // x Append the move action to "actions"
-        // · Update state (e.g. by reacting to a Moved-event)
+        // x Update state (e.g. by reacting to a Moved-event)
     }
 
     function minion_clicked(data :ClickedEventData) {
@@ -204,7 +209,6 @@ class PlayScreenState extends State {
             var action = core.Actions.Action.Move({ minionId: data.minion.id, pos: data.pos });
             actions.push(action);
             game.do_action(action);
-            //reset(); // HACK HACK HACK
         }));
     }
 
