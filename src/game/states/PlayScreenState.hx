@@ -19,46 +19,6 @@ import game.entities.Button;
 import game.entities.MinionEntity;
 import game.components.OnClick;
 
-/*
-class PlayerTurnActions {
-    static public function actions_for_turn(game :Game) :Array<Action> {
-        var newGame = game.clone();
-        var actions = [];
-        while (true) {
-            newGame.print();
-
-            var available_actions = newGame.get_actions();
-            if (available_actions.length == 0)
-                return actions;
-
-            Sys.println("Available actions:");
-            for (i in 0 ... available_actions.length) {
-                // trace(available_actions[i]);
-                Sys.println('[${i + 1}] ${action_to_string(available_actions[i], newGame)}');
-            }
-            var end_turn_index = available_actions.length + 1;
-            Sys.println('[$end_turn_index] End turn');
-
-            Sys.println('Select action (1-$end_turn_index): ');
-            Sys.print(">>> ");
-            var selection = Sys.stdin().readLine();
-            var actionIndex = Std.parseInt(selection);
-            if (actionIndex != null && actionIndex > 0 && actionIndex <= end_turn_index) {
-                if (actionIndex == end_turn_index)
-                    return actions;
-
-                var action = available_actions[actionIndex - 1];
-                newGame.do_action(action);
-                actions.push(action);
-                continue;
-            }
-
-            Sys.println('$selection is an invalid action index');
-        }
-    }
-}
-*/
-
 class MoveIndicator extends Component {
     public var pulse_speed :Float = 1;
     public var pulse_size :Float = 1.1;
@@ -91,11 +51,8 @@ class PlayScreenState extends State {
         scene = new Scene('PlayScreenScene');
         actions = [];
         game = tests.SimpleTestGame.create_game(take_turn);
-        game.listen(core.Rules.Event.MinionMoved(), function (event :core.Rules.Event) {
-            switch event {
-                case core.Rules.Event.MinionMoved(movedData): trace('Minion moved!');
-                case _:
-            }
+        game.listen(core.Rules.Event.MinionMoved, function (event :core.Rules.MinionMovedEventData) {
+            trace('Minion with ID ${event.minionId} moved from ${event.from} to ${event.to}!');
         });
     }
 

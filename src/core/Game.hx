@@ -100,10 +100,10 @@ class Game {
         }
     }
 
-    function emit(event :Event, ?eventData :Event) :Void {
+    function emit(event :Event, ?data :Dynamic) :Void {
         if (!listeners.exists(event)) return;
         var listener = listeners.get(event);
-        listener(eventData);
+        listener(data);
     }
 
     public function get_actions_for_minion(minion :Minion) :Array<Action> {
@@ -214,7 +214,7 @@ class Game {
         state.board.get_tile(currentPos).minion = null;
         state.board.get_tile(moveAction.pos).minion = minion;
         minion.movesLeft--;
-        emit(MinionMoved(), MinionMoved({ minionId: moveAction.minionId, from: currentPos, to: moveAction.pos }));
+        emit(MinionMoved, { minionId: moveAction.minionId, from: currentPos, to: moveAction.pos });
     }
 
     function attack(attackAction :AttackAction) {
