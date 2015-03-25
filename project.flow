@@ -25,7 +25,10 @@
         build : {
             dependencies : {
                 luxe : '*'
-            }
+            },
+            defines : [
+                'absolute-path'
+            ]
         },
 
         files : {
