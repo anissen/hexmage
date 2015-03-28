@@ -40,8 +40,6 @@ class MoveIndicator extends Component {
     }
 }
 
-typedef CanMoveToEventData = { entity :MinionEntity, minion :core.Minion, pos :core.Point };
-
 class PlayScreenState extends State {
     var scene :Scene;
     var background :Visual;
@@ -138,7 +136,6 @@ class PlayScreenState extends State {
                     });
                     minionMap[minion.id] = minionEntity;
                     minionEntity.events.listen('clicked', minion_clicked);
-                    minionEntity.events.listen('can_move_to', minion_can_move_to);
 
                     new Text({
                         text: '${minion.name}\n${minion.attack}/${minion.life}',
@@ -177,39 +174,15 @@ class PlayScreenState extends State {
                 game.do_end_turn();
             }
         });
-
-        // TODO:
-        // x Make minions clickable
-        // x Show possible moves when clicked
-        // x Perform a move by clicking on a tile
-        // x Append the move action to "actions"
-        // x Update state (e.g. by reacting to a Moved-event)
     }
 
     function minion_clicked(data :ClickedEventData) {
-        trace('${data.minion.name} was clicked!');
-        // events for moves
-        var minion_actions = game.get_actions_for_minion(data.minion);
-        for (action in minion_actions) {
-            switch action {
-                case Move(m): data.entity.events.fire('can_move_to', { entity: data.entity, minion: data.minion, pos: m.pos });
-                case _:
-            }
+        // trace('${data.minion.name} was clicked!');
+        if (!Main.states.enabled('MinionActionsState')) {
+            Main.states.enable('MinionActionsState', { game: game, minionId: data.minion.id });
+        } else {
+            Main.states.disable('MinionActionsState');
         }
-    }
-
-    function minion_can_move_to(data :CanMoveToEventData) {
-        var moveDot = new Sprite({
-            pos: tile_to_pos(data.pos.x, data.pos.y),
-            color: new Color(1, 1, 1),
-            geometry: Luxe.draw.circle({ r: 20 }),
-            scene: scene
-        });
-        moveDot.add(new OnClick(function() {
-            var action = core.Actions.Action.Move({ minionId: data.minion.id, pos: data.pos });
-            actions.push(action);
-            game.do_action(action);
-        }));
     }
 
     function take_turn(game :core.Game) :core.Actions.Actions {
