@@ -22,21 +22,9 @@ class Main extends luxe.Game {
         // switch_to_state('MenuScreenState');
     }
 
-    static public function switch_to_state(state :String) {
+    static public function switch_to_state<T>(state :String, ?args :T) {
         if (!states.exists(state)) 
             throw 'State "$state" not found';
-        states.set(state);
+        states.set(state, args);
     }
-
-    // static public function enable_state(state :String) {
-    //     if (!states.exists(state)) 
-    //         throw 'State "$state" not found';
-    //     states.enable(state);
-    // }
-
-    // static public function disable_state(state :String) {
-    //     if (!states.exists(state)) 
-    //         throw 'State "$state" not found';
-    //     states.disable(state);
-    // }
 }
