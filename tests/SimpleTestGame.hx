@@ -59,6 +59,7 @@ class HumanPlayer {
     }
 
     static public function actions_for_turn(game :Game) :Array<Action> {
+        #if (neko || cpp)
         var newGame = game.clone();
         var actions = [];
         while (true) {
@@ -92,6 +93,9 @@ class HumanPlayer {
 
             Sys.println('$selection is an invalid action index');
         }
+        #else
+        return [];
+        #end
     }
 }
 
@@ -210,8 +214,13 @@ class SimpleTestGame {
             game.take_turn();
         }
 
+        #if (neko || cpp)
         Sys.println("GAME OVER");
         game.print();
         Sys.stdin().readLine();
+        #else
+        trace("GAME OVER");
+        game.print();
+        #end
     }
 }
