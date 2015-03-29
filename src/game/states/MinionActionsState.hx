@@ -1,7 +1,6 @@
 
 package game.states;
 
-import core.Actions.MoveAction;
 import luxe.Scene;
 import luxe.States;
 import luxe.Sprite;
@@ -19,14 +18,14 @@ class MinionActionsState extends State {
         scene = new Scene('MinionActionsScene');
     }
 
-    function minion_can_move_to(data :MoveAction, game :Game) {
+    function minion_can_move_to(data :core.Actions.MoveAction, game :Game) {
         var minionPos = game.get_minion_pos(game.get_minion(data.minionId));
         var from = tile_to_pos(minionPos.x, minionPos.y);
         var to = tile_to_pos(data.pos.x, data.pos.y);
         var moveDot = new Sprite({
             pos: from,
             color: new Color(1, 1, 1),
-            geometry: Luxe.draw.circle({ r: 30 }),
+            geometry: Luxe.draw.circle({ r: 25 }),
             scale: new Vector(0.0, 0.0),
             scene: scene
         });
@@ -37,6 +36,27 @@ class MinionActionsState extends State {
         }));
         luxe.tween.Actuate.tween(moveDot.pos, 0.3, { x: to.x, y: to.y });
         luxe.tween.Actuate.tween(moveDot.scale, 0.3, { x: 1, y: 1 });
+    }
+
+    function minion_can_attack(data :core.Actions.AttackAction, game :Game) {
+        var minionPos = game.get_minion_pos(game.get_minion(data.minionId));
+        var victimPos = game.get_minion_pos(game.get_minion(data.victimId));
+        var from = tile_to_pos(minionPos.x, minionPos.y);
+        var to = tile_to_pos(victimPos.x, victimPos.y);
+        var attackDot = new Sprite({
+            pos: from,
+            color: new Color(1, 0, 0),
+            geometry: Luxe.draw.circle({ r: 25 }),
+            scale: new Vector(0.0, 0.0),
+            scene: scene
+        });
+        attackDot.add(new OnClick(function() {
+            // callback(data);
+            game.do_action(Attack(data));
+            Main.states.disable(this.name);
+        }));
+        luxe.tween.Actuate.tween(attackDot.pos, 0.3, { x: to.x, y: to.y });
+        luxe.tween.Actuate.tween(attackDot.scale, 0.3, { x: 1, y: 1 });
     }
 
     function tile_to_pos(x, y) :Vector { // HACK (this shouldn't be included here)!
@@ -51,6 +71,7 @@ class MinionActionsState extends State {
         for (action in minion_actions) {
             switch action {
                 case core.Actions.Action.Move(m): minion_can_move_to(m, data.game);
+                case core.Actions.Action.Attack(a): minion_can_attack(a, data.game);
                 case _:
             }
         }
