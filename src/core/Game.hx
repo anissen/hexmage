@@ -219,6 +219,8 @@ class Game {
         var victim = state.board.get_minion(attackAction.victimId);
 
         minion.attacksLeft--;
+        
+        emit(MinionAttacked, attackAction);
 
         var victim_tool_damage = victim.damage(minion.attack, minion);
         if (victim_tool_damage) {
@@ -231,12 +233,14 @@ class Game {
 
         // TODO: Should be handled in response to damage
         if (victim.life <= 0) {
+            emit(MinionDied, { minionId: victim.id }); // temp!
             var pos = get_minion_pos(victim);
             //if (victim.on_death != null)
             //    handle_commands(victim.on_death());
             state.board.get_tile(pos).minion = null;
         }
         if (minion.life <= 0) {
+            emit(MinionDied, { minionId: minion.id }); // temp!
             var pos = get_minion_pos(minion);
             //handle_commands(minion.handle_event(MinionDied, { minionId: minion.id }));
             state.board.get_tile(pos).minion = null;

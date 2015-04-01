@@ -59,6 +59,16 @@ class PlayScreenState extends State {
             var newPos = tile_to_pos(event.to.x, event.to.y);
             luxe.tween.Actuate.tween(minionEntity.pos, 0.8, { x: newPos.x, y: newPos.y });
         });
+        game.listen(Event.MinionAttacked, function (event :MinionAttackedEventData) {
+            var minionEntity = id_to_minion_entity(event.minionId);
+            var minionPos = minionEntity.pos.clone();
+            var victimPos = id_to_minion_entity(event.victimId).pos;
+            luxe.tween.Actuate
+                .tween(minionEntity.pos, 0.2, { x: victimPos.x, y: victimPos.y })
+                .onComplete(function() {
+                    luxe.tween.Actuate.tween(minionEntity.pos, 0.3, { x: minionPos.x, y: minionPos.y });
+                });
+        });
         game.listen(Event.MinionDied, function (event :MinionDiedEventData) {
             var minionEntity = id_to_minion_entity(event.minionId);
             minionMap.remove(event.minionId);
