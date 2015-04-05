@@ -11,19 +11,21 @@ typedef GameState = {
     var players :Players; // includes deck
 };
 
+typedef EventListenerFunction = Event -> Void;
+
 class Game {
     var state :GameState;
     static public var Id :Int = 0;
     // @:isVar public var id(default, null) :Int;
 
-    var commandQueue :Commands;
+    //var commandQueue :Commands;
 
-    var listeners :Map<Event, Dynamic->Void>;
+    var listeners :List<EventListenerFunction>;
 
     public function new(_state :GameState, _isNewGame :Bool = true) {
         state = _state;
-        listeners = new Map<Event, Dynamic->Void>();
-        commandQueue = new Commands();
+        listeners = new List<EventListenerFunction>();
+        //commandQueue = new Commands();
         Id++;
 
         if (_isNewGame) { // TODO: This is not pretty
@@ -92,10 +94,10 @@ class Game {
         }
     }
 
-    function emit(event :Event, ?data :Dynamic) :Void {
-        if (!listeners.exists(event)) return;
-        var listener = listeners.get(event);
-        listener(data);
+    function emit(event :Event) :Void {
+        for (listener in listeners) {
+            listener(event);
+        }
     }
 
     public function get_actions_for_minion(minion :Minion) :Array<Action> {
@@ -211,7 +213,7 @@ class Game {
         state.board.get_tile(currentPos).minion = null;
         state.board.get_tile(moveAction.pos).minion = minion;
         minion.movesLeft--;
-        emit(MinionMoved, { minionId: moveAction.minionId, from: currentPos, to: moveAction.pos });
+        emit(MinionMoved({ minionId: moveAction.minionId, from: currentPos, to: moveAction.pos }));
     }
 
     function attack(attackAction :AttackAction) {
@@ -220,7 +222,7 @@ class Game {
 
         minion.attacksLeft--;
         
-        emit(MinionAttacked, attackAction);
+        emit(MinionAttacked(attackAction));
 
         var victim_tool_damage = victim.damage(minion.attack, minion);
         if (victim_tool_damage) {
@@ -233,14 +235,14 @@ class Game {
 
         // TODO: Should be handled in response to damage
         if (victim.life <= 0) {
-            emit(MinionDied, { minionId: victim.id }); // temp!
+            emit(MinionDied({ minionId: victim.id })); // temp!
             var pos = get_minion_pos(victim);
             //if (victim.on_death != null)
             //    handle_commands(victim.on_death());
             state.board.get_tile(pos).minion = null;
         }
         if (minion.life <= 0) {
-            emit(MinionDied, { minionId: minion.id }); // temp!
+            emit(MinionDied({ minionId: minion.id })); // temp!
             var pos = get_minion_pos(minion);
             //handle_commands(minion.handle_event(MinionDied, { minionId: minion.id }));
             state.board.get_tile(pos).minion = null;
@@ -272,8 +274,8 @@ class Game {
         return true;
     }
 
-    public function listen(event :Event, func: Dynamic->Void) {
-        listeners.set(event, func);
+    public function listen(func: EventListenerFunction) {
+        listeners.add(func);
     }
 
     public function get_minions_for_player(player :Player) :Array<Minion> {

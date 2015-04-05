@@ -1,9 +1,9 @@
 
 package core;
 
-typedef MinionMovedEventData = { minionId :Int, from :Point, to :Point };
-typedef MinionAttackedEventData = { minionId :Int, victimId :Int };
-typedef MinionDiedEventData = { minionId :Int };
+typedef MinionMovedData = { minionId :Int, from :Point, to :Point };
+typedef MinionAttackedData = { minionId :Int, victimId :Int };
+typedef MinionDiedData = { minionId :Int };
 
 enum Event {
     TurnStarted;
@@ -11,9 +11,12 @@ enum Event {
     GameOver;
     CardDrawn;
     SelfEntered;
-    MinionMoved;
-    MinionDied;
-    MinionAttacked;
+    MinionMoved(data :MinionMovedData);
+    MinionDied(data :MinionDiedData);
+    MinionAttacked(data :MinionAttackedData);
+
+    PlayerEntered; // also triggered on game start 
+    MinionEntered; // also triggered on game start (minions should be added *after* initial setup)
 }
 
 typedef Events = Array<Event>;
