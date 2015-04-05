@@ -214,7 +214,7 @@ class PlayScreenState extends State {
     }
 
     function minion_clicked(data :ClickedEventData) {
-        if (data.minion.player.id != game.current_player().id) return;
+        if (!game.is_current_player(data.minion.player)) return;
         // trace('${data.minion.name} was clicked!');
         if (!Main.states.enabled('MinionActionsState')) {
             Main.states.enable('MinionActionsState', { game: game, minionId: data.minion.id });

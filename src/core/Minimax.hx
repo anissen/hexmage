@@ -35,7 +35,7 @@ class Minimax {
 
     public function best_actions(game :Game) :Array<Action> {
         actions_tested = 0;
-        var player = game.current_player();
+        var player = game.current_player;
         var currentScore = score_function(player, game);
         var result = minimax(player, game);
         var deltaScore = result.score - currentScore;

@@ -20,6 +20,8 @@ class Game {
 
     //var commandQueue :Commands;
 
+    public var current_player (get, null) :Player;
+
     var listeners :List<EventListenerFunction>;
 
     public function new(_state :GameState, _isNewGame :Bool = true) {
@@ -42,11 +44,11 @@ class Game {
     }
 
     public function take_turn() :Void {
-        for (action in current_player().take_turn(clone())) {
+        for (action in current_player.take_turn(clone())) {
             // TODO: check action available
             do_action(action);
             // TODO: check victory/defeat
-            if (has_won(current_player())) {
+            if (has_won(current_player)) {
                 emit(GameOver);
                 return;
             }
@@ -59,7 +61,7 @@ class Game {
     }
 
     function reset_minion_stats() :Void {
-        for (minion in state.board.minions_for_player(current_player())) {
+        for (minion in state.board.minions_for_player(current_player)) {
             minion.movesLeft = minion.moves;
             minion.attacksLeft = minion.attacks;
         }
@@ -67,7 +69,7 @@ class Game {
 
     function draw_cards() :Void {
         //trace('draw_cards');
-        var player = current_player();
+        var player = current_player;
         var card = player.deck.draw();
         if (card == null) {
             // player is out of cards!
@@ -105,7 +107,7 @@ class Game {
     }
 
     public function actions() :Array<Action> {
-        return RuleEngine.available_actions(state, current_player());
+        return RuleEngine.available_actions(state, current_player);
     }
 
     function determine_available_sets_of_actions(actionDepthRemaining :Int) :Array<Array<Action>> {
@@ -153,12 +155,12 @@ class Game {
         return clone_players();
     }
 
-    public function current_player() :Player {
+    function get_current_player() :Player {
         return state.players[0];
     }
 
     public function is_current_player(player :Player) :Bool {
-        return current_player().id == player.id;
+        return current_player.id == player.id;
     }
 
     public function is_game_over() :Bool {
@@ -175,7 +177,7 @@ class Game {
     }
 
     function end_turn() :Void {
-        // for (minion in state.board.minions_for_player(current_player())) {
+        // for (minion in state.board.minions_for_player(current_player)) {
         //     for (rule in minion.rules) {
         //         if (rule.turn_ends == null) continue;
         //         rule.turn_ends(minion);
@@ -250,7 +252,7 @@ class Game {
     }
 
     function playCard(playCardAction :PlayCardAction) {
-        var player = current_player();
+        var player = current_player;
         player.hand.remove(playCardAction.card);
 
         // handle
@@ -260,7 +262,7 @@ class Game {
     }
 
     function playMinion(minionId :String, target :Point) {
-        var minion = MinionLibrary.create(minionId, current_player());
+        var minion = MinionLibrary.create(minionId, current_player);
         state.board.tile(target).minion = minion;
         handle_commands(minion.handle_event(SelfEntered));
     }
