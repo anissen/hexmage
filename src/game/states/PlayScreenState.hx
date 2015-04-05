@@ -22,12 +22,22 @@ import game.entities.MinionEntity;
 import game.components.OnClick;
 
 class MoveIndicator extends Component {
-    public var pulse_speed :Float = 1;
+    public var pulse_speed :Float = 0.8;
     public var pulse_size :Float = 1.1;
     var initial_scale :Vector;
+    var bg :Sprite;
 
     override function init() {
         initial_scale = entity.scale.clone();
+    }
+
+    override function onadded() {
+        bg = new Sprite({
+            color: new ColorHSV(0, 0, 1),
+            geometry: Luxe.draw.circle({ r: 70 }),
+            parent: entity,
+            depth: 50
+        });
         Actuate
             .tween(entity.scale, pulse_speed, { x: pulse_size, y: pulse_size })
             .reflect()
@@ -35,6 +45,7 @@ class MoveIndicator extends Component {
     }
 
     override function onremoved() {
+        bg.destroy();
         Actuate
             .tween(entity.scale, 0.3, { x: initial_scale.x, y: initial_scale.y });
     }
@@ -99,7 +110,61 @@ class PlayScreenState extends State {
                         handle_next_event();
                     });
             }
-            case _: trace('$event is unhandled');
+            case MinionEntered(data): {
+                var minion = game.minion(data.minionId);
+                var pos = game.minion_pos(minion);
+                var minionEntity = new MinionEntity({
+                    minion: minion,
+                    pos: tile_to_pos(pos.x, pos.y),
+                    scene: scene
+                });
+                minionMap[minion.id] = minionEntity;
+                minionEntity.events.listen('clicked', minion_clicked);
+
+                new Text({
+                    text: '${minion.name}\n${minion.attack}/${minion.life}',
+                    color: new Color(1, 1, 1, 1),
+                    align: TextAlign.center,
+                    align_vertical: TextAlign.center,
+                    point_size: 20,
+                    scene: scene,
+                    parent: minionEntity
+                });
+
+                minionEntity.scale.set_xy(0, 0);
+                Actuate
+                    .tween(minionEntity.scale, 0.8, { x: 1.0, y: 1.0 })
+                    .onComplete(function() {
+                        handle_next_event();
+                    });
+            }
+            case TurnStarted: {
+                trace('TurnStarted!');
+                trace('Player: ' + game.current_player.name);
+                for (action in game.actions()) {
+                    trace('Action: ' + action);
+                    switch (action) {
+                        case Move(m):
+                            var minionEntity = minionMap[m.minionId];
+                            if (!minionEntity.has('MoveIndicator')) {
+                                minionEntity.add(new MoveIndicator({ name: 'MoveIndicator' }));
+                            }
+                        case _:
+                    }
+                }
+                handle_next_event();
+            }
+            case TurnEnded: {
+                for (minion in game.minions_for_player(game.current_player)) {
+                    var minionEntity = minionMap[minion.id];
+                    minionEntity.remove('MoveIndicator');
+                }
+                handle_next_event();
+            }
+            case _: {
+                trace('$event is unhandled');
+                handle_next_event();
+            }
         }
     }
 
@@ -141,61 +206,24 @@ class PlayScreenState extends State {
 
         var boardSize = game.board_size();
         var tileSize = 140;
-        Actuate
-            .tween(background.color, 0.3, { h: 240, s: 0.5, v: 0.7 })
-            .onComplete(function() {
-                for (y in 0 ... boardSize.y) {
-                    for (x in 0 ... boardSize.x) {
-                        var tile = new Sprite({
-                            pos: tile_to_pos(x, y),
-                            color: new ColorHSV(360 * Math.random(), 0.5, 0.5),
-                            size: new Vector(tileSize, tileSize),
-                            scale: new Vector(0, 0),
-                            scene: scene
-                        });
-                        tile.rotation_z = -25 + 50 * Math.random();
-                        Actuate
-                            .tween(tile, 0.2, { rotation_z: 0 })
-                            .delay((y * boardSize.x + x) / 20);
-                        Actuate
-                            .tween(tile.scale, 0.2, { x: 1, y: 1 })
-                            .delay((y * boardSize.x + x) / 20);
-                    }
-                }
-
-                var minions = game.minions();
-                for (minion in minions) {
-                    var pos = game.minion_pos(minion);
-                    var minionEntity = new MinionEntity({
-                        minion: minion,
-                        pos: tile_to_pos(pos.x, pos.y),
-                        scene: scene
-                    });
-                    minionMap[minion.id] = minionEntity;
-                    minionEntity.events.listen('clicked', minion_clicked);
-
-                    new Text({
-                        text: '${minion.name}\n${minion.attack}/${minion.life}',
-                        color: new Color(1, 1, 1, 1),
-                        align: TextAlign.center,
-                        align_vertical: TextAlign.center,
-                        point_size: 20,
-                        scene: scene,
-                        parent: minionEntity
-                    });
-                }
-
-                var actions = game.actions();
-                for (action in actions) {
-                    switch (action) {
-                        case Move(m):
-                            var minion = minionMap[m.minionId];
-                            if (!minion.has('MoveIndicator'))
-                                minion.add(new MoveIndicator({ name: 'MoveIndicator' }));
-                        case _:
-                    }
-                }
-            });
+        for (y in 0 ... boardSize.y) {
+            for (x in 0 ... boardSize.x) {
+                var tile = new Sprite({
+                    pos: tile_to_pos(x, y),
+                    color: new ColorHSV(360 * Math.random(), 0.5, 0.5),
+                    size: new Vector(tileSize, tileSize),
+                    scale: new Vector(0, 0),
+                    scene: scene
+                });
+                tile.rotation_z = -25 + 50 * Math.random();
+                Actuate
+                    .tween(tile, 0.2, { rotation_z: 0 })
+                    .delay((y * boardSize.x + x) / 20);
+                Actuate
+                    .tween(tile.scale, 0.2, { x: 1, y: 1 })
+                    .delay((y * boardSize.x + x) / 20);
+            }
+        }
 
         var buttonWidth  = 150;
         var buttonHeight = 50;
@@ -211,6 +239,8 @@ class PlayScreenState extends State {
                 game.do_end_turn();
             }
         });
+
+        game.start();
     }
 
     function minion_clicked(data :ClickedEventData) {

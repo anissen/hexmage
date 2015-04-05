@@ -209,6 +209,7 @@ class SimpleTestGame {
 
     static public function play() {
         var game = create_game();
+        game.start();
         while (!game.is_game_over()) {
             // trace('Game ID: ${Game.Id}');
             game.take_turn();
