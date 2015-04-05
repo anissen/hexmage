@@ -46,34 +46,61 @@ class PlayScreenState extends State {
     var game :core.Game;
     var actions :core.Actions.Actions;
     var minionMap :Map<Int, MinionEntity>;
+    var eventQueue :List<Event>;
 
     public function new() {
         super({ name: 'PlayScreenState' });
         scene = new Scene('PlayScreenScene');
         minionMap = new Map();
         actions = [];
+        eventQueue = new List<Event>();
         game = tests.SimpleTestGame.create_game(take_turn);
-        game.listen(Event.MinionMoved, function (event :MinionMovedEventData) {
-            //trace('Minion with ID ${event.minionId} moved from ${event.from} to ${event.to}!');
-            var minionEntity = id_to_minion_entity(event.minionId);
-            var newPos = tile_to_pos(event.to.x, event.to.y);
-            luxe.tween.Actuate.tween(minionEntity.pos, 0.8, { x: newPos.x, y: newPos.y });
+        game.listen(function(event) {
+            eventQueue.add(event);
+            if (eventQueue.length == 1) handle_next_event();
         });
-        game.listen(Event.MinionAttacked, function (event :MinionAttackedEventData) {
-            var minionEntity = id_to_minion_entity(event.minionId);
-            var minionPos = minionEntity.pos.clone();
-            var victimPos = id_to_minion_entity(event.victimId).pos;
-            luxe.tween.Actuate
-                .tween(minionEntity.pos, 0.2, { x: victimPos.x, y: victimPos.y })
-                .onComplete(function() {
-                    luxe.tween.Actuate.tween(minionEntity.pos, 0.3, { x: minionPos.x, y: minionPos.y });
-                });
-        });
-        game.listen(Event.MinionDied, function (event :MinionDiedEventData) {
-            var minionEntity = id_to_minion_entity(event.minionId);
-            minionMap.remove(event.minionId);
-            minionEntity.destroy();
-        });
+    }
+
+    function handle_next_event() {
+        if (eventQueue.isEmpty()) return;
+        handle_event(eventQueue.pop());
+    }
+
+    function handle_event(event :Event) {
+        trace('Handling event $event');
+        switch (event) {
+            case MinionMoved(data): {
+                //trace('Minion with ID ${data.minionId} moved from ${data.from} to ${data.to}!');
+                var minionEntity = id_to_minion_entity(data.minionId);
+                var newPos = tile_to_pos(data.to.x, data.to.y);
+                Actuate
+                    .tween(minionEntity.pos, 0.8, { x: newPos.x, y: newPos.y })
+                    .onComplete(handle_next_event);
+            }
+            case MinionAttacked(data): {
+                var minionEntity = id_to_minion_entity(data.minionId);
+                var minionPos = minionEntity.pos.clone();
+                var victimPos = id_to_minion_entity(data.victimId).pos;
+                Actuate
+                    .tween(minionEntity.pos, 0.2, { x: victimPos.x, y: victimPos.y })
+                    .onComplete(function() {
+                        Actuate
+                            .tween(minionEntity.pos, 0.3, { x: minionPos.x, y: minionPos.y })
+                            .onComplete(handle_next_event);
+                    });
+            }
+            case MinionDied(data): {
+                var minionEntity = id_to_minion_entity(data.minionId);
+                Actuate
+                    .tween(minionEntity.scale, 0.2, { x: 0, y: 0 })
+                    .onComplete(function() {
+                        minionMap.remove(data.minionId);
+                        minionEntity.destroy();
+                        handle_next_event();
+                    });
+            }
+            case _: trace('$event is unhandled');
+        }
     }
 
     override function init() {
@@ -187,6 +214,7 @@ class PlayScreenState extends State {
     }
 
     function minion_clicked(data :ClickedEventData) {
+        if (data.minion.player.id != game.get_current_player().id) return;
         // trace('${data.minion.name} was clicked!');
         if (!Main.states.enabled('MinionActionsState')) {
             Main.states.enable('MinionActionsState', { game: game, minionId: data.minion.id });
