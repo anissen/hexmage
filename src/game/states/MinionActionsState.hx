@@ -31,8 +31,8 @@ class MinionActionsState extends State {
         });
         moveDot.add(new OnClick(function() {
             // callback(data);
-            game.do_action(Move(data));
             Main.states.disable(this.name);
+            game.do_action(Move(data));
         }));
         luxe.tween.Actuate.tween(moveDot.pos, 0.3, { x: to.x, y: to.y });
         luxe.tween.Actuate.tween(moveDot.scale, 0.3, { x: 1, y: 1 });
@@ -52,8 +52,8 @@ class MinionActionsState extends State {
         });
         attackDot.add(new OnClick(function() {
             // callback(data);
-            game.do_action(Attack(data));
             Main.states.disable(this.name);
+            game.do_action(Attack(data));
         }));
         luxe.tween.Actuate.tween(attackDot.pos, 0.3, { x: to.x, y: to.y });
         luxe.tween.Actuate.tween(attackDot.scale, 0.3, { x: 1, y: 1 });
@@ -78,8 +78,8 @@ class MinionActionsState extends State {
     }
 
     override function ondisabled<T>(_value :T) {
-        trace('MinionActionState before scene empty');
+        // trace('MinionActionState before scene empty');
         scene.empty();
-        trace('MinionActionState after scene empty');
+        // trace('MinionActionState after scene empty');
     }
 }
