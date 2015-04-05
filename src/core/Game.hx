@@ -19,44 +19,24 @@ class Game {
     // @:isVar public var id(default, null) :Int;
 
     //var commandQueue :Commands;
-
+    var current_player_index :Int = 0;
     public var current_player (get, null) :Player;
 
     var listeners :List<EventListenerFunction>;
 
-    public function new(_state :GameState, _isNewGame :Bool = true) {
+    public function new(_state :GameState) {
         state = _state;
         listeners = new List<EventListenerFunction>();
         //commandQueue = new Commands();
         Id++;
-
-        if (_isNewGame) { // TODO: This is not pretty
-            emit(TurnStarted);
-            start_turn();
-        }
     }
 
     public function start() {
-        var maxTurns = 1; // TEMPORARY, for testing
-        for (turn in 0 ... maxTurns) {
-            take_turn();
-        }
-    }
+        emit(GameStarted);
+        current_player_index = 0;
+        for (player in players()) emit(PlayerEntered({ playerId: player.id }));
+        for (minion in minions()) emit(MinionEntered({ minionId: minion.id }));
 
-    public function take_turn() :Void {
-        for (action in current_player.take_turn(clone())) {
-            // TODO: check action available
-            do_action(action);
-            // TODO: check victory/defeat
-            if (has_won(current_player)) {
-                emit(GameOver);
-                return;
-            }
-        }
-        emit(TurnEnded);
-        end_turn();
-
-        emit(TurnStarted);
         start_turn();
     }
 
@@ -135,16 +115,12 @@ class Game {
         return actions;
     }
 
-    function clone_players() :Players {
-        return [ for (p in state.players) p.clone() ];
-    }
-
     public function clone() :Game {
         return new Game({
             board: state.board.clone_board(),
-            players: clone_players()
+            players: state.players
             //rules: state.rules // TODO: Should clone rules list
-        }, false);
+        });
     }
 
     // public function state() :GameState {
@@ -152,11 +128,11 @@ class Game {
     // }
 
     public function players() :Array<Player> {
-        return clone_players();
+        return state.players;
     }
 
     function get_current_player() :Player {
-        return state.players[0];
+        return state.players[current_player_index];
     }
 
     public function is_current_player(player :Player) :Bool {
@@ -172,19 +148,9 @@ class Game {
     }
 
     function start_turn() :Void {
+        emit(TurnStarted);
         reset_minion_stats();
         draw_cards();
-    }
-
-    function end_turn() :Void {
-        // for (minion in state.board.minions_for_player(current_player)) {
-        //     for (rule in minion.rules) {
-        //         if (rule.turn_ends == null) continue;
-        //         rule.turn_ends(minion);
-        //     }
-        // }
-
-        state.players.push(state.players.shift());
     }
 
     public function do_action(action :Action) :Void {
@@ -198,14 +164,21 @@ class Game {
 
     public function do_turn(actions :Array<Action>) :Void {
         for (action in actions) {
+            // TODO: check action available
             do_action(action);
+            // TODO: check victory/defeat
+            if (has_won(current_player)) {
+                emit(GameOver);
+                return;
+            }
         }
         end_turn();
-        start_turn();
     }
 
-    public function do_end_turn() :Void {
-        end_turn();
+    public function end_turn() :Void {
+        emit(TurnEnded);
+        current_player_index = (current_player_index + 1) % state.players.length;
+
         start_turn();
     }
 

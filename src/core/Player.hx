@@ -8,7 +8,6 @@ typedef PlayerOptions = {
     ?id :Int,
     name :String,
     ?deck :Deck,
-    ?take_turn :Game -> Actions,
     ?hand :Cards
 };
 
@@ -21,24 +20,12 @@ class Player {
     public var name :String;
     public var deck :Deck;
     public var hand :Cards;
-    public var take_turn :Game -> Actions;
 
     public function new(options :PlayerOptions) {
         id = (options.id != null ? options.id : Id++);
 
         name = options.name;
         deck = (options.deck != null ? options.deck : new Deck());
-        take_turn = options.take_turn;
         hand = (options.hand != null ? options.hand : []);
-    }
-
-    public function clone() {
-        return new Player({ 
-            id: id, 
-            name: name, 
-            deck: deck.clone(), // TODO: This is probably not enough 
-            take_turn: take_turn,
-            hand: hand.copy() // TODO: This is probably not enough
-        });
     }
 }

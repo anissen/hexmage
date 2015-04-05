@@ -108,7 +108,7 @@ class SimpleTestGame {
         play();
     }
 
-    static public function create_game(?take_turn_function :Game->Array<Action>) :Game {
+    static public function create_game(/*?take_turn_function :Game->Array<Action>*/) :Game {
         CardLibrary.add(new Unicorn());
 
         MinionLibrary.add(new Minion({
@@ -161,7 +161,7 @@ class SimpleTestGame {
 
         var ai_player = new Player({
             name: 'AI Player',
-            take_turn: AIPlayer.actions_for_turn,
+            // take_turn: AIPlayer.actions_for_turn,
             deck: new Deck({
                 name: 'AI Test Deck',
                 cards: [
@@ -187,7 +187,7 @@ class SimpleTestGame {
             hand: [
                 CardLibrary.create('Unicorn')
             ],
-            take_turn: (take_turn_function != null ? take_turn_function : HumanPlayer.actions_for_turn)
+            //take_turn: (take_turn_function != null ? take_turn_function : HumanPlayer.actions_for_turn)
         });
 
         var tiles = { x: 3, y: 4 };
@@ -210,9 +210,19 @@ class SimpleTestGame {
     static public function play() {
         var game = create_game();
         game.start();
+
+        function get_actions_for_turn(player :Player) {
+            return switch (player.name) {
+                case 'AI Player': AIPlayer.actions_for_turn(game);
+                case 'Human Player': HumanPlayer.actions_for_turn(game);
+                case name: trace('Player with name $name is not handled!'); [];
+            }
+        }
+
         while (!game.is_game_over()) {
             // trace('Game ID: ${Game.Id}');
-            game.take_turn();
+            var actions = get_actions_for_turn(game.current_player);
+            game.do_turn(actions);
         }
 
         #if (neko || cpp)

@@ -34,9 +34,9 @@ class MoveIndicator extends Component {
     override function onadded() {
         bg = new Sprite({
             color: new ColorHSV(0, 0, 1),
-            geometry: Luxe.draw.circle({ r: 70 }),
+            geometry: Luxe.draw.circle({ r: 80 }),
             parent: entity,
-            depth: 50
+            depth: -10
         });
         Actuate
             .tween(entity.scale, pulse_speed, { x: pulse_size, y: pulse_size })
@@ -55,7 +55,6 @@ class PlayScreenState extends State {
     var scene :Scene;
     var background :Visual;
     var game :core.Game;
-    var actions :core.Actions.Actions;
     var minionMap :Map<Int, MinionEntity>;
     var eventQueue :List<Event>;
 
@@ -63,9 +62,8 @@ class PlayScreenState extends State {
         super({ name: 'PlayScreenState' });
         scene = new Scene('PlayScreenScene');
         minionMap = new Map();
-        actions = [];
         eventQueue = new List<Event>();
-        game = tests.SimpleTestGame.create_game(take_turn);
+        game = tests.SimpleTestGame.create_game();
         game.listen(function(event) {
             eventQueue.add(event);
             if (eventQueue.length == 1) handle_next_event();
@@ -139,25 +137,31 @@ class PlayScreenState extends State {
                     });
             }
             case TurnStarted: {
-                trace('TurnStarted!');
                 trace('Player: ' + game.current_player.name);
-                for (action in game.actions()) {
-                    trace('Action: ' + action);
-                    switch (action) {
-                        case Move(m):
-                            var minionEntity = minionMap[m.minionId];
-                            if (!minionEntity.has('MoveIndicator')) {
-                                minionEntity.add(new MoveIndicator({ name: 'MoveIndicator' }));
-                            }
-                        case _:
-                    }
+                if (game.current_player.name == 'AI Player') { // HACK HACK HACK
+                    var actions = tests.SimpleTestGame.AIPlayer.actions_for_turn(game);
+                    game.do_turn(actions);
+                } else {
+                    for (action in game.actions()) {
+                        trace('Action: ' + action);
+                        switch (action) {
+                            case Move(m):
+                                var minionEntity = minionMap[m.minionId];
+                                if (!minionEntity.has('MoveIndicator')) {
+                                    minionEntity.add(new MoveIndicator({ name: 'MoveIndicator' }));
+                                }
+                            case _:
+                        }
+                    }   
                 }
                 handle_next_event();
             }
             case TurnEnded: {
                 for (minion in game.minions_for_player(game.current_player)) {
                     var minionEntity = minionMap[minion.id];
-                    minionEntity.remove('MoveIndicator');
+                    if (minionEntity.has('MoveIndicator')) {
+                        minionEntity.remove('MoveIndicator');
+                    }
                 }
                 handle_next_event();
             }
@@ -201,7 +205,8 @@ class PlayScreenState extends State {
             pos: new Vector(0, 0),
             size: Luxe.screen.size.clone(),
             color: new ColorHSV(200, 0.5, 0.7),
-            scene: scene
+            scene: scene,
+            depth: -100
         });
 
         var boardSize = game.board_size();
@@ -213,7 +218,8 @@ class PlayScreenState extends State {
                     color: new ColorHSV(360 * Math.random(), 0.5, 0.5),
                     size: new Vector(tileSize, tileSize),
                     scale: new Vector(0, 0),
-                    scene: scene
+                    scene: scene,
+                    depth: -50
                 });
                 tile.rotation_z = -25 + 50 * Math.random();
                 Actuate
@@ -236,7 +242,7 @@ class PlayScreenState extends State {
             text_color: new Color(1, 1, 1),
             callback: function() {
                 trace('End Turn pressed!');
-                game.do_end_turn();
+                game.end_turn();
             }
         });
 
@@ -251,12 +257,6 @@ class PlayScreenState extends State {
         } else {
             Main.states.disable('MinionActionsState');
         }
-    }
-
-    function take_turn(game :core.Game) :core.Actions.Actions {
-        var turn_actions = actions.copy();
-        actions = [];
-        return turn_actions;
     }
 
     function cleanup() {
