@@ -22,7 +22,7 @@ class AIPlayer {
             min_delta_score: -4
         });
 
-        var actions = minimax.get_best_actions(game);
+        var actions = minimax.best_actions(game);
         trace('AI tested ${minimax.actions_tested} different sets of actions');
         trace('AI chose $actions');
         return actions;
@@ -30,19 +30,19 @@ class AIPlayer {
 
     static function score_board(player :Player, game :Game) :Int {
         // score the players own stuff only
-        function get_score_for_player(p) {
+        function score_for_player(p) {
             var score :Float = 0;
             var intrinsicMinionScore = 1;
-            for (minion in game.get_minions_for_player(p)) {
+            for (minion in game.minions_for_player(p)) {
                 score += intrinsicMinionScore + Math.max(minion.attack, 0) + Math.max(minion.life, 0);
             }
             return score;
         }
 
-        var score = get_score_for_player(player);
-        for (p in game.get_players()) {
+        var score = score_for_player(player);
+        for (p in game.players()) {
             if (p.id == player.id) continue;
-            score -= get_score_for_player(p);
+            score -= score_for_player(p);
         }
         return Math.round(score);
     }
@@ -51,8 +51,8 @@ class AIPlayer {
 class HumanPlayer {
     static public function action_to_string(action :Action, game :Game) {
         return switch (action) {
-            case Move(m): 'Move ${game.get_minion(m.minionId).name} to ${m.pos.x}, ${m.pos.y}';
-            case Attack(a): 'Attack ${game.get_minion(a.minionId).name} —> ${game.get_minion(a.victimId).name}';
+            case Move(m): 'Move ${game.minion(m.minionId).name} to ${m.pos.x}, ${m.pos.y}';
+            case Attack(a): 'Attack ${game.minion(a.minionId).name} —> ${game.minion(a.victimId).name}';
             case PlayCard(c): 'Play ${c.card.name} to ${c.target.x}, ${c.target.y}';
             case NoAction: 'No Action';
         }
@@ -65,7 +65,7 @@ class HumanPlayer {
         while (true) {
             newGame.print();
 
-            var available_actions = newGame.get_actions();
+            var available_actions = newGame.actions();
             if (available_actions.length == 0)
                 return actions;
 

@@ -33,9 +33,9 @@ class Minimax {
         actions_tested = 0;
     }
 
-    public function get_best_actions(game :Game) :Array<Action> {
+    public function best_actions(game :Game) :Array<Action> {
         actions_tested = 0;
-        var player = game.get_current_player();
+        var player = game.current_player();
         var currentScore = score_function(player, game);
         var result = minimax(player, game);
         var deltaScore = result.score - currentScore;
@@ -65,7 +65,7 @@ class Minimax {
             actions: [] 
         };
 
-        var set_of_all_actions = game.get_nested_actions(max_action_depth);
+        var set_of_all_actions = game.nested_actions(max_action_depth);
         // trace('AI has ${set_of_all_actions.length} sets of actions to choose between');
 
         // TODO: Actions should be tested in a tree to avoid many similar cases, e.g.
@@ -93,19 +93,19 @@ class Minimax {
 
     function default_score_function(player :Player, game :Game) :Int {
         // score the players own stuff only
-        function get_score_for_player(p) {
+        function score_for_player(p) {
             var score :Float = 0;
             var intrinsicMinionScore = 1;
-            for (minion in game.get_minions_for_player(p)) {
+            for (minion in game.minions_for_player(p)) {
                 score += intrinsicMinionScore + Math.max(minion.attack, 0) + Math.max(minion.life, 0);
             }
             return score;
         }
         
-        var score = get_score_for_player(player);
-        for (p in game.get_players()) {
+        var score = score_for_player(player);
+        for (p in game.players()) {
             if (p.id == player.id) continue;
-            score -= get_score_for_player(p);
+            score -= score_for_player(p);
         }
         return Math.round(score);
     }

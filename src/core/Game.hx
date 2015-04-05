@@ -42,11 +42,11 @@ class Game {
     }
 
     public function take_turn() :Void {
-        for (action in get_current_player().take_turn(clone())) {
+        for (action in current_player().take_turn(clone())) {
             // TODO: check action available
             do_action(action);
             // TODO: check victory/defeat
-            if (has_won(get_current_player())) {
+            if (has_won(current_player())) {
                 emit(GameOver);
                 return;
             }
@@ -59,7 +59,7 @@ class Game {
     }
 
     function reset_minion_stats() :Void {
-        for (minion in state.board.get_minions_for_player(get_current_player())) {
+        for (minion in state.board.minions_for_player(current_player())) {
             minion.movesLeft = minion.moves;
             minion.attacksLeft = minion.attacks;
         }
@@ -67,7 +67,7 @@ class Game {
 
     function draw_cards() :Void {
         //trace('draw_cards');
-        var player = get_current_player();
+        var player = current_player();
         var card = player.deck.draw();
         if (card == null) {
             // player is out of cards!
@@ -76,7 +76,7 @@ class Game {
         player.hand.push(card);
 
         // EMIT CardDrawn:
-        for (minion in state.board.get_minions()) {
+        for (minion in state.board.minions()) {
             // commandQueue
             //commandQueue = commandQueue.concat(minion.handle_event(CardDrawn));
             handle_commands(minion.handle_event(CardDrawn));
@@ -100,12 +100,12 @@ class Game {
         }
     }
 
-    public function get_actions_for_minion(minion :Minion) :Array<Action> {
-        return RuleEngine.get_available_actions_for_minion(state, minion);
+    public function actions_for_minion(minion :Minion) :Array<Action> {
+        return RuleEngine.available_actions_for_minion(state, minion);
     }
 
-    public function get_actions() :Array<Action> {
-        return RuleEngine.get_available_actions(state, get_current_player());
+    public function actions() :Array<Action> {
+        return RuleEngine.available_actions(state, current_player());
     }
 
     function determine_available_sets_of_actions(actionDepthRemaining :Int) :Array<Array<Action>> {
@@ -113,7 +113,7 @@ class Game {
             return [];
 
         var actions :Array<Array<Action>> = [];
-        for (action in get_actions()) {
+        for (action in this.actions()) {
             var newGame = this.clone();
             newGame.do_action(action);
 
@@ -127,7 +127,7 @@ class Game {
         return actions;
     }
 
-    public function get_nested_actions(actionDepthRemaining :Int) :Array<Array<Action>> {
+    public function nested_actions(actionDepthRemaining :Int) :Array<Array<Action>> {
         var actions = determine_available_sets_of_actions(actionDepthRemaining);
         actions.push([NoAction]); // Include the no-action actions
         return actions;
@@ -145,25 +145,25 @@ class Game {
         }, false);
     }
 
-    // public function get_state() :GameState {
+    // public function state() :GameState {
     //     return state;
     // }
 
-    public function get_players() :Array<Player> {
+    public function players() :Array<Player> {
         return clone_players();
     }
 
-    public function get_current_player() :Player {
+    public function current_player() :Player {
         return state.players[0];
     }
 
     public function is_current_player(player :Player) :Bool {
-        return get_current_player().id == player.id;
+        return current_player().id == player.id;
     }
 
     public function is_game_over() :Bool {
         for (player in state.players) {
-            if (state.board.get_minions_for_player(player).length == 0)
+            if (state.board.minions_for_player(player).length == 0)
                 return true;
         }
         return false;
@@ -175,7 +175,7 @@ class Game {
     }
 
     function end_turn() :Void {
-        // for (minion in state.board.get_minions_for_player(get_current_player())) {
+        // for (minion in state.board.minions_for_player(current_player())) {
         //     for (rule in minion.rules) {
         //         if (rule.turn_ends == null) continue;
         //         rule.turn_ends(minion);
@@ -208,17 +208,17 @@ class Game {
     }
 
     function move(moveAction :MoveAction) {
-        var minion = state.board.get_minion(moveAction.minionId);
-        var currentPos = state.board.get_minion_pos(minion);
-        state.board.get_tile(currentPos).minion = null;
-        state.board.get_tile(moveAction.pos).minion = minion;
+        var minion = state.board.minion(moveAction.minionId);
+        var currentPos = state.board.minion_pos(minion);
+        state.board.tile(currentPos).minion = null;
+        state.board.tile(moveAction.pos).minion = minion;
         minion.movesLeft--;
         emit(MinionMoved({ minionId: moveAction.minionId, from: currentPos, to: moveAction.pos }));
     }
 
     function attack(attackAction :AttackAction) {
-        var minion = state.board.get_minion(attackAction.minionId);
-        var victim = state.board.get_minion(attackAction.victimId);
+        var minion = state.board.minion(attackAction.minionId);
+        var victim = state.board.minion(attackAction.victimId);
 
         minion.attacksLeft--;
         
@@ -236,21 +236,21 @@ class Game {
         // TODO: Should be handled in response to damage
         if (victim.life <= 0) {
             emit(MinionDied({ minionId: victim.id })); // temp!
-            var pos = get_minion_pos(victim);
+            var pos = minion_pos(victim);
             //if (victim.on_death != null)
             //    handle_commands(victim.on_death());
-            state.board.get_tile(pos).minion = null;
+            state.board.tile(pos).minion = null;
         }
         if (minion.life <= 0) {
             emit(MinionDied({ minionId: minion.id })); // temp!
-            var pos = get_minion_pos(minion);
+            var pos = minion_pos(minion);
             //handle_commands(minion.handle_event(MinionDied, { minionId: minion.id }));
-            state.board.get_tile(pos).minion = null;
+            state.board.tile(pos).minion = null;
         }
     }
 
     function playCard(playCardAction :PlayCardAction) {
-        var player = get_current_player();
+        var player = current_player();
         player.hand.remove(playCardAction.card);
 
         // handle
@@ -260,15 +260,15 @@ class Game {
     }
 
     function playMinion(minionId :String, target :Point) {
-        var minion = MinionLibrary.create(minionId, get_current_player());
-        state.board.get_tile(target).minion = minion;
+        var minion = MinionLibrary.create(minionId, current_player());
+        state.board.tile(target).minion = minion;
         handle_commands(minion.handle_event(SelfEntered));
     }
 
     public function has_won(player :Player) :Bool {
         for (other_player in state.players) {
             if (other_player.id == player.id) continue;
-            if (state.board.get_minions_for_player(other_player).length > 0)
+            if (state.board.minions_for_player(other_player).length > 0)
                 return false;
         }
         return true;
@@ -278,28 +278,28 @@ class Game {
         listeners.add(func);
     }
 
-    public function get_minions_for_player(player :Player) :Array<Minion> {
-        return state.board.get_minions_for_player(player);
+    public function minions_for_player(player :Player) :Array<Minion> {
+        return state.board.minions_for_player(player);
     }
 
-    public function get_board_size() :Point {
-        return state.board.get_board_size();
+    public function board_size() :Point {
+        return state.board.board_size();
     }
 
-    public function get_minion_pos(m :Minion) :Point {
-        return state.board.get_minion_pos(m);
+    public function minion_pos(m :Minion) :Point {
+        return state.board.minion_pos(m);
     }
 
-    public function get_minion(id :Int) :Null<Minion> {
-        return state.board.get_minion(id);
+    public function minion(id :Int) :Null<Minion> {
+        return state.board.minion(id);
     }
 
-    public function get_minions() :Array<Minion> {
-        return state.board.get_minions();
+    public function minions() :Array<Minion> {
+        return state.board.minions();
     }
 
-    // public function get_tile(pos :Point) :Board.Tile {
-    //     return state.board.get_tile(pos);
+    // public function tile(pos :Point) :Board.Tile {
+    //     return state.board.tile(pos);
     // }
 
     public function print() {

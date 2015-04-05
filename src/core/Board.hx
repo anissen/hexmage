@@ -32,13 +32,13 @@ class Board {
 
     public function clone_board() :Board {
         function create_tile(x, y) {
-            var tile = get_tile({ x: x, y: y });
+            var tile = tile({ x: x, y: y });
             return { minion: (tile.minion != null ? tile.minion.clone() : null) };
         }
         return new Board(boardSize.x, boardSize.y, create_tile);
     }
 
-    public function get_tile(pos :Point) {
+    public function tile(pos :Point) {
         return board[pos.y][pos.x];
     }
 
@@ -56,7 +56,7 @@ class Board {
         return tiles;
     }
 
-    public function get_board_size() :Point {
+    public function board_size() :Point {
         return boardSize;
     }
 
@@ -115,7 +115,7 @@ class Board {
         trace(s);
     }
 
-    public function get_minions() :Array<Minion> {
+    public function minions() :Array<Minion> {
         var minions = [];
         for (row in board) {
             for (tile in row) {
@@ -125,7 +125,7 @@ class Board {
         return minions;
     }
         
-    public function get_minions_for_player(player :Player) :Array<Minion> {
+    public function minions_for_player(player :Player) :Array<Minion> {
         var minions = [];
         for (row in board) {
             for (tile in row) {
@@ -135,7 +135,7 @@ class Board {
         return minions;
     }
         
-    public function get_minion(id :Int) :Minion {
+    public function minion(id :Int) :Minion {
         for (row in board) {
             for (tile in row) {
                 if (tile.minion != null && tile.minion.id == id)
@@ -145,7 +145,7 @@ class Board {
         return null;
     }
 
-    public function get_minion_pos(minion :Minion) :Point {
+    public function minion_pos(minion :Minion) :Point {
         for (y in 0 ... board.length) {
             var row = board[y];
             for (x in 0 ... row.length) {

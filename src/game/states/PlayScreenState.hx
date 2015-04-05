@@ -139,7 +139,7 @@ class PlayScreenState extends State {
             scene: scene
         });
 
-        var boardSize = game.get_board_size();
+        var boardSize = game.board_size();
         var tileSize = 140;
         Actuate
             .tween(background.color, 0.3, { h: 240, s: 0.5, v: 0.7 })
@@ -163,9 +163,9 @@ class PlayScreenState extends State {
                     }
                 }
 
-                var minions = game.get_minions();
+                var minions = game.minions();
                 for (minion in minions) {
-                    var pos = game.get_minion_pos(minion);
+                    var pos = game.minion_pos(minion);
                     var minionEntity = new MinionEntity({
                         minion: minion,
                         pos: tile_to_pos(pos.x, pos.y),
@@ -185,7 +185,7 @@ class PlayScreenState extends State {
                     });
                 }
 
-                var actions = game.get_actions();
+                var actions = game.actions();
                 for (action in actions) {
                     switch (action) {
                         case Move(m):
@@ -214,7 +214,7 @@ class PlayScreenState extends State {
     }
 
     function minion_clicked(data :ClickedEventData) {
-        if (data.minion.player.id != game.get_current_player().id) return;
+        if (data.minion.player.id != game.current_player().id) return;
         // trace('${data.minion.name} was clicked!');
         if (!Main.states.enabled('MinionActionsState')) {
             Main.states.enable('MinionActionsState', { game: game, minionId: data.minion.id });

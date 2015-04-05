@@ -19,7 +19,7 @@ class MinionActionsState extends State {
     }
 
     function minion_can_move_to(data :core.Actions.MoveAction, game :Game) {
-        var minionPos = game.get_minion_pos(game.get_minion(data.minionId));
+        var minionPos = game.minion_pos(game.minion(data.minionId));
         var from = tile_to_pos(minionPos.x, minionPos.y);
         var to = tile_to_pos(data.pos.x, data.pos.y);
         var moveDot = new Sprite({
@@ -39,8 +39,8 @@ class MinionActionsState extends State {
     }
 
     function minion_can_attack(data :core.Actions.AttackAction, game :Game) {
-        var minionPos = game.get_minion_pos(game.get_minion(data.minionId));
-        var victimPos = game.get_minion_pos(game.get_minion(data.victimId));
+        var minionPos = game.minion_pos(game.minion(data.minionId));
+        var victimPos = game.minion_pos(game.minion(data.victimId));
         var from = tile_to_pos(minionPos.x, minionPos.y);
         var to = tile_to_pos(victimPos.x, victimPos.y);
         var attackDot = new Sprite({
@@ -66,8 +66,8 @@ class MinionActionsState extends State {
 
     override function onenabled<T>(_value :T) {
         var data :{ game :Game, minionId :Int } = cast _value;
-        var minion = data.game.get_minion(data.minionId);
-        var minion_actions = data.game.get_actions_for_minion(minion);
+        var minion = data.game.minion(data.minionId);
+        var minion_actions = data.game.actions_for_minion(minion);
         for (action in minion_actions) {
             switch action {
                 case core.Actions.Action.Move(m): minion_can_move_to(m, data.game);
