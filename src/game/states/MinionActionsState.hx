@@ -65,6 +65,14 @@ class MinionActionsState extends State {
     }
 
     override function onenabled<T>(_value :T) {
+        var bg = new Sprite({
+            color: new Color(0, 0, 0, 0.1),
+            size: Luxe.screen.size.clone(),
+            centered: false,
+            scene: scene,
+            depth: -20
+        });
+
         var data :{ game :Game, minionId :Int } = cast _value;
         var minion = data.game.minion(data.minionId);
         var minion_actions = data.game.actions_for_minion(minion);

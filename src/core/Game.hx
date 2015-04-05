@@ -9,6 +9,7 @@ import core.Events;
 typedef GameState = {
     var board :Board;
     var players :Players; // includes deck
+    @:optional var current_player_index :Int;
 };
 
 typedef EventListenerFunction = Event -> Void;
@@ -19,13 +20,13 @@ class Game {
     // @:isVar public var id(default, null) :Int;
 
     //var commandQueue :Commands;
-    var current_player_index :Int = 0;
     public var current_player (get, null) :Player;
 
     var listeners :List<EventListenerFunction>;
 
     public function new(_state :GameState) {
         state = _state;
+        if (_state.current_player_index == null) state.current_player_index = 0;
         listeners = new List<EventListenerFunction>();
         //commandQueue = new Commands();
         Id++;
@@ -33,7 +34,7 @@ class Game {
 
     public function start() {
         emit(GameStarted);
-        current_player_index = 0;
+        state.current_player_index = 0;
         for (player in players()) emit(PlayerEntered({ playerId: player.id }));
         for (minion in minions()) emit(MinionEntered({ minionId: minion.id }));
 
@@ -118,7 +119,8 @@ class Game {
     public function clone() :Game {
         return new Game({
             board: state.board.clone_board(),
-            players: state.players
+            players: state.players,
+            current_player_index: state.current_player_index
             //rules: state.rules // TODO: Should clone rules list
         });
     }
@@ -132,7 +134,7 @@ class Game {
     }
 
     function get_current_player() :Player {
-        return state.players[current_player_index];
+        return state.players[state.current_player_index];
     }
 
     public function is_current_player(player :Player) :Bool {
@@ -177,7 +179,7 @@ class Game {
 
     public function end_turn() :Void {
         emit(TurnEnded);
-        current_player_index = (current_player_index + 1) % state.players.length;
+        state.current_player_index = (state.current_player_index + 1) % state.players.length;
 
         start_turn();
     }

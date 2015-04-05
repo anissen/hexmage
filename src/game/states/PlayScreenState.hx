@@ -34,7 +34,7 @@ class MoveIndicator extends Component {
     override function onadded() {
         bg = new Sprite({
             color: new ColorHSV(0, 0, 1),
-            geometry: Luxe.draw.circle({ r: 80 }),
+            geometry: Luxe.draw.circle({ r: 70 }),
             parent: entity,
             depth: -10
         });
@@ -46,6 +46,7 @@ class MoveIndicator extends Component {
 
     override function onremoved() {
         bg.destroy();
+        if (initial_scale == null) return;
         Actuate
             .tween(entity.scale, 0.3, { x: initial_scale.x, y: initial_scale.y });
     }
@@ -85,6 +86,7 @@ class PlayScreenState extends State {
                 Actuate
                     .tween(minionEntity.pos, 0.8, { x: newPos.x, y: newPos.y })
                     .onComplete(handle_next_event);
+                update_move_indicator(game.minion(data.minionId));
             }
             case MinionAttacked(data): {
                 var minionEntity = id_to_minion_entity(data.minionId);
@@ -129,30 +131,27 @@ class PlayScreenState extends State {
                     parent: minionEntity
                 });
 
-                minionEntity.scale.set_xy(0, 0);
-                Actuate
-                    .tween(minionEntity.scale, 0.8, { x: 1.0, y: 1.0 })
-                    .onComplete(function() {
-                        handle_next_event();
-                    });
+                update_move_indicator(minion);
+
+                handle_next_event();
+                // minionEntity.scale.set_xy(0, 0);
+                // Actuate
+                //     .tween(minionEntity.scale, 0.8, { x: 1.0, y: 1.0 })
+                //     .onComplete(function() {
+                //         handle_next_event();
+                //     });
             }
             case TurnStarted: {
                 trace('Player: ' + game.current_player.name);
                 if (game.current_player.name == 'AI Player') { // HACK HACK HACK
+                    trace('Actions for AI:');
+                    trace(game.actions());
                     var actions = tests.SimpleTestGame.AIPlayer.actions_for_turn(game);
                     game.do_turn(actions);
                 } else {
-                    for (action in game.actions()) {
-                        trace('Action: ' + action);
-                        switch (action) {
-                            case Move(m):
-                                var minionEntity = minionMap[m.minionId];
-                                if (!minionEntity.has('MoveIndicator')) {
-                                    minionEntity.add(new MoveIndicator({ name: 'MoveIndicator' }));
-                                }
-                            case _:
-                        }
-                    }   
+                    for (minion in game.minions_for_player(game.current_player)) {
+                        update_move_indicator(minion);
+                    }
                 }
                 handle_next_event();
             }
@@ -169,6 +168,26 @@ class PlayScreenState extends State {
                 trace('$event is unhandled');
                 handle_next_event();
             }
+        }
+    }
+
+    function update_move_indicator(minion :core.Minion) {
+        if (minion.player.id != game.current_player.id) return;
+
+        var minionEntity = minionMap[minion.id];
+        for (action in game.actions_for_minion(minion)) {
+            switch (action) {
+                case Move(_): {
+                    if (!minionEntity.has('MoveIndicator')) {
+                        minionEntity.add(new MoveIndicator({ name: 'MoveIndicator' }));
+                        return;
+                    }
+                }
+                case _: 
+            }
+        }
+        if (minionEntity.has('MoveIndicator')) {
+            minionEntity.remove('MoveIndicator');
         }
     }
 

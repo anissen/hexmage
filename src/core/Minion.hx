@@ -114,15 +114,13 @@ class Minion {
         name             = options.name;
         attack           = (options.attack != null ? options.attack : 1);
         life             = (options.life != null ? options.life : 1);
-        //rules            = (options.rules != null ? options.rules : []);
         moves            = (options.moves != null ? options.moves : 1);
-        movesLeft        = (options.movesLeft != null ? options.movesLeft : 0);
+        movesLeft        = (options.movesLeft != null ? options.movesLeft : moves);
         attacks          = (options.attacks != null ? options.attacks : 1);
-        attacksLeft      = (options.attacksLeft != null ? options.attacksLeft : 0);
+        attacksLeft      = (options.attacksLeft != null ? options.attacksLeft : attacks);
         can_be_damaged   = (options.can_be_damaged != null ? options.can_be_damaged : true);
         can_move         = (options.can_move != null ? options.can_move : true);
         can_attack       = (options.can_attack != null ? options.can_attack : true);
-        //on_death         = options.on_death;
 
         on_event = (options.on_event != null ? options.on_event : new Map<Event, Void -> Commands>());
     }
@@ -153,7 +151,6 @@ class Minion {
             name: this.name,
             attack: this.attack,
             life: this.life,
-            //rules: this.rules,
             moves: this.moves,
             movesLeft: this.movesLeft,
             attacks: this.attacks,
@@ -161,7 +158,6 @@ class Minion {
             can_be_damaged: this.can_be_damaged,
             can_move: this.can_move,
             can_attack: this.can_attack,
-            //on_death: this.on_death,
             on_event: this.on_event
         });
     }

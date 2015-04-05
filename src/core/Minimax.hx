@@ -66,8 +66,7 @@ class Minimax {
         };
 
         var set_of_all_actions = game.nested_actions(max_action_depth);
-        trace('AI has ${set_of_all_actions.length} sets of actions to choose between');
-        trace(set_of_all_actions);
+        // trace('AI has ${set_of_all_actions.length} sets of actions to choose between');
 
         // TODO: Actions should be tested in a tree to avoid many similar cases, e.g.
         // [[Move 1 to X, Move 2 to Y], [Move 1 to X, Move 2 to Z], ...]

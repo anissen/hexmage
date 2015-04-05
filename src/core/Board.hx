@@ -129,7 +129,9 @@ class Board {
         var minions = [];
         for (row in board) {
             for (tile in row) {
-                if (tile.minion != null && tile.minion.player.id == player.id) minions.push(tile.minion);
+                if (tile.minion != null && tile.minion.player.id == player.id) {
+                    minions.push(tile.minion);
+                }
             }
         }
         return minions;
@@ -138,8 +140,9 @@ class Board {
     public function minion(id :Int) :Minion {
         for (row in board) {
             for (tile in row) {
-                if (tile.minion != null && tile.minion.id == id)
+                if (tile.minion != null && tile.minion.id == id) {
                     return tile.minion;
+                }
             }
         }
         return null;
