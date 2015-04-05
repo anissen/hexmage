@@ -9,11 +9,14 @@ class RuleEngine {
     static public function available_actions(state :GameState, player :Player) :Array<Action> {
         var board = state.board;
         var actions = [];
+        function add_actions(a) {
+            actions = actions.concat(a);
+        }
         for (card in player.hand) {
-            actions = actions.concat(card_plays_for_player(board, player, card));
+            add_actions(card_plays_for_player(board, player, card));
         }
         for (minion in board.minions_for_player(player)) {
-            actions = available_actions_for_minion(state, minion);
+            add_actions(available_actions_for_minion(state, minion));
         }
         return actions;
     }
