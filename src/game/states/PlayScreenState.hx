@@ -52,6 +52,37 @@ class MoveIndicator extends Component {
     }
 }
 
+class AttackIndicator extends Component {
+    public var pulse_speed :Float = 0.8;
+    public var pulse_size :Float = 1.1;
+    var initial_scale :Vector;
+    var bg :Sprite;
+
+    override function init() {
+        initial_scale = entity.scale.clone();
+    }
+
+    override function onadded() {
+        bg = new Sprite({
+            color: new Color(1, 0, 0),
+            geometry: Luxe.draw.circle({ r: 66 }),
+            parent: entity,
+            depth: -5
+        });
+        Actuate
+            .tween(entity.scale, pulse_speed, { x: pulse_size, y: pulse_size })
+            .reflect()
+            .repeat();
+    }
+
+    override function onremoved() {
+        bg.destroy();
+        if (initial_scale == null) return;
+        Actuate
+            .tween(entity.scale, 0.3, { x: initial_scale.x, y: initial_scale.y });
+    }
+}
+
 class PlayScreenState extends State {
     var scene :Scene;
     var background :Visual;
@@ -63,14 +94,6 @@ class PlayScreenState extends State {
     public function new() {
         super({ name: 'PlayScreenState' });
         scene = new Scene('PlayScreenScene');
-        minionMap = new Map();
-        eventQueue = new List<Event>();
-        idle = true;
-        game = tests.SimpleTestGame.create_game();
-        game.listen(function(event) {
-            eventQueue.add(event);
-            if (idle) handle_next_event();
-        });
     }
 
     function handle_next_event() {
@@ -91,20 +114,24 @@ class PlayScreenState extends State {
                 var newPos = tile_to_pos(data.to.x, data.to.y);
                 Actuate
                     .tween(minionEntity.pos, 0.8, { x: newPos.x, y: newPos.y })
-                    .onComplete(handle_next_event);
-                update_move_indicator(game.minion(data.minionId));
+                    .onComplete(function() {
+                        update_move_indicator(game.minion(data.minionId));
+                        handle_next_event();
+                    });
             }
             case MinionAttacked(data): {
                 var minionEntity = id_to_minion_entity(data.minionId);
                 var minionPos = minionEntity.pos.clone();
                 var victimPos = id_to_minion_entity(data.victimId).pos;
-                // adsf
                 Actuate
                     .tween(minionEntity.pos, 0.2, { x: victimPos.x, y: victimPos.y })
                     .onComplete(function() {
                         Actuate
                             .tween(minionEntity.pos, 0.3, { x: minionPos.x, y: minionPos.y })
-                            .onComplete(handle_next_event);
+                            .onComplete(function() {
+                                update_move_indicator(game.minion(data.minionId));
+                                handle_next_event();
+                            });
                     });
             }
             case MinionDied(data): {
@@ -168,6 +195,9 @@ class PlayScreenState extends State {
                     if (minionEntity.has('MoveIndicator')) {
                         minionEntity.remove('MoveIndicator');
                     }
+                    if (minionEntity.has('AttackIndicator')) {
+                        minionEntity.remove('AttackIndicator');
+                    }
                 }
                 handle_next_event();
             }
@@ -179,36 +209,55 @@ class PlayScreenState extends State {
     }
 
     function update_move_indicator(minion :core.Minion) {
-        if (minion.player.id != game.current_player.id) return;
+        if (minion == null) return;
+        if (minion.player.name != 'Human Player') return; // HACK
+        //if (minion.player.id != game.current_player.id) return;
 
         var minionEntity = minionMap[minion.id];
+        var canAttack = false;
+        var canMove = false;
         for (action in game.actions_for_minion(minion)) {
             switch (action) {
                 case Move(_): {
+                    trace('Minion ${minion.name} can move!');
+                    canMove = true;
                     if (!minionEntity.has('MoveIndicator')) {
                         minionEntity.add(new MoveIndicator({ name: 'MoveIndicator' }));
-                        return;
+                    }
+                }
+                case Attack(_): {
+                    trace('Minion ${minion.name} can attack!');
+                    canAttack = true;
+                    if (!minionEntity.has('AttackIndicator')) {
+                        minionEntity.add(new AttackIndicator({ name: 'AttackIndicator' }));
                     }
                 }
                 case _: 
             }
         }
-        if (minionEntity.has('MoveIndicator')) {
+
+        trace('Minion ${minion.name} can move: $canMove & can attack: $canAttack!');
+
+        if (!canMove && minionEntity.has('MoveIndicator')) {
             minionEntity.remove('MoveIndicator');
+        }
+
+        if (!canAttack && minionEntity.has('AttackIndicator')) {
+            minionEntity.remove('AttackIndicator');
         }
     }
 
     override function init() {
-        trace("INIT PlayScreenState");
+        // trace("INIT PlayScreenState");
     }
 
     override function onenter<T>(_value :T) {
-        trace("ENTER PlayScreenState");
+        // trace("ENTER PlayScreenState");
         setup();
     }
 
     override function onleave<T>(_value :T) {
-        trace("LEAVE PlayScreenState");
+        // trace("LEAVE PlayScreenState");
         cleanup();
     }
 
@@ -227,6 +276,15 @@ class PlayScreenState extends State {
     }
 
     function setup() {
+        minionMap = new Map();
+        eventQueue = new List<Event>();
+        idle = true;
+        game = tests.SimpleTestGame.create_game();
+        game.listen(function(event) {
+            eventQueue.add(event);
+            if (idle) handle_next_event();
+        });
+
         background = new Visual({
             pos: new Vector(0, 0),
             size: Luxe.screen.size.clone(),

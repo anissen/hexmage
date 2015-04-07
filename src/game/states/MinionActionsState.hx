@@ -66,7 +66,7 @@ class MinionActionsState extends State {
 
     override function onenabled<T>(_value :T) {
         var bg = new Sprite({
-            color: new Color(0, 0, 0, 0.1),
+            color: new Color(0, 0, 0, 0.2),
             size: Luxe.screen.size.clone(),
             centered: false,
             scene: scene,
