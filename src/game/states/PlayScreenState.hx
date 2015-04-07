@@ -21,23 +21,16 @@ import game.entities.Button;
 import game.entities.MinionEntity;
 import game.components.OnClick;
 
-class MoveIndicator extends Component {
+class ActionIndicator extends Component {
     public var pulse_speed :Float = 0.8;
-    public var pulse_size :Float = 1.1;
+    public var pulse_size :Float = 1.08;
     var initial_scale :Vector;
-    var bg :Sprite;
 
     override function init() {
         initial_scale = entity.scale.clone();
     }
 
     override function onadded() {
-        bg = new Sprite({
-            color: new ColorHSV(0, 0, 1),
-            geometry: Luxe.draw.circle({ r: 70 }),
-            parent: entity,
-            depth: -10
-        });
         Actuate
             .tween(entity.scale, pulse_speed, { x: pulse_size, y: pulse_size })
             .reflect()
@@ -45,41 +38,51 @@ class MoveIndicator extends Component {
     }
 
     override function onremoved() {
-        bg.destroy();
         if (initial_scale == null) return;
         Actuate
             .tween(entity.scale, 0.3, { x: initial_scale.x, y: initial_scale.y });
     }
 }
 
-class AttackIndicator extends Component {
-    public var pulse_speed :Float = 0.8;
-    public var pulse_size :Float = 1.1;
-    var initial_scale :Vector;
+class MoveIndicator extends Component {
     var bg :Sprite;
 
-    override function init() {
-        initial_scale = entity.scale.clone();
+    override function onadded() {
+        bg = new Sprite({
+            color: new ColorHSV(0, 0, 1),
+            geometry: Luxe.draw.circle({ r: 70 }),
+            scale: new Vector(0, 0),
+            parent: entity,
+            depth: -10
+        });
+        Actuate.tween(bg.scale, 0.4, { x: 1.0, y: 1.0 });
     }
+
+    override function onremoved() {
+        Actuate
+            .tween(bg.scale, 0.3, { x: 0.0, y: 0.0 })
+            .onComplete(bg.destroy);
+    }
+}
+
+class AttackIndicator extends Component {
+    var bg :Sprite;
 
     override function onadded() {
         bg = new Sprite({
             color: new Color(1, 0, 0),
-            geometry: Luxe.draw.circle({ r: 66 }),
+            geometry: Luxe.draw.circle({ r: 65 }),
+            scale: new Vector(0, 0),
             parent: entity,
             depth: -5
         });
-        Actuate
-            .tween(entity.scale, pulse_speed, { x: pulse_size, y: pulse_size })
-            .reflect()
-            .repeat();
+        Actuate.tween(bg.scale, 0.4, { x: 1.0, y: 1.0 });
     }
 
     override function onremoved() {
-        bg.destroy();
-        if (initial_scale == null) return;
         Actuate
-            .tween(entity.scale, 0.3, { x: initial_scale.x, y: initial_scale.y });
+            .tween(bg.scale, 0.3, { x: 0.0, y: 0.0 })
+            .onComplete(bg.destroy);
     }
 }
 
@@ -113,7 +116,7 @@ class PlayScreenState extends State {
                 var minionEntity = id_to_minion_entity(data.minionId);
                 var newPos = tile_to_pos(data.to.x, data.to.y);
                 Actuate
-                    .tween(minionEntity.pos, 0.8, { x: newPos.x, y: newPos.y })
+                    .tween(minionEntity.pos, 0.6, { x: newPos.x, y: newPos.y })
                     .onComplete(function() {
                         update_move_indicator(game.minion(data.minionId));
                         handle_next_event();
@@ -198,6 +201,9 @@ class PlayScreenState extends State {
                     if (minionEntity.has('AttackIndicator')) {
                         minionEntity.remove('AttackIndicator');
                     }
+                    if (minionEntity.has('ActionIndicator')) {
+                        minionEntity.remove('ActionIndicator');
+                    }
                 }
                 handle_next_event();
             }
@@ -244,6 +250,12 @@ class PlayScreenState extends State {
 
         if (!canAttack && minionEntity.has('AttackIndicator')) {
             minionEntity.remove('AttackIndicator');
+        }
+
+        if (!canAttack && !canMove && minionEntity.has('ActionIndicator')) {
+            minionEntity.remove('ActionIndicator');
+        } else if (canAttack || canMove && !minionEntity.has('ActionIndicator')) {
+            minionEntity.add(new ActionIndicator({ name: 'ActionIndicator' }));
         }
     }
 
