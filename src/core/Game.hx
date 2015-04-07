@@ -201,16 +201,12 @@ class Game {
         
         emit(MinionAttacked(attackAction));
 
-        var victim_tool_damage = victim.damage(minion.attack, minion);
-        if (victim_tool_damage) {
-            // queue effect
-        }
-        var minion_tool_damage = minion.damage(victim.attack, victim);
-        if (minion_tool_damage) {
-            // queue effect
-        }
+        victim.life -= minion.attack;
+        emit(MinionDamaged({ minionId: victim.id, damage: minion.attack }));
 
-        // TODO: Should be handled in response to damage
+        minion.life -= victim.attack;
+        emit(MinionDamaged({ minionId: minion.id, damage: victim.attack }));
+        
         if (victim.life <= 0) {
             emit(MinionDied({ minionId: victim.id })); // temp!
             var pos = minion_pos(victim);

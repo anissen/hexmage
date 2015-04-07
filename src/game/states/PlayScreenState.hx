@@ -125,12 +125,12 @@ class PlayScreenState extends State {
             case MinionAttacked(data): {
                 var minionEntity = id_to_minion_entity(data.minionId);
                 var minionPos = minionEntity.pos.clone();
-                var victimPos = id_to_minion_entity(data.victimId).pos;
+                var victimEntityPos = id_to_minion_entity(data.victimId).pos;
                 Actuate
-                    .tween(minionEntity.pos, 0.2, { x: victimPos.x, y: victimPos.y })
+                    .tween(minionEntity.pos, 0.1, { x: victimEntityPos.x, y: victimEntityPos.y })
                     .onComplete(function() {
                         Actuate
-                            .tween(minionEntity.pos, 0.3, { x: minionPos.x, y: minionPos.y })
+                            .tween(minionEntity.pos, 0.2, { x: minionPos.x, y: minionPos.y })
                             .onComplete(function() {
                                 update_move_indicator(game.minion(data.minionId));
                                 handle_next_event();
@@ -158,25 +158,15 @@ class PlayScreenState extends State {
                 minionMap[minion.id] = minionEntity;
                 minionEntity.events.listen('clicked', minion_clicked);
 
-                new Text({
-                    text: '${minion.name}\n${minion.attack}/${minion.life}',
-                    color: new Color(1, 1, 1, 1),
-                    align: TextAlign.center,
-                    align_vertical: TextAlign.center,
-                    point_size: 20,
-                    scene: scene,
-                    parent: minionEntity
-                });
+                minionEntity.scale.set_xy(0, 0);
+                Actuate
+                    .tween(minionEntity.scale, 0.3, { x: 1.0, y: 1.0 })
+                    .onComplete(function() {
+                        Luxe.camera.shake(1);
 
-                update_move_indicator(minion);
-
-                handle_next_event();
-                // minionEntity.scale.set_xy(0, 0);
-                // Actuate
-                //     .tween(minionEntity.scale, 0.8, { x: 1.0, y: 1.0 })
-                //     .onComplete(function() {
-                //         handle_next_event();
-                //     });
+                        update_move_indicator(minion);
+                        handle_next_event();
+                    });
             }
             case TurnStarted: {
                 trace('Player: ' + game.current_player.name);
@@ -207,6 +197,12 @@ class PlayScreenState extends State {
                 }
                 handle_next_event();
             }
+            case MinionDamaged(data): {
+                var minionEntity = id_to_minion_entity(data.minionId);
+                minionEntity
+                    .damage(data.damage)
+                    .then(handle_next_event);
+            }
             case _: {
                 trace('$event is unhandled');
                 handle_next_event();
@@ -225,14 +221,12 @@ class PlayScreenState extends State {
         for (action in game.actions_for_minion(minion)) {
             switch (action) {
                 case Move(_): {
-                    trace('Minion ${minion.name} can move!');
                     canMove = true;
                     if (!minionEntity.has('MoveIndicator')) {
                         minionEntity.add(new MoveIndicator({ name: 'MoveIndicator' }));
                     }
                 }
                 case Attack(_): {
-                    trace('Minion ${minion.name} can attack!');
                     canAttack = true;
                     if (!minionEntity.has('AttackIndicator')) {
                         minionEntity.add(new AttackIndicator({ name: 'AttackIndicator' }));
@@ -241,8 +235,6 @@ class PlayScreenState extends State {
                 case _: 
             }
         }
-
-        trace('Minion ${minion.name} can move: $canMove & can attack: $canAttack!');
 
         if (!canMove && minionEntity.has('MoveIndicator')) {
             minionEntity.remove('MoveIndicator');

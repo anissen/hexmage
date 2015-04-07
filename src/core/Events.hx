@@ -4,6 +4,7 @@ package core;
 typedef MinionMovedData = { minionId :Int, from :Point, to :Point };
 typedef MinionAttackedData = { minionId :Int, victimId :Int };
 typedef MinionDiedData = { minionId :Int };
+typedef MinionDamagedData = { minionId :Int, damage :Int };
 typedef MinionEnteredData = { minionId :Int };
 typedef PlayerEnteredData = { playerId :Int };
 
@@ -17,6 +18,7 @@ enum Event {
     MinionMoved(data :MinionMovedData);
     MinionDied(data :MinionDiedData);
     MinionAttacked(data :MinionAttackedData);
+    MinionDamaged(data :MinionDamagedData);
 
     PlayerEntered(data :PlayerEnteredData); // also triggered on game start 
     MinionEntered(data :MinionEnteredData); // also triggered on game start (minions should be added *after* initial setup)

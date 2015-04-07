@@ -131,12 +131,6 @@ class Minion {
         return event_func();
     }
 
-    public function damage(amount :Int, source :Minion /* TODO: Should be supertype, Entity */) :Bool {
-        if (!can_be_damaged) return false;
-        life -= amount;
-        return true;
-    }
-
     public function createNew(player :Player) :Minion {
         var minion = clone();
         minion.id = Id++;
