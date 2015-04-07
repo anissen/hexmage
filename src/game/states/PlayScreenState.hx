@@ -58,26 +58,32 @@ class PlayScreenState extends State {
     var game :core.Game;
     var minionMap :Map<Int, MinionEntity>;
     var eventQueue :List<Event>;
+    var idle :Bool;
 
     public function new() {
         super({ name: 'PlayScreenState' });
         scene = new Scene('PlayScreenScene');
         minionMap = new Map();
         eventQueue = new List<Event>();
+        idle = true;
         game = tests.SimpleTestGame.create_game();
         game.listen(function(event) {
             eventQueue.add(event);
-            if (eventQueue.length == 1) handle_next_event();
+            if (idle) handle_next_event();
         });
     }
 
     function handle_next_event() {
-        if (eventQueue.isEmpty()) return;
+        if (eventQueue.isEmpty()) {
+            idle = true;
+            return;
+        }
         handle_event(eventQueue.pop());
     }
 
     function handle_event(event :Event) {
         trace('Handling event $event');
+        idle = false;
         switch (event) {
             case MinionMoved(data): {
                 //trace('Minion with ID ${data.minionId} moved from ${data.from} to ${data.to}!');
@@ -92,6 +98,7 @@ class PlayScreenState extends State {
                 var minionEntity = id_to_minion_entity(data.minionId);
                 var minionPos = minionEntity.pos.clone();
                 var victimPos = id_to_minion_entity(data.victimId).pos;
+                // adsf
                 Actuate
                     .tween(minionEntity.pos, 0.2, { x: victimPos.x, y: victimPos.y })
                     .onComplete(function() {
