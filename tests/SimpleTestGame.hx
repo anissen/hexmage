@@ -159,17 +159,6 @@ class SimpleTestGame {
             // }
         }));
 
-        var ai_player = new Player({
-            name: 'AI Player',
-            // take_turn: AIPlayer.actions_for_turn,
-            deck: new Deck({
-                name: 'AI Test Deck',
-                cards: [
-                    CardLibrary.create('Unicorn')
-                ]
-            })
-        });
-
         /*
             Unicorn should have an URANIUM ARMOR that has
             * Minion is invurnable but loses one life per turn
@@ -188,6 +177,17 @@ class SimpleTestGame {
                 CardLibrary.create('Unicorn')
             ],
             //take_turn: (take_turn_function != null ? take_turn_function : HumanPlayer.actions_for_turn)
+        });
+
+        var ai_player = new Player({
+            name: 'AI Player',
+            // take_turn: AIPlayer.actions_for_turn,
+            deck: new Deck({
+                name: 'AI Test Deck',
+                cards: [
+                    CardLibrary.create('Unicorn')
+                ]
+            })
         });
 
         var tiles = { x: 3, y: 4 };

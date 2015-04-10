@@ -1,11 +1,11 @@
 
 package core;
 
-typedef MinionMovedData = { minionId :Int, from :Point, to :Point };
-typedef MinionAttackedData = { minionId :Int, victimId :Int };
-typedef MinionDiedData = { minionId :Int };
-typedef MinionDamagedData = { minionId :Int, damage :Int };
-typedef MinionEnteredData = { minionId :Int };
+typedef MinionMovedData = { minion :Minion, from :Point, to :Point };
+typedef MinionAttackedData = { minion :Minion, victim :Minion };
+typedef MinionDiedData = { minion :Minion };
+typedef MinionDamagedData = { minion :Minion, damage :Int };
+typedef MinionEnteredData = { minion :Minion };
 typedef PlayerEnteredData = { playerId :Int };
 
 enum Event {

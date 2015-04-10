@@ -132,12 +132,12 @@ class PlayScreenState extends State {
 
     function handle_minion_moved(data :MinionMovedData) :Promise {
         return new Promise(function(resolve, reject) {
-            var minionEntity = id_to_minion_entity(data.minionId);
+            var minionEntity = id_to_minion_entity(data.minion.id);
             var newPos = tile_to_pos(data.to.x, data.to.y);
             Actuate
                 .tween(minionEntity.pos, 0.6, { x: newPos.x, y: newPos.y })
                 .onComplete(function() {
-                    update_move_indicator(game.minion(data.minionId));
+                    update_move_indicator(game.minion(data.minion.id));
                     resolve();
                 });
         });
@@ -145,16 +145,16 @@ class PlayScreenState extends State {
 
     function handle_minion_attacked(data :MinionAttackedData) :Promise {
         return new Promise(function(resolve, reject) {
-            var minionEntity = id_to_minion_entity(data.minionId);
+            var minionEntity = id_to_minion_entity(data.minion.id);
             var minionPos = minionEntity.pos.clone();
-            var victimEntityPos = id_to_minion_entity(data.victimId).pos;
+            var victimEntityPos = id_to_minion_entity(data.victim.id).pos;
             Actuate
                 .tween(minionEntity.pos, 0.1, { x: victimEntityPos.x, y: victimEntityPos.y })
                 .onComplete(function() {
                     Actuate
                         .tween(minionEntity.pos, 0.2, { x: minionPos.x, y: minionPos.y })
                         .onComplete(function() {
-                            update_move_indicator(game.minion(data.minionId));
+                            update_move_indicator(game.minion(data.minion.id));
                             resolve();
                         });
                 });
@@ -163,11 +163,11 @@ class PlayScreenState extends State {
 
     function handle_minion_died(data :MinionDiedData) :Promise {
         return new Promise(function(resolve, reject) {
-            var minionEntity = id_to_minion_entity(data.minionId);
+            var minionEntity = id_to_minion_entity(data.minion.id);
             Actuate
                 .tween(minionEntity.scale, 0.2, { x: 0, y: 0 })
                 .onComplete(function() {
-                    minionMap.remove(data.minionId);
+                    minionMap.remove(data.minion.id);
                     minionEntity.destroy();
                     resolve();
                 });
@@ -176,7 +176,7 @@ class PlayScreenState extends State {
 
     function handle_minion_entered(data :MinionEnteredData) :Promise {
         return new Promise(function(resolve, reject) {
-            var minion = game.minion(data.minionId);
+            var minion = game.minion(data.minion.id);
             var pos = game.minion_pos(minion);
             var minionEntity = new MinionEntity({
                 minion: minion,
@@ -216,6 +216,7 @@ class PlayScreenState extends State {
             trace('Actions for AI:');
             trace(game.actions());
             var actions = tests.SimpleTestGame.AIPlayer.actions_for_turn(game);
+            trace('AI chose $actions');
             game.do_turn(actions);
         }
 
@@ -225,7 +226,7 @@ class PlayScreenState extends State {
     }
 
     function handle_minion_damaged(data :MinionDamagedData) :Promise {
-        var minionEntity = id_to_minion_entity(data.minionId);
+        var minionEntity = id_to_minion_entity(data.minion.id);
         return minionEntity.damage(data.damage);
     }
 
@@ -249,7 +250,7 @@ class PlayScreenState extends State {
 
     function update_move_indicator(minion :core.Minion) {
         if (minion == null) return;
-        if (minion.player.name != 'Human Player') return; // HACK
+        if (minion.playerId != 0) return; // HACK
         //if (minion.player.id != game.current_player.id) return;
 
         var minionEntity = minionMap[minion.id];
@@ -375,7 +376,7 @@ class PlayScreenState extends State {
     }
 
     function minion_clicked(data :ClickedEventData) {
-        if (!game.is_current_player(data.minion.player)) return;
+        if (data.minion.playerId != game.current_player.id) return;
         // trace('${data.minion.name} was clicked!');
         if (!Main.states.enabled('MinionActionsState')) {
             Main.states.enable('MinionActionsState', { game: game, minionId: data.minion.id });

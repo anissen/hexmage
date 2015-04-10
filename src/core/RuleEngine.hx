@@ -15,7 +15,7 @@ class RuleEngine {
         for (card in player.hand) {
             add_actions(card_plays_for_player(board, player, card));
         }
-        for (minion in board.minions_for_player(player)) {
+        for (minion in board.minions_for_player(player.id)) {
             add_actions(available_actions_for_minion(state, minion));
         }
         return actions;
@@ -60,7 +60,7 @@ class RuleEngine {
             if (newx < 0 || newx >= board.board_size().x) return;
             if (newy < 0 || newy >= board.board_size().y) return;
             var other = board.tile({ x: newx, y: newy }).minion;
-            if (other == null || other.player.id == minion.player.id) return;
+            if (other == null || other.playerId == minion.playerId) return;
             attacks.push(Attack({ minionId: minion.id, victimId: other.id }));
         }
         add_attack(x, y - 1);

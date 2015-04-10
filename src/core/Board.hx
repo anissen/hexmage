@@ -80,7 +80,8 @@ class Board {
             return StringTools.rpad(text.substr(0, maxLength), ' ', maxLength);
         }
 
-        var playerColors = [red(), green()];
+        var playerColors = [green(), red()];
+        var playerNames = ['Human Player', 'AI Player']; // HACK
 
         var s = '\n\nBoard:\n|';
         for (tile in board[0]) {
@@ -94,11 +95,11 @@ class Board {
                 for (x in 0 ... row.length) {
                     var tile = row[x];
                     if (tile.minion != null) {
-                        s += playerColors[tile.minion.player.id];
+                        s += playerColors[tile.minion.playerId];
                     }
                     s += switch (i) {
-                        case 0: (tile.minion != null ? fit(tile.minion.player.name).toUpperCase() : fill());
-                        case 1: (tile.minion != null ? fit(tile.minion.name) : darkgrey() + fit(' ($x,$y)'));
+                        case 0: (tile.minion != null ? fit(playerNames[tile.minion.playerId]).toUpperCase() : fill());
+                        case 1: (tile.minion != null ? fit('ID:${tile.minion.id}') : darkgrey() + fit(' ($x,$y)')); //tile.minion.name
                         case 2: (tile.minion != null ? fit('${tile.minion.attack} / ${tile.minion.life}') : fill());
                         case _: '?';
                     };
@@ -125,11 +126,11 @@ class Board {
         return minions;
     }
         
-    public function minions_for_player(player :Player) :Array<Minion> {
+    public function minions_for_player(playerId :Int) :Array<Minion> {
         var minions = [];
         for (row in board) {
             for (tile in row) {
-                if (tile.minion != null && tile.minion.player.id == player.id) {
+                if (tile.minion != null && tile.minion.playerId == playerId) {
                     minions.push(tile.minion);
                 }
             }

@@ -10,14 +10,14 @@ class CardLibrary {
         if (card.name.length == 0)
             throw 'Cannot add card with empty name';
         if (cards.exists(card.name))
-            throw 'Card with ID: ${card.name} already exists!';
+            throw 'Card with name "${card.name}"" already exists!';
         cards.set(card.name, card);
     }
 
-    static public function create(id :String) {
-        var card = cards.get(id);
+    static public function create(name :String) {
+        var card = cards.get(name);
         if (card == null)
-            throw 'Card with ID: $id does not exist!';
+            throw 'Card with name "$name" does not exist!';
         return card.clone();
     }
 }

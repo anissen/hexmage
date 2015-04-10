@@ -9,6 +9,7 @@ import core.Events;
 typedef GameState = {
     var board :Board;
     var players :Players; // includes deck
+    @:optional var minionIdCounter :Int;
     @:optional var current_player_index :Int;
 };
 
@@ -26,6 +27,7 @@ class Game {
 
     public function new(_state :GameState) {
         state = _state;
+        Minion.Id = (_state.minionIdCounter != null ? _state.minionIdCounter : 0);
         if (_state.current_player_index == null) state.current_player_index = 0;
         listeners = new List<EventListenerFunction>();
         //commandQueue = new Commands();
@@ -36,13 +38,13 @@ class Game {
         emit(GameStarted);
         state.current_player_index = 0;
         for (player in players()) emit(PlayerEntered({ playerId: player.id }));
-        for (minion in minions()) emit(MinionEntered({ minionId: minion.id }));
+        for (minion in minions()) emit(MinionEntered({ minion: minion.clone() }));
 
         start_turn();
     }
 
     function reset_minion_stats() :Void {
-        for (minion in state.board.minions_for_player(current_player)) {
+        for (minion in state.board.minions_for_player(current_player.id)) {
             minion.movesLeft = minion.moves;
             minion.attacksLeft = minion.attacks;
         }
@@ -120,7 +122,8 @@ class Game {
         return new Game({
             board: state.board.clone_board(),
             players: state.players,
-            current_player_index: state.current_player_index
+            current_player_index: state.current_player_index,
+            minionIdCounter: Minion.Id
             //rules: state.rules // TODO: Should clone rules list
         });
     }
@@ -143,7 +146,7 @@ class Game {
 
     public function is_game_over() :Bool {
         for (player in state.players) {
-            if (state.board.minions_for_player(player).length == 0)
+            if (state.board.minions_for_player(player.id).length == 0)
                 return true;
         }
         return false;
@@ -187,11 +190,15 @@ class Game {
 
     function move(moveAction :MoveAction) {
         var minion = state.board.minion(moveAction.minionId);
+        if (minion == null) {
+            trace('SUSPECTED ERROR COMING UP! (moveAction: ${moveAction})');
+            state.board.print_big();
+        }
         var currentPos = state.board.minion_pos(minion);
         state.board.tile(currentPos).minion = null;
         state.board.tile(moveAction.pos).minion = minion;
         minion.movesLeft--;
-        emit(MinionMoved({ minionId: moveAction.minionId, from: currentPos, to: moveAction.pos }));
+        emit(MinionMoved({ minion: minion.clone(), from: currentPos, to: moveAction.pos }));
     }
 
     function attack(attackAction :AttackAction) {
@@ -200,23 +207,23 @@ class Game {
 
         minion.attacksLeft--;
         
-        emit(MinionAttacked(attackAction));
+        emit(MinionAttacked({ minion: minion.clone(), victim: victim.clone() }));
 
         victim.life -= minion.attack;
-        emit(MinionDamaged({ minionId: victim.id, damage: minion.attack }));
+        emit(MinionDamaged({ minion: victim.clone(), damage: minion.attack }));
 
         minion.life -= victim.attack;
-        emit(MinionDamaged({ minionId: minion.id, damage: victim.attack }));
+        emit(MinionDamaged({ minion: minion.clone(), damage: victim.attack }));
         
         if (victim.life <= 0) {
-            emit(MinionDied({ minionId: victim.id })); // temp!
+            emit(MinionDied({ minion: victim.clone() })); // temp!
             var pos = minion_pos(victim);
             //if (victim.on_death != null)
             //    handle_commands(victim.on_death());
             state.board.tile(pos).minion = null;
         }
         if (minion.life <= 0) {
-            emit(MinionDied({ minionId: minion.id })); // temp!
+            emit(MinionDied({ minion: minion.clone() })); // temp!
             var pos = minion_pos(minion);
             //handle_commands(minion.handle_event(MinionDied, { minionId: minion.id }));
             state.board.tile(pos).minion = null;
@@ -229,12 +236,13 @@ class Game {
 
         // handle
         switch (playCardAction.card.type) {
-            case MinionCard(minionId): playMinion(minionId, playCardAction.target);
+            case MinionCard(minionName): playMinion(minionName, playCardAction.target);
         }
     }
 
-    function playMinion(minionId :String, target :Point) {
-        var minion = MinionLibrary.create(minionId, current_player);
+    function playMinion(minionName :String, target :Point) {
+        var minion = MinionLibrary.create(minionName, current_player);
+        trace('CREATED MINION with id ${minion.id}');
         state.board.tile(target).minion = minion;
         handle_commands(minion.handle_event(SelfEntered));
     }
@@ -242,7 +250,7 @@ class Game {
     public function has_won(player :Player) :Bool {
         for (other_player in state.players) {
             if (other_player.id == player.id) continue;
-            if (state.board.minions_for_player(other_player).length > 0)
+            if (state.board.minions_for_player(other_player.id).length > 0)
                 return false;
         }
         return true;
@@ -253,7 +261,7 @@ class Game {
     }
 
     public function minions_for_player(player :Player) :Array<Minion> {
-        return state.board.minions_for_player(player);
+        return state.board.minions_for_player(player.id);
     }
 
     public function board_size() :Point {

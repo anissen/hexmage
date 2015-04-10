@@ -71,7 +71,7 @@ typedef Properties = {
 
 typedef MinionOptions = {
     ?id :Int,
-    ?player :Player,
+    ?playerId :Int,
     name :String,
     ?attack :Int,
     ?life :Int,
@@ -88,10 +88,10 @@ typedef MinionOptions = {
 };
 
 class Minion {
-    static var Id :Int = 0;
+    static public var Id :Int = 0;
     public var id :Int;
 
-    public var player :Player;
+    public var playerId :Int;
     public var name :String;
     public var attack :Int;
     public var life :Int;
@@ -110,7 +110,7 @@ class Minion {
     public function new(options :MinionOptions) {
         id               = (options.id != null ? options.id : Id++);
 
-        player           = options.player;
+        playerId         = options.playerId;
         name             = options.name;
         attack           = (options.attack != null ? options.attack : 1);
         life             = (options.life != null ? options.life : 1);
@@ -134,14 +134,14 @@ class Minion {
     public function createNew(player :Player) :Minion {
         var minion = clone();
         minion.id = Id++;
-        minion.player = player;
+        minion.playerId = player.id;
         return minion;
     }
 
     public function clone() :Minion {
         return new Minion({
             id: this.id,
-            player: this.player, // TODO: Is clone() necessesary here?
+            playerId: this.playerId,
             name: this.name,
             attack: this.attack,
             life: this.life,
@@ -156,9 +156,9 @@ class Minion {
         });
     }
 
-    public function equals(other :Minion) :Bool {
-        return (other != null && other.id == id);
-    }
+    // public function equals(other :Minion) :Bool {
+    //     return (other != null && other.id == id);
+    // }
 
     // public function toString() :String {
     //     return '[$name ($attack/$life, $attacksLeft/$attacks attacks and $movesLeft/$moves moves) owner: ${player.name}]';

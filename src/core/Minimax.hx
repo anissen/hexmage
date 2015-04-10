@@ -71,6 +71,7 @@ class Minimax {
         // TODO: Actions should be tested in a tree to avoid many similar cases, e.g.
         // [[Move 1 to X, Move 2 to Y], [Move 1 to X, Move 2 to Z], ...]
         for (actions in set_of_all_actions) {
+            trace('Testing $actions');
             var newGame = game.clone();
             newGame.do_turn(actions); // TODO: Make this return a clone instead?
 

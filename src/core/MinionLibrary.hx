@@ -10,14 +10,14 @@ class MinionLibrary {
         if (minion.name.length == 0)
             throw 'Cannot add minion with empty name';
         if (minions.exists(minion.name))
-            throw 'Minion with ID: ${minion.name} already exists!';
+            throw 'Minion with name "${minion.name}"" already exists!';
         minions.set(minion.name, minion);
     }
 
-    static public function create(id :String, player :Player) {
-        var minion = minions.get(id);
+    static public function create(name :String, player :Player) {
+        var minion = minions.get(name);
         if (minion == null)
-            throw 'Minion with ID: "$id" does not exist!';
+            throw 'Minion with name "$name" does not exist!';
         return minion.createNew(player);
     }
 }

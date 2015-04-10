@@ -30,7 +30,7 @@ class MinionEntity extends Sprite {
     public function new(options :MinionOptions) {
         super({
             pos: options.pos,
-            color: new ColorHSV(100 * options.minion.player.id, 0.8, 0.8),
+            color: new ColorHSV(100 * options.minion.playerId % 100, 0.8, 0.8),
             geometry: Luxe.draw.circle({ r: 60 }),
             scene: options.scene
         });
