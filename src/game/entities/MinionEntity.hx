@@ -2,6 +2,7 @@
 package game.entities;
 
 import luxe.Text;
+import luxe.tween.Actuate;
 import luxe.Vector;
 import luxe.Sprite;
 import luxe.Scene;
@@ -54,7 +55,7 @@ class MinionEntity extends Sprite {
         Luxe.camera.shake(amount);
         text.text = '${minion.name}\n${minion.attack}/${minion.life}';
         return new Promise(function(resolve, reject) {
-            luxe.tween.Actuate
+            Actuate
                 .tween(this.color, 0.6, { s: 0 })
                 .reverse()
                 .onComplete(resolve);

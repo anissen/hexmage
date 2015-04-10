@@ -149,6 +149,7 @@ class Board {
     }
 
     public function minion_pos(minion :Minion) :Point {
+        if (minion == null) throw 'Minion is null';
         for (y in 0 ... board.length) {
             var row = board[y];
             for (x in 0 ... row.length) {

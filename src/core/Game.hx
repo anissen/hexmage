@@ -153,6 +153,7 @@ class Game {
         emit(TurnStarted);
         reset_minion_stats();
         draw_cards();
+        emit(PlayersTurn);
     }
 
     public function do_action(action :Action) :Void {

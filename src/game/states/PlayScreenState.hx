@@ -20,6 +20,7 @@ import core.Events;
 import game.entities.Button;
 import game.entities.MinionEntity;
 import game.components.OnClick;
+import snow.api.Promise;
 
 class ActionIndicator extends Component {
     public var pulse_speed :Float = 0.8;
@@ -110,104 +111,140 @@ class PlayScreenState extends State {
     function handle_event(event :Event) {
         trace('Handling event $event');
         idle = false;
-        switch (event) {
-            case MinionMoved(data): {
-                //trace('Minion with ID ${data.minionId} moved from ${data.from} to ${data.to}!');
-                var minionEntity = id_to_minion_entity(data.minionId);
-                var newPos = tile_to_pos(data.to.x, data.to.y);
-                Actuate
-                    .tween(minionEntity.pos, 0.6, { x: newPos.x, y: newPos.y })
-                    .onComplete(function() {
-                        update_move_indicator(game.minion(data.minionId));
-                        handle_next_event();
-                    });
-            }
-            case MinionAttacked(data): {
-                var minionEntity = id_to_minion_entity(data.minionId);
-                var minionPos = minionEntity.pos.clone();
-                var victimEntityPos = id_to_minion_entity(data.victimId).pos;
-                Actuate
-                    .tween(minionEntity.pos, 0.1, { x: victimEntityPos.x, y: victimEntityPos.y })
-                    .onComplete(function() {
-                        Actuate
-                            .tween(minionEntity.pos, 0.2, { x: minionPos.x, y: minionPos.y })
-                            .onComplete(function() {
-                                update_move_indicator(game.minion(data.minionId));
-                                handle_next_event();
-                            });
-                    });
-            }
-            case MinionDied(data): {
-                var minionEntity = id_to_minion_entity(data.minionId);
-                Actuate
-                    .tween(minionEntity.scale, 0.2, { x: 0, y: 0 })
-                    .onComplete(function() {
-                        minionMap.remove(data.minionId);
-                        minionEntity.destroy();
-                        handle_next_event();
-                    });
-            }
-            case MinionEntered(data): {
-                var minion = game.minion(data.minionId);
-                var pos = game.minion_pos(minion);
-                var minionEntity = new MinionEntity({
-                    minion: minion,
-                    pos: tile_to_pos(pos.x, pos.y),
-                    scene: scene
-                });
-                minionMap[minion.id] = minionEntity;
-                minionEntity.events.listen('clicked', minion_clicked);
-
-                minionEntity.scale.set_xy(0, 0);
-                Actuate
-                    .tween(minionEntity.scale, 0.3, { x: 1.0, y: 1.0 })
-                    .onComplete(function() {
-                        Luxe.camera.shake(1);
-
-                        update_move_indicator(minion);
-                        handle_next_event();
-                    });
-            }
-            case TurnStarted: {
-                trace('Player: ' + game.current_player.name);
-                if (game.current_player.name == 'AI Player') { // HACK HACK HACK
-                    trace('Actions for AI:');
-                    trace(game.actions());
-                    var actions = tests.SimpleTestGame.AIPlayer.actions_for_turn(game);
-                    game.do_turn(actions);
-                } else {
-                    for (minion in game.minions_for_player(game.current_player)) {
-                        update_move_indicator(minion);
-                    }
-                }
-                handle_next_event();
-            }
-            case TurnEnded: {
-                for (minion in game.minions_for_player(game.current_player)) {
-                    var minionEntity = minionMap[minion.id];
-                    if (minionEntity.has('MoveIndicator')) {
-                        minionEntity.remove('MoveIndicator');
-                    }
-                    if (minionEntity.has('AttackIndicator')) {
-                        minionEntity.remove('AttackIndicator');
-                    }
-                    if (minionEntity.has('ActionIndicator')) {
-                        minionEntity.remove('ActionIndicator');
-                    }
-                }
-                handle_next_event();
-            }
-            case MinionDamaged(data): {
-                var minionEntity = id_to_minion_entity(data.minionId);
-                minionEntity
-                    .damage(data.damage)
-                    .then(handle_next_event);
-            }
+        var handler = switch (event) {
+            case TurnStarted: handle_turn_started();
+            case PlayersTurn: handle_players_turn();
+            case TurnEnded: handle_turn_ended();
+            case MinionMoved(data): handle_minion_moved(data);
+            case MinionAttacked(data): handle_minion_attacked(data);
+            case MinionDied(data): handle_minion_died(data);
+            case MinionEntered(data): handle_minion_entered(data);
+            case MinionDamaged(data): handle_minion_damaged(data);
             case _: {
                 trace('$event is unhandled');
-                handle_next_event();
+                new Promise(function(resolve, reject) {
+                    resolve();
+                });
             }
         }
+        handler.then(handle_next_event);
+    }
+
+    function handle_minion_moved(data :MinionMovedData) :Promise {
+        return new Promise(function(resolve, reject) {
+            var minionEntity = id_to_minion_entity(data.minionId);
+            var newPos = tile_to_pos(data.to.x, data.to.y);
+            Actuate
+                .tween(minionEntity.pos, 0.6, { x: newPos.x, y: newPos.y })
+                .onComplete(function() {
+                    update_move_indicator(game.minion(data.minionId));
+                    resolve();
+                });
+        });
+    }
+
+    function handle_minion_attacked(data :MinionAttackedData) :Promise {
+        return new Promise(function(resolve, reject) {
+            var minionEntity = id_to_minion_entity(data.minionId);
+            var minionPos = minionEntity.pos.clone();
+            var victimEntityPos = id_to_minion_entity(data.victimId).pos;
+            Actuate
+                .tween(minionEntity.pos, 0.1, { x: victimEntityPos.x, y: victimEntityPos.y })
+                .onComplete(function() {
+                    Actuate
+                        .tween(minionEntity.pos, 0.2, { x: minionPos.x, y: minionPos.y })
+                        .onComplete(function() {
+                            update_move_indicator(game.minion(data.minionId));
+                            resolve();
+                        });
+                });
+        });
+    }
+
+    function handle_minion_died(data :MinionDiedData) :Promise {
+        return new Promise(function(resolve, reject) {
+            var minionEntity = id_to_minion_entity(data.minionId);
+            Actuate
+                .tween(minionEntity.scale, 0.2, { x: 0, y: 0 })
+                .onComplete(function() {
+                    minionMap.remove(data.minionId);
+                    minionEntity.destroy();
+                    resolve();
+                });
+        });
+    }
+
+    function handle_minion_entered(data :MinionEnteredData) :Promise {
+        return new Promise(function(resolve, reject) {
+            var minion = game.minion(data.minionId);
+            var pos = game.minion_pos(minion);
+            var minionEntity = new MinionEntity({
+                minion: minion,
+                pos: tile_to_pos(pos.x, pos.y),
+                scene: scene
+            });
+            minionMap[minion.id] = minionEntity;
+            minionEntity.events.listen('clicked', minion_clicked);
+
+            minionEntity.scale.set_xy(0, 0);
+            Actuate
+                .tween(minionEntity.scale, 0.3, { x: 1.0, y: 1.0 })
+                .onComplete(function() {
+                    Luxe.camera.shake(1);
+
+                    update_move_indicator(minion);
+                    resolve();
+                });
+        });
+    }
+
+    function handle_turn_started() :Promise {
+        trace('Player: ' + game.current_player.name);
+        if (game.current_player.name == 'Human Player') { // HACK HACK HACK
+            for (minion in game.minions_for_player(game.current_player)) {
+                update_move_indicator(minion);
+            }
+        }
+
+        return new Promise(function(resolve, reject) {
+            resolve();
+        });
+    }
+
+    function handle_players_turn() :Promise {
+        if (game.current_player.name == 'AI Player') { // HACK HACK HACK
+            trace('Actions for AI:');
+            trace(game.actions());
+            var actions = tests.SimpleTestGame.AIPlayer.actions_for_turn(game);
+            game.do_turn(actions);
+        }
+
+        return new Promise(function(resolve, reject) {
+            resolve();
+        });
+    }
+
+    function handle_minion_damaged(data :MinionDamagedData) :Promise {
+        var minionEntity = id_to_minion_entity(data.minionId);
+        return minionEntity.damage(data.damage);
+    }
+
+    function handle_turn_ended() :Promise {
+        return new Promise(function(resolve, reject) {
+            for (minion in game.minions_for_player(game.current_player)) {
+                var minionEntity = minionMap[minion.id];
+                if (minionEntity.has('MoveIndicator')) {
+                    minionEntity.remove('MoveIndicator');
+                }
+                if (minionEntity.has('AttackIndicator')) {
+                    minionEntity.remove('AttackIndicator');
+                }
+                if (minionEntity.has('ActionIndicator')) {
+                    minionEntity.remove('ActionIndicator');
+                }
+            }
+            resolve();
+        });
     }
 
     function update_move_indicator(minion :core.Minion) {

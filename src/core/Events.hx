@@ -19,6 +19,7 @@ enum Event {
     MinionDied(data :MinionDiedData);
     MinionAttacked(data :MinionAttackedData);
     MinionDamaged(data :MinionDamagedData);
+    PlayersTurn;
 
     PlayerEntered(data :PlayerEnteredData); // also triggered on game start 
     MinionEntered(data :MinionEnteredData); // also triggered on game start (minions should be added *after* initial setup)
