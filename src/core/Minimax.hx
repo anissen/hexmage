@@ -66,27 +66,39 @@ class Minimax {
         };
 
         var set_of_all_actions = game.nested_actions(max_action_depth);
-        // trace('AI has ${set_of_all_actions.length} sets of actions to choose between');
+        trace('AI has ${set_of_all_actions.length} sets of actions to choose between');
+
 
         // TODO: Actions should be tested in a tree to avoid many similar cases, e.g.
         // [[Move 1 to X, Move 2 to Y], [Move 1 to X, Move 2 to Z], ...]
-        for (actions in set_of_all_actions) {
+        function try_actions(game :Game, actionTree :ActionTree, actions :Actions) :BestActionsResult {
+            if (actionTree.next == null) {
+                return { score: score_function(player, game) - turn, actions: [] };
+            }
+
             trace('Testing $actions');
             var newGame = game.clone();
-            newGame.do_turn(actions); // TODO: Make this return a clone instead?
+            newGame.do_action(actionTree.current); // TODO: Make this return a clone instead?
 
-            var result = minimax(player, newGame, turn + 1);
-            if (game.is_current_player(player)) {
-                if (result.score > bestResult.score) {
-                    bestResult.score = result.score;
-                    bestResult.actions = actions;
-                }
-            } else {
-                if (result.score < bestResult.score) {
-                    bestResult.score = result.score;
-                    bestResult.actions = actions;
+            for (action in actionTree.next) {
+                var result = try_actions(newGame, action, actions.concat([actionTree.current]));
+                if (game.is_current_player(player)) {
+                    if (result.score > bestResult.score) {
+                        bestResult.score = result.score;
+                        bestResult.actions = actions;
+                    }
+                } else {
+                    if (result.score < bestResult.score) {
+                        bestResult.score = result.score;
+                        bestResult.actions = actions;
+                    }
                 }
             }
+            return bestResult;
+        }
+
+        for (actions in set_of_all_actions) {
+            try_actions(game, actions, []);
         }
 
         return bestResult;

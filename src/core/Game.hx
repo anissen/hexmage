@@ -15,6 +15,8 @@ typedef GameState = {
 
 typedef EventListenerFunction = Event -> Void;
 
+typedef ActionTree = { current :Action, ?next :Array<ActionTree> };
+
 class Game {
     var state :GameState;
     static public var Id :Int = 0;
@@ -93,28 +95,19 @@ class Game {
         return RuleEngine.available_actions(state, current_player);
     }
 
-    function determine_available_sets_of_actions(actionDepthRemaining :Int) :Array<Array<Action>> {
+    public function nested_actions(actionDepthRemaining :Int) :Array<ActionTree> {
         if (actionDepthRemaining <= 0)
-            return [];
+            return [{ current: NoAction }];
 
-        var actions :Array<Array<Action>> = [];
+        var actions :Array<ActionTree> = [];
         for (action in this.actions()) {
             var newGame = this.clone();
             newGame.do_action(action);
 
-            var result = newGame.determine_available_sets_of_actions(actionDepthRemaining - 1);
-            actions.push([action]);
-            for (resultActions in result) {
-                actions.push([action].concat(resultActions));
-            }
+            var result = newGame.nested_actions(actionDepthRemaining - 1);
+            actions.push({ current: action, next: result });
         }
 
-        return actions;
-    }
-
-    public function nested_actions(actionDepthRemaining :Int) :Array<Array<Action>> {
-        var actions = determine_available_sets_of_actions(actionDepthRemaining);
-        actions.push([NoAction]); // Include the no-action actions
         return actions;
     }
 
