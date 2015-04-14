@@ -24,20 +24,25 @@ class HandState extends State {
 
     function add_card(card :core.Card) {
         var cardSize = 100;
-        var cardSprite = new Visual({
+        var cardSprite = new Sprite({
             color: new Color(0.0, 0.2, 0.3),
             size: new Vector(cardSize, cardSize),
-            pos: new Vector(Luxe.screen.w * Math.random(), Luxe.screen.h - cardSize - 20),
+            pos: new Vector(Luxe.screen.w * Math.random(), Luxe.screen.h - (cardSize / 2) - 10),
+            // geometry: Luxe.draw.box({
+            //     w: cardSize,
+            //     h: cardSize
+            // }),
             scene: scene,
             depth: 10
         });
         new Text({
             text: card.name,
+            pos: new Vector(cardSize / 2, cardSize / 2),
             color: new Color(1, 1, 1, 1),
-            // align: TextAlign.center,
-            // align_vertical: TextAlign.center,
+            align: TextAlign.center,
+            align_vertical: TextAlign.center,
             point_size: 20,
-            scene: scene,
+            // scene: scene,
             parent: cardSprite,
             depth: 15
         });
@@ -57,11 +62,13 @@ class HandState extends State {
             pos: new Vector(0, Luxe.screen.h - bgHeight),
             centered: false,
             scene: scene,
-            depth: 5
+            depth: 10
         });
 
         Luxe.events.listen('card_drawn', function(data :core.Events.CardDrawnData) {
-            add_card(data.card);
+            if (data.player.name == 'Human Player') {
+                add_card(data.card);
+            }
         });
     }
 

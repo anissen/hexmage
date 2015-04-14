@@ -18,7 +18,7 @@ enum Event {
     TurnEnded(data :TurnEndedData);
     GameOver;
     CardDrawn(data :CardDrawnData);
-    SelfEntered;
+    // SelfEntered;
     MinionMoved(data :MinionMovedData);
     MinionDied(data :MinionDiedData);
     MinionAttacked(data :MinionAttackedData);

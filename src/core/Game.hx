@@ -76,6 +76,7 @@ class Game {
         */
     }
 
+    /*
     function handle_commands(commands :Commands) :Void {
         for (command in commands) {
             switch (command) {
@@ -86,6 +87,7 @@ class Game {
             }
         }
     }
+    */
 
     function emit(event :Event) :Void {
         for (listener in listeners) {
