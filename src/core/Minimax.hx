@@ -76,7 +76,7 @@ class Minimax {
                 return { score: score_function(player, game) - turn, actions: [] };
             }
 
-            trace('Testing $actions');
+            trace('Testing ${actionTree.current}');
             var newGame = game.clone();
             newGame.do_action(actionTree.current); // TODO: Make this return a clone instead?
 
