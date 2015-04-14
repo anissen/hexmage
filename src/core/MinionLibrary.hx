@@ -6,7 +6,7 @@ import core.Minion;
 class MinionLibrary {
     static var minions = new Map<String, Minion>();
 
-    static public function add(minion :Minion) {
+    static public function Add(minion :Minion) {
         if (minion.name.length == 0)
             throw 'Cannot add minion with empty name';
         if (minions.exists(minion.name))
@@ -14,10 +14,21 @@ class MinionLibrary {
         minions.set(minion.name, minion);
     }
 
-    static public function create(name :String, player :Player) {
-        var minion = minions.get(name);
-        if (minion == null)
+
+    public var nextMinionId(default, null) :Int;
+
+    public function new(nextId :Int) {
+        nextMinionId = nextId;
+    }
+
+    public function create(name :String, player :Player) {
+        var minionPrototype = minions.get(name);
+        if (minionPrototype == null)
             throw 'Minion with name "$name" does not exist!';
-        return minion.createNew(player);
+
+        var minion = minionPrototype.clone();
+        minion.id = nextMinionId++;
+        minion.playerId = player.id;
+        return minion;
     }
 }

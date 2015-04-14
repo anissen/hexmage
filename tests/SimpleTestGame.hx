@@ -111,31 +111,31 @@ class SimpleTestGame {
     static public function create_game(/*?take_turn_function :Game->Array<Action>*/) :Game {
         CardLibrary.add(new Unicorn());
 
-        MinionLibrary.add(new Minion({
+        MinionLibrary.Add(new Minion({
             name: 'Goblin',
             attack: 1,
             life: 2
         }));
 
-        MinionLibrary.add(new Minion({
+        MinionLibrary.Add(new Minion({
             name: 'Troll',
             attack: 4,
             life: 1
         }));
 
-        MinionLibrary.add(new Minion({
+        MinionLibrary.Add(new Minion({
             name: 'Teddybear',
             attack: 2,
             life: 2
         }));
 
-        MinionLibrary.add(new Minion({
+        MinionLibrary.Add(new Minion({
             name: 'Bunny',
             attack: 0,
             life: 1
         }));
 
-        MinionLibrary.add(new Minion({
+        MinionLibrary.Add(new Minion({
             name: 'Unicorn',
             attack: 1,
             life: 2,
@@ -190,18 +190,21 @@ class SimpleTestGame {
             })
         });
 
+        var minionLibrary = new MinionLibrary(0);
+
         var tiles = { x: 3, y: 4 };
         function create_tile(x :Int, y :Int) :Tile {
-            if (x == 1 && y == 0) return { minion: MinionLibrary.create('Troll', ai_player) };
-            if (x == 1 && y == 1) return { minion: MinionLibrary.create('Goblin', ai_player) };
-            if (x == 1 && y == 3) return { minion: MinionLibrary.create('Teddybear', human_player) };
-            if (x == 2 && y == 3) return { minion: MinionLibrary.create('Bunny', human_player) };
+            if (x == 1 && y == 0) return { minion: minionLibrary.create('Troll', ai_player) };
+            if (x == 1 && y == 1) return { minion: minionLibrary.create('Goblin', ai_player) };
+            if (x == 1 && y == 3) return { minion: minionLibrary.create('Teddybear', human_player) };
+            if (x == 2 && y == 3) return { minion: minionLibrary.create('Bunny', human_player) };
             return {};
         }
 
         var gameState = {
             board: new Board(tiles.x, tiles.y, create_tile), // TODO: Make from a core.Map
-            players: [human_player, ai_player]
+            players: [human_player, ai_player],
+            minionIdCounter: minionLibrary.nextMinionId
             //rules: new Rules()
         };
         return new Game(gameState);

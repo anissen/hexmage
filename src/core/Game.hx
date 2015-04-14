@@ -20,6 +20,7 @@ typedef ActionTree = { current :Action, ?next :Array<ActionTree> };
 class Game {
     var state :GameState;
     static public var Id :Int = 0;
+    var minionLibrary :MinionLibrary;
     // @:isVar public var id(default, null) :Int;
 
     //var commandQueue :Commands;
@@ -29,7 +30,8 @@ class Game {
 
     public function new(_state :GameState) {
         state = _state;
-        Minion.Id = (_state.minionIdCounter != null ? _state.minionIdCounter : 0);
+        var nextMinionId = (_state.minionIdCounter != null ? _state.minionIdCounter : 0);
+        minionLibrary = new MinionLibrary(nextMinionId);
         if (_state.current_player_index == null) state.current_player_index = 0;
         listeners = new List<EventListenerFunction>();
         //commandQueue = new Commands();
@@ -104,6 +106,8 @@ class Game {
             var newGame = this.clone();
             newGame.do_action(action);
 
+            // trace(action);
+
             var result = newGame.nested_actions(actionDepthRemaining - 1);
             actions.push({ current: action, next: result });
         }
@@ -116,7 +120,7 @@ class Game {
             board: state.board.clone_board(),
             players: state.players,
             current_player_index: state.current_player_index,
-            minionIdCounter: Minion.Id
+            minionIdCounter: minionLibrary.nextMinionId
             //rules: state.rules // TODO: Should clone rules list
         });
     }
@@ -234,10 +238,12 @@ class Game {
     }
 
     function playMinion(minionName :String, target :Point) {
-        var minion = MinionLibrary.create(minionName, current_player);
+        var minion = minionLibrary.create(minionName, current_player);
         trace('CREATED MINION with id ${minion.id}');
         state.board.tile(target).minion = minion;
-        handle_commands(minion.handle_event(SelfEntered));
+        // handle_commands(minion.handle_event(SelfEntered));
+
+        emit(MinionEntered({ minion: minion.clone() }));
     }
 
     public function has_won(player :Player) :Bool {

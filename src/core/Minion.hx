@@ -75,7 +75,6 @@ typedef MinionOptions = {
     name :String,
     ?attack :Int,
     ?life :Int,
-    //?rules :Rules,
     ?moves: Int,
     ?movesLeft :Int,
     ?attacks: Int,
@@ -83,19 +82,16 @@ typedef MinionOptions = {
     ?can_be_damaged :Bool,
     ?can_move :Bool,
     ?can_attack :Bool,
-    //?on_death :Void -> Commands,
     ?on_event :Map<Event, Void -> Commands>
 };
 
 class Minion {
-    static public var Id :Int = 0;
     public var id :Int;
 
     public var playerId :Int;
     public var name :String;
     public var attack :Int;
     public var life :Int;
-    //public var rules :Rules;
     public var moves: Int;
     public var movesLeft :Int;
     public var attacks: Int;
@@ -103,13 +99,11 @@ class Minion {
     public var can_be_damaged :Bool;
     public var can_move :Bool;
     public var can_attack :Bool;
-    //public var on_death :Void -> Commands;
 
     public var on_event :Map<Event, Void -> Commands>;
 
     public function new(options :MinionOptions) {
-        id               = (options.id != null ? options.id : Id++);
-
+        id               = options.id;
         playerId         = options.playerId;
         name             = options.name;
         attack           = (options.attack != null ? options.attack : 1);
@@ -131,13 +125,6 @@ class Minion {
         return event_func();
     }
 
-    public function createNew(player :Player) :Minion {
-        var minion = clone();
-        minion.id = Id++;
-        minion.playerId = player.id;
-        return minion;
-    }
-
     public function clone() :Minion {
         return new Minion({
             id: this.id,
@@ -155,12 +142,4 @@ class Minion {
             on_event: this.on_event
         });
     }
-
-    // public function equals(other :Minion) :Bool {
-    //     return (other != null && other.id == id);
-    // }
-
-    // public function toString() :String {
-    //     return '[$name ($attack/$life, $attacksLeft/$attacks attacks and $movesLeft/$moves moves) owner: ${player.name}]';
-    // }
 }
