@@ -98,6 +98,7 @@ class PlayScreenState extends State {
     public function new() {
         super({ name: 'PlayScreenState' });
         scene = new Scene('PlayScreenScene');
+        Main.states.enable('HandState');
     }
 
     function handle_next_event() {
@@ -120,6 +121,7 @@ class PlayScreenState extends State {
             case MinionDied(data): handle_minion_died(data);
             case MinionEntered(data): handle_minion_entered(data);
             case MinionDamaged(data): handle_minion_damaged(data);
+            case CardDrawn(data): handle_card_drawn(data);
             case _: {
                 trace('$event is unhandled');
                 new Promise(function(resolve, reject) {
@@ -201,6 +203,10 @@ class PlayScreenState extends State {
     function handle_turn_started(data :TurnStartedData) :Promise {
         trace('Player: ' + data.player.name);
         if (data.player.name == 'Human Player') { // HACK HACK HACK
+            // if (!Main.states.enabled('HandState')) {
+            //     Main.states.enable('HandState');
+            // }
+
             for (minion in game.minions_for_player(game.current_player)) {
                 update_move_indicator(minion);
             }
@@ -232,6 +238,12 @@ class PlayScreenState extends State {
 
     function handle_turn_ended(data :TurnEndedData) :Promise {
         return new Promise(function(resolve, reject) {
+            if (data.player.name == 'Human Player') {
+                // if (Main.states.enabled('HandState')) {
+                //     Main.states.disable('HandState');
+                // }
+            }
+
             for (minion in game.minions_for_player(data.player)) {
                 var minionEntity = minionMap[minion.id];
                 if (minionEntity.has('MoveIndicator')) {
@@ -244,6 +256,13 @@ class PlayScreenState extends State {
                     minionEntity.remove('ActionIndicator');
                 }
             }
+            resolve();
+        });
+    }
+
+    function handle_card_drawn(data :CardDrawnData) :Promise {
+        return new Promise(function(resolve, reject) {
+            Luxe.events.fire('card_drawn', data);
             resolve();
         });
     }
@@ -391,7 +410,7 @@ class PlayScreenState extends State {
 
     override function onkeyup(e :KeyEvent) {
         switch (e.keycode) {
-            case Key.enter: { trace('End Turn triggered!'); game.end_turn(); }
+            case Key.enter: trace('End Turn triggered!'); game.end_turn();
             case Key.key_r: reset();
             case Key.escape: Luxe.shutdown(); //Main.switch_to_state('TitleScreenState');
         }
