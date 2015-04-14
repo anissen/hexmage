@@ -391,6 +391,7 @@ class PlayScreenState extends State {
 
     override function onkeyup(e :KeyEvent) {
         switch (e.keycode) {
+            case Key.enter: { trace('End Turn triggered!'); game.end_turn(); }
             case Key.key_r: reset();
             case Key.escape: Luxe.shutdown(); //Main.switch_to_state('TitleScreenState');
         }
