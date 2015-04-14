@@ -41,7 +41,7 @@ class Game {
     public function start() {
         emit(GameStarted);
         state.current_player_index = 0;
-        for (player in players()) emit(PlayerEntered({ playerId: player.id }));
+        for (player in players()) emit(PlayerEntered({ player: player }));
         for (minion in minions()) emit(MinionEntered({ minion: minion.clone() }));
 
         start_turn();
@@ -150,10 +150,10 @@ class Game {
     }
 
     function start_turn() :Void {
-        emit(TurnStarted);
+        emit(TurnStarted({ player: current_player }));
         reset_minion_stats();
         draw_cards();
-        emit(PlayersTurn);
+        emit(PlayersTurn({ player: current_player }));
     }
 
     public function do_action(action :Action) :Void {
@@ -179,7 +179,7 @@ class Game {
     }
 
     public function end_turn() :Void {
-        emit(TurnEnded);
+        emit(TurnEnded({ player: current_player }));
         state.current_player_index = (state.current_player_index + 1) % state.players.length;
 
         start_turn();
@@ -187,10 +187,6 @@ class Game {
 
     function move(moveAction :MoveAction) {
         var minion = state.board.minion(moveAction.minionId);
-        if (minion == null) {
-            trace('SUSPECTED ERROR COMING UP! (moveAction: ${moveAction})');
-            state.board.print_big();
-        }
         var currentPos = state.board.minion_pos(minion);
         state.board.tile(currentPos).minion = null;
         state.board.tile(moveAction.pos).minion = minion;

@@ -6,12 +6,15 @@ typedef MinionAttackedData = { minion :Minion, victim :Minion };
 typedef MinionDiedData = { minion :Minion };
 typedef MinionDamagedData = { minion :Minion, damage :Int };
 typedef MinionEnteredData = { minion :Minion };
-typedef PlayerEnteredData = { playerId :Int };
+typedef PlayerEnteredData = { player :Player };
+typedef TurnStartedData = { player :Player };
+typedef TurnEndedData = { player :Player };
+typedef PlayersTurnData = { player :Player };
 
 enum Event {
     GameStarted;
-    TurnStarted;
-    TurnEnded;
+    TurnStarted(data :TurnStartedData);
+    TurnEnded(data :TurnEndedData);
     GameOver;
     CardDrawn;
     SelfEntered;
@@ -19,7 +22,7 @@ enum Event {
     MinionDied(data :MinionDiedData);
     MinionAttacked(data :MinionAttackedData);
     MinionDamaged(data :MinionDamagedData);
-    PlayersTurn;
+    PlayersTurn(data :PlayersTurnData);
 
     PlayerEntered(data :PlayerEnteredData); // also triggered on game start 
     MinionEntered(data :MinionEnteredData); // also triggered on game start (minions should be added *after* initial setup)

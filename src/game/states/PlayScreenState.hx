@@ -112,9 +112,9 @@ class PlayScreenState extends State {
         trace('Handling event $event');
         idle = false;
         var handler = switch (event) {
-            case TurnStarted: handle_turn_started();
-            case PlayersTurn: handle_players_turn();
-            case TurnEnded: handle_turn_ended();
+            case TurnStarted(data): handle_turn_started(data);
+            case PlayersTurn(data): handle_players_turn(data);
+            case TurnEnded(data): handle_turn_ended(data);
             case MinionMoved(data): handle_minion_moved(data);
             case MinionAttacked(data): handle_minion_attacked(data);
             case MinionDied(data): handle_minion_died(data);
@@ -198,9 +198,9 @@ class PlayScreenState extends State {
         });
     }
 
-    function handle_turn_started() :Promise {
-        trace('Player: ' + game.current_player.name);
-        if (game.current_player.name == 'Human Player') { // HACK HACK HACK
+    function handle_turn_started(data :TurnStartedData) :Promise {
+        trace('Player: ' + data.player.name);
+        if (data.player.name == 'Human Player') { // HACK HACK HACK
             for (minion in game.minions_for_player(game.current_player)) {
                 update_move_indicator(minion);
             }
@@ -211,8 +211,8 @@ class PlayScreenState extends State {
         });
     }
 
-    function handle_players_turn() :Promise {
-        if (game.current_player.name == 'AI Player') { // HACK HACK HACK
+    function handle_players_turn(data :PlayersTurnData) :Promise {
+        if (data.player.name == 'AI Player') { // HACK HACK HACK
             trace('Actions for AI:');
             trace(game.actions());
             var actions = tests.SimpleTestGame.AIPlayer.actions_for_turn(game);
@@ -230,9 +230,9 @@ class PlayScreenState extends State {
         return minionEntity.damage(data.damage);
     }
 
-    function handle_turn_ended() :Promise {
+    function handle_turn_ended(data :TurnEndedData) :Promise {
         return new Promise(function(resolve, reject) {
-            for (minion in game.minions_for_player(game.current_player)) {
+            for (minion in game.minions_for_player(data.player)) {
                 var minionEntity = minionMap[minion.id];
                 if (minionEntity.has('MoveIndicator')) {
                     minionEntity.remove('MoveIndicator');
