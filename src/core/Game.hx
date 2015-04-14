@@ -64,12 +64,16 @@ class Game {
         }
         player.hand.push(card);
 
+        emit(CardDrawn({ card: card, player: player }));
+
+        /*
         // EMIT CardDrawn:
         for (minion in state.board.minions()) {
             // commandQueue
             //commandQueue = commandQueue.concat(minion.handle_event(CardDrawn));
             handle_commands(minion.handle_event(CardDrawn));
         }
+        */
     }
 
     function handle_commands(commands :Commands) :Void {
