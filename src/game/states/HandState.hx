@@ -1,6 +1,7 @@
 
 package game.states;
 
+import core.Card;
 import luxe.Input.MouseEvent;
 import luxe.Scene;
 import luxe.States;
@@ -9,6 +10,8 @@ import luxe.Text;
 import luxe.tween.Actuate;
 import luxe.Vector;
 import luxe.Color;
+import snow.api.Promise;
+
 
 import core.Game;
 import game.entities.CardEntity;
@@ -30,7 +33,7 @@ class HandState extends State {
         cards_y = Luxe.screen.h - 20;
     }
 
-    function add_card(card :core.Card) {
+    public function add_card(card :Card) :Promise {
         var cardEntity = new CardEntity({ 
             pos: new Vector(Luxe.screen.w * Math.random(), cards_y),
             card: card,
@@ -38,39 +41,46 @@ class HandState extends State {
             depth: card_depth++
         });
         cards.push(cardEntity);
-        position_cards();
+        return position_cards();
     }
 
-    function play_card(card :core.Card) {
-        for (cardEntity in cards) {
-            if (cardEntity.card.name == card.name) {
-                Actuate.tween(cardEntity, 0.3, { rotation_z: 0 });
-                Actuate
-                    .tween(cardEntity.pos, 0.3, { x: Luxe.screen.w / 2, y: Luxe.screen.h / 2 })
-                    .onComplete(function() {
-                        Actuate.tween(cardEntity.scale, 0.4, { x: 0.6, y: 0.6 });
-                        Actuate
-                            .tween(cardEntity.color, 0.4, { a: 0 })
-                            .onComplete(function() {
-                                cards.remove(cardEntity);
-                                cardEntity.destroy();
-                                position_cards();
-                            });
-                    });
-                return;
+    public function play_card(card :Card) :Promise {
+        return new Promise(function(resolve, reject) {
+            for (cardEntity in cards) {
+                if (cardEntity.card.name == card.name) {
+                    Actuate.tween(cardEntity, 0.3, { rotation_z: 0 });
+                    Actuate
+                        .tween(cardEntity.pos, 0.3, { x: Luxe.screen.w / 2, y: Luxe.screen.h / 2 })
+                        .onComplete(function() {
+                            Actuate.tween(cardEntity.scale, 0.4, { x: 0.6, y: 0.6 });
+                            Actuate
+                                .tween(cardEntity.color, 0.4, { a: 0 })
+                                .onComplete(function() {
+                                    cards.remove(cardEntity);
+                                    cardEntity.destroy();
+                                    position_cards().then(function(res, rej) {
+                                        resolve();
+                                    });
+                                });
+                        });
+                    return;
+                }
             }
-        }
+        });
     }
 
-    function position_cards() {
-        for (i in 0 ... cards.length) {
-            var cardEntity = cards[i];
-            var cardCount = cards.length;
-            var startX :Float = (Luxe.screen.w / 2) - (cards.length * 120) / 2;
-            var startRot :Float = -((cards.length - 1) * 3) / 2;
-            Actuate.tween(cardEntity.pos, 0.3, { x: startX + i * 120 });
-            Actuate.tween(cardEntity, 0.3, { rotation_z: startRot + i * 3 });
-        }
+    function position_cards() :Promise {
+        return new Promise(function(resolve, reject) {
+            for (i in 0 ... cards.length) {
+                var cardEntity = cards[i];
+                var cardCount = cards.length;
+                var startX :Float = (Luxe.screen.w / 2) - (cards.length * 120) / 2;
+                var startRot :Float = -((cards.length - 1) * 3) / 2;
+                Actuate.tween(cardEntity.pos, 0.3, { x: startX + i * 120 });
+                Actuate.tween(cardEntity, 0.3, { rotation_z: startRot + i * 3 });
+            }
+            Luxe.timer.schedule(0.3, resolve);
+        });
     }
 
     override function onenabled<T>(_value :T) {

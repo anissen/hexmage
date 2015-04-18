@@ -34,9 +34,19 @@ class PlayScreenState extends State {
     var eventQueue :List<Event>;
     var idle :Bool;
 
+    var minionActionState :MinionActionsState;
+    var handState :HandState;
+
     public function new() {
         super({ name: 'PlayScreenState' });
         scene = new Scene('PlayScreenScene');
+
+        minionActionState = new MinionActionsState();
+        Main.states.add(minionActionState);
+
+        handState = new HandState();
+        Main.states.add(handState);
+
         Main.states.enable('HandState');
 
         Luxe.events.listen('card_clicked', function(data :{ entity :CardEntity, card :Card }) {
@@ -210,17 +220,11 @@ class PlayScreenState extends State {
     }
 
     function handle_card_drawn(data :CardDrawnData) :Promise {
-        return new Promise(function(resolve, reject) {
-            Luxe.events.fire('card_drawn', data);
-            resolve();
-        });
+        return handState.add_card(data.card);
     }
 
     function handle_card_played(data :CardPlayedData) :Promise {
-        return new Promise(function(resolve, reject) {
-            Luxe.events.fire('card_played', data);
-            resolve();
-        });
+        return handState.play_card(data.card);
     }
 
     function update_move_indicator(minion :core.Minion) {
