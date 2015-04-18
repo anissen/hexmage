@@ -31,7 +31,7 @@ class MinionEntity extends Sprite {
         super({
             pos: options.pos,
             color: new ColorHSV(100 - options.minion.playerId * 100, 0.8, 0.8),
-            geometry: Luxe.draw.circle({ r: 60 }),
+            geometry: Luxe.draw.circle({ r: 55 }),
             scene: options.scene
         });
         minion = options.minion;

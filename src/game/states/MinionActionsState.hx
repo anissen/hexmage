@@ -60,8 +60,8 @@ class MinionActionsState extends State {
     }
 
     function tile_to_pos(x, y) :Vector { // HACK (this shouldn't be included here)!
-        var tileSize = 140;
-        return new Vector(180 + tileSize / 2 + x * (tileSize + 10), 20 + tileSize / 2 + y * (tileSize + 10));
+        var tileSize = 120;
+        return new Vector(180 + tileSize / 2 + x * (tileSize + 10), 10 + tileSize / 2 + y * (tileSize + 10));
     }
 
     override function onenabled<T>(_value :T) {
