@@ -1,6 +1,8 @@
 
 package game.states;
 
+import core.Card;
+import game.entities.CardEntity;
 import luxe.Color;
 import luxe.Input.KeyEvent;
 import luxe.Input.Key;
@@ -36,6 +38,15 @@ class PlayScreenState extends State {
         super({ name: 'PlayScreenState' });
         scene = new Scene('PlayScreenScene');
         Main.states.enable('HandState');
+
+        Luxe.events.listen('card_clicked', function(data :{ entity :CardEntity, card :Card }) {
+            trace('hello!');
+            if (!Main.states.enabled('PlayCardState')) {
+                Main.states.enable('PlayCardState', { game: game, card: data.card });
+            } else {
+                Main.states.disable('PlayCardState');
+            }
+        });
     }
 
     function handle_next_event() {

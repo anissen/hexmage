@@ -11,10 +11,12 @@ import core.Game;
 import game.components.OnClick;
 
 class MinionActionsState extends State {
+    static public var StateId = 'MinionActionsState';
+
     var scene :Scene;
 
     public function new() {
-        super({ name: 'MinionActionsState' });
+        super({ name: StateId });
         scene = new Scene('MinionActionsScene');
     }
 

@@ -72,12 +72,10 @@ class HandState extends State {
             if (mouseover && card_hovered != cardEntity) {
                 Actuate.tween(cardEntity.scale, 0.3, { x: 1.5, y: 1.5 });
                 Actuate.tween(cardEntity.pos, 0.3, { y: cards_y - 70 });
-
                 if (card_hovered != null) {
                     Actuate.tween(card_hovered.scale, 0.5, { x: 1.0, y: 1.0 });
                     Actuate.tween(card_hovered.pos, 0.5, { y: cards_y });
                 }
-
                 card_hovered = cardEntity;
             } else if (!mouseover && card_hovered == cardEntity) {
                 Actuate.tween(cardEntity.scale, 0.5, { x: 1.0, y: 1.0 });

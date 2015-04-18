@@ -18,6 +18,7 @@ class Main extends luxe.Game {
         // states.add(new MenuScreenState());
         states.add(new HandState());
         states.add(new MinionActionsState());
+        states.add(new PlayCardState());
         states.add(new PlayScreenState());
 
         // switch_to_state('TitleScreenState');

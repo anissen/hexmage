@@ -61,6 +61,6 @@ class CardEntity extends Sprite {
     }
 
     function on_click() {
-        events.fire('clicked', { entity: this, card: card });
+        Luxe.events.fire('card_clicked', { entity: this, card: card });
     }
 }
