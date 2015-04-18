@@ -8,6 +8,17 @@
         }
     },
 
+    luxe:{
+        window: {
+            width: 1024,
+            height: 768,
+            title: 'Hexmage',
+            fullscreen: false,
+            resizable: true,
+            borderless: false
+        }
+    },
+
     project : {
         name : 'Hexmage',
         version : '0.0.1',

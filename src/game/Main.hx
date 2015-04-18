@@ -1,6 +1,8 @@
 
 package game;
 
+import luxe.Input.KeyEvent;
+import luxe.Input.Key;
 import luxe.States;
 import luxe.tween.Actuate;
 import game.states.*;
@@ -27,5 +29,11 @@ class Main extends luxe.Game {
         if (!states.exists(state)) 
             throw 'State "$state" not found';
         states.set(state, args);
+    }
+
+    override function onkeyup(e :KeyEvent) {
+        if (e.keycode == Key.enter && e.mod.alt) {
+            app.app.window.fullscreen = !app.app.window.fullscreen;
+        }
     }
 }
