@@ -70,6 +70,7 @@ class PlayScreenState extends State {
             case MinionEntered(data): handle_minion_entered(data);
             case MinionDamaged(data): handle_minion_damaged(data);
             case CardDrawn(data): handle_card_drawn(data);
+            case CardPlayed(data): handle_card_played(data);
             case _: {
                 trace('$event is unhandled');
                 new Promise(function(resolve, reject) {
@@ -211,6 +212,13 @@ class PlayScreenState extends State {
     function handle_card_drawn(data :CardDrawnData) :Promise {
         return new Promise(function(resolve, reject) {
             Luxe.events.fire('card_drawn', data);
+            resolve();
+        });
+    }
+
+    function handle_card_played(data :CardPlayedData) :Promise {
+        return new Promise(function(resolve, reject) {
+            Luxe.events.fire('card_played', data);
             resolve();
         });
     }

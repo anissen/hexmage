@@ -233,6 +233,8 @@ class Game {
         var player = current_player;
         player.hand.remove(playCardAction.card);
 
+        emit(CardPlayed({ card: playCardAction.card, player: player }));
+
         // handle
         switch (playCardAction.card.type) {
             case MinionCard(minionName): playMinion(minionName, playCardAction.target);
@@ -241,7 +243,6 @@ class Game {
 
     function playMinion(minionName :String, target :Point) {
         var minion = minionLibrary.create(minionName, current_player);
-        trace('CREATED MINION with id ${minion.id}');
         state.board.tile(target).minion = minion;
         // handle_commands(minion.handle_event(SelfEntered));
 

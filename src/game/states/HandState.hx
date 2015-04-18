@@ -38,6 +38,31 @@ class HandState extends State {
             depth: card_depth++
         });
         cards.push(cardEntity);
+        position_cards();
+    }
+
+    function play_card(card :core.Card) {
+        for (cardEntity in cards) {
+            if (cardEntity.card.name == card.name) {
+                Actuate.tween(cardEntity, 0.3, { rotation_z: 0 });
+                Actuate
+                    .tween(cardEntity.pos, 0.3, { x: Luxe.screen.w / 2, y: Luxe.screen.h / 2 })
+                    .onComplete(function() {
+                        Actuate.tween(cardEntity.scale, 0.4, { x: 0.6, y: 0.6 });
+                        Actuate
+                            .tween(cardEntity.color, 0.4, { a: 0 })
+                            .onComplete(function() {
+                                cards.remove(cardEntity);
+                                cardEntity.destroy();
+                                position_cards();
+                            });
+                    });
+                return;
+            }
+        }
+    }
+
+    function position_cards() {
         for (i in 0 ... cards.length) {
             var cardEntity = cards[i];
             var cardCount = cards.length;
@@ -62,6 +87,14 @@ class HandState extends State {
         Luxe.events.listen('card_drawn', function(data :core.Events.CardDrawnData) {
             if (data.player.name == 'Human Player') {
                 add_card(data.card);
+            }
+        });
+
+        Luxe.events.listen('card_played', function(data :core.Events.CardPlayedData) {
+            trace('HandState::card_played');
+            trace(data);
+            if (data.player.name == 'Human Player') {
+                play_card(data.card);
             }
         });
     }

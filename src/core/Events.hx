@@ -11,6 +11,7 @@ typedef TurnStartedData = { player :Player };
 typedef TurnEndedData = { player :Player };
 typedef PlayersTurnData = { player :Player };
 typedef CardDrawnData = { card :Card, player :Player };
+typedef CardPlayedData = { card :Card, player :Player };
 
 enum Event {
     GameStarted;
@@ -18,6 +19,7 @@ enum Event {
     TurnEnded(data :TurnEndedData);
     GameOver;
     CardDrawn(data :CardDrawnData);
+    CardPlayed(data :CardPlayedData);
     // SelfEntered;
     MinionMoved(data :MinionMovedData);
     MinionDied(data :MinionDiedData);

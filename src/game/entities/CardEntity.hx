@@ -18,7 +18,7 @@ typedef CardOptions = {
 }
 
 class CardEntity extends Sprite {
-    var card :core.Card;
+    public var card :core.Card;
     var text :Text;
     var cardWidth :Int = 140;
     var cardHeight :Int = 200;

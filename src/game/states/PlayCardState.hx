@@ -43,7 +43,7 @@ class PlayCardState extends State {
 
     override function onenabled<T>(_value :T) {
         var bg = new Sprite({
-            color: new Color(0, 0, 100, 0.2),
+            color: new Color(0, 0, 100, 0.1),
             size: Luxe.screen.size.clone(),
             centered: false,
             scene: scene,
