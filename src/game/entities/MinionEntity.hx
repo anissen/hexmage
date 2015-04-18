@@ -4,7 +4,7 @@ package game.entities;
 import luxe.Text;
 import luxe.tween.Actuate;
 import luxe.Vector;
-import luxe.Sprite;
+import luxe.Visual;
 import luxe.Scene;
 import luxe.Color;
 import luxe.options.SpriteOptions;
@@ -23,7 +23,7 @@ typedef ClickedEventData = {
     minion :core.Minion
 }
 
-class MinionEntity extends Sprite {
+class MinionEntity extends Visual {
     var minion :core.Minion;
     var text :Text;
 

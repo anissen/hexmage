@@ -16,6 +16,9 @@
             fullscreen: false,
             resizable: true,
             borderless: false
+        },
+        render: {
+            antialiasing: 4
         }
     },
 
