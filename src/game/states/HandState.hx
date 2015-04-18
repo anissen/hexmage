@@ -10,6 +10,7 @@ import luxe.Vector;
 import luxe.Color;
 
 import core.Game;
+import game.entities.CardEntity;
 import game.components.OnClick;
 
 class HandState extends State {
@@ -23,34 +24,19 @@ class HandState extends State {
     }
 
     function add_card(card :core.Card) {
-        var cardSize = 100;
-        var cardSprite = new Sprite({
-            color: new Color(0.0, 0.2, 0.3),
-            size: new Vector(cardSize, cardSize),
-            pos: new Vector(Luxe.screen.w * Math.random(), Luxe.screen.h - (cardSize / 2) - 10),
-            // geometry: Luxe.draw.box({
-            //     w: cardSize,
-            //     h: cardSize
-            // }),
-            scene: scene,
-            depth: 10
+        var cardEntity = new CardEntity({ 
+            pos: new Vector(Luxe.screen.w * Math.random(), Luxe.screen.h - 120),
+            card: card,
+            scene: scene
         });
-        new Text({
-            text: card.name,
-            pos: new Vector(cardSize / 2, cardSize / 2),
-            color: new Color(1, 1, 1, 1),
-            align: TextAlign.center,
-            align_vertical: TextAlign.center,
-            point_size: 20,
-            // scene: scene,
-            parent: cardSprite,
-            depth: 15
-        });
-        cards.push(cardSprite);
+        cards.push(cardEntity);
         for (i in 0 ... cards.length) {
-            var cardSprite = cards[i];
-            var cardCount = cards.length; 
-            Actuate.tween(cardSprite.pos, 0.3, { x: ((i + 1) / (cardCount + 1)) * Luxe.screen.w }, true);
+            var cardEntity = cards[i];
+            var cardCount = cards.length;
+            var startX = (Luxe.screen.w / 2) - (cards.length * 100) / 2;
+            var startRot = -(cards.length * 3) / 2;
+            Actuate.tween(cardEntity.pos, 0.3, { x: startX + i * 100 }, true);
+            Actuate.tween(cardEntity, 0.3, { rotation_z: startRot + i * 3 }, true);
         }
     }
 
@@ -62,7 +48,7 @@ class HandState extends State {
             pos: new Vector(0, Luxe.screen.h - bgHeight),
             centered: false,
             scene: scene,
-            depth: 10
+            depth: 5
         });
 
         Luxe.events.listen('card_drawn', function(data :core.Events.CardDrawnData) {

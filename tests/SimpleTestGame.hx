@@ -110,6 +110,16 @@ class SimpleTestGame {
 
     static public function create_game(/*?take_turn_function :Game->Array<Action>*/) :Game {
         CardLibrary.add(new Unicorn());
+        CardLibrary.add(new core.Card({ 
+            name: 'Bunny',
+            cost: 1,
+            type: MinionCard('Bunny')
+        }));
+        CardLibrary.add(new core.Card({ 
+            name: 'Teddybear',
+            cost: 2,
+            type: MinionCard('Teddybear')
+        }));
 
         MinionLibrary.Add(new Minion({
             name: 'Goblin',
@@ -159,7 +169,8 @@ class SimpleTestGame {
             deck: new Deck({
                 name: 'Test Deck',
                 cards: [
-                    CardLibrary.create('Unicorn'),
+                    CardLibrary.create('Teddybear'),
+                    CardLibrary.create('Bunny'),
                     CardLibrary.create('Unicorn')
                 ]
             }),
