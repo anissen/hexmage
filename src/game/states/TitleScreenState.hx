@@ -12,21 +12,23 @@ import luxe.Vector;
 import luxe.Visual;
 
 class TitleScreenState extends State {
+    static public var StateId = 'TitleScreenState';
+
     var scene :Scene;
     var titleText :Text;
     var background :Visual;
 
     public function new() {
-        super({ name: 'TitleScreenState' });
+        super({ name: StateId });
         scene = new Scene('TitleScreenScene');
     }
 
     override function init() {
-        trace("INIT TitleState");
+        trace('INIT $StateId');
     }
 
     override function onenter<T>(_value :T) {
-        trace("ENTER TitleState");
+        trace('ENTER $StateId');
 
         background = new Visual({
             pos: new Vector(0, Luxe.screen.h),
@@ -53,7 +55,7 @@ class TitleScreenState extends State {
     }
 
     override function onleave<T>(_value :T) {
-        trace("LEAVE TitleState");
+        trace('LEAVE $StateId');
         Actuate
             .tween(background.pos, 0.3, { y: -Luxe.screen.h })
             .onComplete(function() {

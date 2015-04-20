@@ -49,13 +49,13 @@ class PlayScreenState extends State {
         handState = new HandState();
         Main.states.add(handState);
 
-        Main.states.enable('HandState');
+        Main.states.enable(HandState.StateId);
 
         Luxe.events.listen('card_clicked', function(data :{ entity :CardEntity, card :Card }) {
-            if (!Main.states.enabled('PlayCardState')) {
-                Main.states.enable('PlayCardState', { game: game, card: data.card });
+            if (!Main.states.enabled(PlayCardState.StateId)) {
+                Main.states.enable(PlayCardState.StateId, { game: game, card: data.card });
             } else {
-                Main.states.disable('PlayCardState');
+                Main.states.disable(PlayCardState.StateId);
             }
         });
     }
@@ -163,8 +163,8 @@ class PlayScreenState extends State {
     function handle_turn_started(data :TurnStartedData) :Promise {
         trace('Player: ' + data.player.name);
         if (data.player.name == 'Human Player') { // HACK HACK HACK
-            // if (!Main.states.enabled('HandState')) {
-            //     Main.states.enable('HandState');
+            // if (!Main.states.enabled(HandState.StateId)) {
+            //     Main.states.enable(HandState.StateId);
             // }
 
             for (minion in game.minions_for_player(game.current_player)) {
@@ -199,8 +199,8 @@ class PlayScreenState extends State {
     function handle_turn_ended(data :TurnEndedData) :Promise {
         return new Promise(function(resolve, reject) {
             if (data.player.name == 'Human Player') {
-                // if (Main.states.enabled('HandState')) {
-                //     Main.states.disable('HandState');
+                // if (Main.states.enabled(HandState.StateId)) {
+                //     Main.states.disable(HandState.StateId);
                 // }
             }
 
@@ -358,10 +358,10 @@ class PlayScreenState extends State {
     function minion_clicked(data :ClickedEventData) {
         if (data.minion.playerId != game.current_player.id) return;
         // trace('${data.minion.name} was clicked!');
-        if (!Main.states.enabled('MinionActionsState')) {
-            Main.states.enable('MinionActionsState', { game: game, minionId: data.minion.id });
+        if (!Main.states.enabled(MinionActionsState.StateId)) {
+            Main.states.enable(MinionActionsState.StateId, { game: game, minionId: data.minion.id });
         } else {
-            Main.states.disable('MinionActionsState');
+            Main.states.disable(MinionActionsState.StateId);
         }
     }
 
@@ -373,7 +373,7 @@ class PlayScreenState extends State {
         switch (e.keycode) {
             case Key.enter: if (!e.mod.alt) { trace('End Turn triggered!'); game.end_turn(); }
             case Key.key_r: reset();
-            case Key.escape: Luxe.shutdown(); //Main.switch_to_state('TitleScreenState');
+            case Key.escape: Luxe.shutdown(); //Main.states.set(TitleScreenState.StateId);
         }
     }
 }

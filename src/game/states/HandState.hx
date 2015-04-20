@@ -18,6 +18,8 @@ import game.entities.CardEntity;
 import game.components.OnClick;
 
 class HandState extends State {
+    static public var StateId = 'HandState';
+
     var scene :Scene;
     var cards :Array<CardEntity>;
     var card_hovered :CardEntity;
@@ -26,7 +28,7 @@ class HandState extends State {
     var cards_y :Float;
 
     public function new() {
-        super({ name: 'HandState' });
+        super({ name: StateId });
         scene = new Scene('HandScene');
         cards = [];
 
