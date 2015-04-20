@@ -10,6 +10,8 @@ import luxe.Color;
 import core.Game;
 import game.components.OnClick;
 
+using game.extensions.PointTools;
+
 class MinionActionsState extends State {
     static public var StateId = 'MinionActionsState';
 
@@ -22,8 +24,8 @@ class MinionActionsState extends State {
 
     function minion_can_move_to(data :core.Actions.MoveAction, game :Game) {
         var minionPos = game.minion_pos(game.minion(data.minionId));
-        var from = tile_to_pos(minionPos.x, minionPos.y);
-        var to = tile_to_pos(data.pos.x, data.pos.y);
+        var from = minionPos.tile_to_world();
+        var to = data.pos.tile_to_world();
         var moveDot = new Sprite({
             pos: from,
             color: new Color(1, 1, 1),
@@ -43,8 +45,8 @@ class MinionActionsState extends State {
     function minion_can_attack(data :core.Actions.AttackAction, game :Game) {
         var minionPos = game.minion_pos(game.minion(data.minionId));
         var victimPos = game.minion_pos(game.minion(data.victimId));
-        var from = tile_to_pos(minionPos.x, minionPos.y);
-        var to = tile_to_pos(victimPos.x, victimPos.y);
+        var from = minionPos.tile_to_world();
+        var to = victimPos.tile_to_world();
         var attackDot = new Sprite({
             pos: from,
             color: new Color(1, 0, 0),
@@ -59,11 +61,6 @@ class MinionActionsState extends State {
         }));
         luxe.tween.Actuate.tween(attackDot.pos, 0.3, { x: to.x, y: to.y });
         luxe.tween.Actuate.tween(attackDot.scale, 0.3, { x: 1, y: 1 });
-    }
-
-    function tile_to_pos(x, y) :Vector { // HACK (this shouldn't be included here)!
-        var tileSize = 120;
-        return new Vector(180 + tileSize / 2 + x * (tileSize + 10), 10 + tileSize / 2 + y * (tileSize + 10));
     }
 
     override function onenabled<T>(_value :T) {
@@ -88,8 +85,6 @@ class MinionActionsState extends State {
     }
 
     override function ondisabled<T>(_value :T) {
-        // trace('MinionActionState before scene empty');
         scene.empty();
-        // trace('MinionActionState after scene empty');
     }
 }

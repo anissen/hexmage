@@ -10,6 +10,8 @@ import luxe.Color;
 import core.Game;
 import game.components.OnClick;
 
+using game.extensions.PointTools;
+
 class PlayCardState extends State {
     static public var StateId = 'PlayCardState';
 
@@ -22,7 +24,7 @@ class PlayCardState extends State {
 
     function can_play_at(data :core.Actions.PlayCardAction, game :Game) {
         var playAtDot = new Sprite({
-            pos: tile_to_pos(data.target.x, data.target.y),
+            pos: data.target.tile_to_world(),
             color: new Color(0.2, 0.2, 1),
             geometry: Luxe.draw.circle({ r: 25 }),
             scale: new Vector(0.0, 0.0),
@@ -34,11 +36,6 @@ class PlayCardState extends State {
             game.do_action(PlayCard(data));
         }));
         luxe.tween.Actuate.tween(playAtDot.scale, 0.3, { x: 1, y: 1 });
-    }
-
-    function tile_to_pos(x, y) :Vector { // HACK (this shouldn't be included here)!
-        var tileSize = 120;
-        return new Vector(180 + tileSize / 2 + x * (tileSize + 10), 10 + tileSize / 2 + y * (tileSize + 10));
     }
 
     override function onenabled<T>(_value :T) {

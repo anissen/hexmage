@@ -2,6 +2,7 @@
 package game.states;
 
 import core.Card;
+import core.Point;
 import game.entities.CardEntity;
 import luxe.Color;
 import luxe.Input.KeyEvent;
@@ -25,6 +26,8 @@ import game.components.Indicators.ActionIndicator;
 import game.components.Indicators.AttackIndicator;
 import game.components.Indicators.MoveIndicator;
 import snow.api.Promise;
+
+using game.extensions.PointTools;
 
 class PlayScreenState extends State {
     static public var StateId = 'PlayScreenState';
@@ -118,7 +121,7 @@ class PlayScreenState extends State {
     function handle_minion_moved(data :MinionMovedData) :Promise {
         return new Promise(function(resolve, reject) {
             var minionEntity = id_to_minion_entity(data.minion.id);
-            var newPos = tile_to_pos(data.to.x, data.to.y);
+            var newPos = data.to.tile_to_world();
             Actuate
                 .tween(minionEntity.pos, 0.6, { x: newPos.x, y: newPos.y })
                 .onComplete(function() {
@@ -165,7 +168,7 @@ class PlayScreenState extends State {
             var pos = game.minion_pos(minion);
             var minionEntity = new MinionEntity({
                 minion: minion,
-                pos: tile_to_pos(pos.x, pos.y),
+                pos: pos.tile_to_world(),
                 scene: scene
             });
             minionMap[minion.id] = minionEntity;
@@ -315,11 +318,6 @@ class PlayScreenState extends State {
         return minionMap[id];
     }
 
-    function tile_to_pos(x, y) :Vector {
-        var tileSize = 120;
-        return new Vector(180 + tileSize / 2 + x * (tileSize + 10), 10 + tileSize / 2 + y * (tileSize + 10));
-    }
-
     function setup() {
         minionMap = new Map();
         eventQueue = new List<Event>();
@@ -342,8 +340,9 @@ class PlayScreenState extends State {
         var tileSize = 120;
         for (y in 0 ... boardSize.y) {
             for (x in 0 ... boardSize.x) {
+                var point :Point = { x: x, y: y };
                 var tile = new Sprite({
-                    pos: tile_to_pos(x, y),
+                    pos: point.tile_to_world(),
                     color: new ColorHSV(360 * Math.random(), 0.5, 0.5),
                     size: new Vector(tileSize, tileSize),
                     scale: new Vector(0, 0),
