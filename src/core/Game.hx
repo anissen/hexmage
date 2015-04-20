@@ -39,10 +39,11 @@ class Game {
     }
 
     public function start() {
-        emit(GameStarted);
         state.current_player_index = 0;
         for (player in players()) emit(PlayerEntered({ player: player }));
         for (minion in minions()) emit(MinionEntered({ minion: minion.clone() }));
+
+        emit(GameStarted);
 
         start_turn();
     }
@@ -169,17 +170,16 @@ class Game {
             case Attack(a): attack(a);
             case PlayCard(c): playCard(c);
         }
+        if (is_game_over()) {
+            emit(GameOver);
+        }
     }
 
     public function do_turn(actions :Array<Action>) :Void {
         for (action in actions) {
             // TODO: check action available
             do_action(action);
-            // TODO: check victory/defeat
-            if (has_won(current_player)) {
-                emit(GameOver);
-                return;
-            }
+            if (is_game_over()) return;
         }
         end_turn();
     }

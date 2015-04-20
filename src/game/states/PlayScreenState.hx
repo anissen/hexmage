@@ -35,6 +35,7 @@ class PlayScreenState extends State {
     var minionMap :Map<Int, MinionEntity>;
     var eventQueue :List<Event>;
     var idle :Bool;
+    var text :Text;
 
     var minionActionState :MinionActionsState;
     var handState :HandState;
@@ -72,6 +73,8 @@ class PlayScreenState extends State {
         trace('Handling event $event');
         idle = false;
         var handler = switch (event) {
+            case GameStarted: handle_game_started();
+            case GameOver: handle_game_over();
             case TurnStarted(data): handle_turn_started(data);
             case PlayersTurn(data): handle_players_turn(data);
             case TurnEnded(data): handle_turn_ended(data);
@@ -90,6 +93,26 @@ class PlayScreenState extends State {
             }
         }
         handler.then(handle_next_event);
+    }
+
+    function handle_game_started() :Promise {
+        return new Promise(function(resolve, reject) {
+            text.text = 'Game Started!';
+            text.color
+                .tween(2, { a: 1 })
+                .reverse()
+                .onComplete(resolve);
+        });
+    }
+
+    function handle_game_over() :Promise {
+        return new Promise(function(resolve, reject) {
+            text.text = 'Game Over!';
+            text.color
+                .tween(2, { a: 1 })
+                .reverse()
+                .onComplete(resolve);
+        });
     }
 
     function handle_minion_moved(data :MinionMovedData) :Promise {
@@ -346,10 +369,22 @@ class PlayScreenState extends State {
             color: new Color(0, 0, 0),
             text: 'End Turn',
             text_color: new Color(1, 1, 1),
+            scene: scene,
             callback: function() {
                 trace('End Turn pressed!');
                 game.end_turn();
             }
+        });
+
+        text = new Text({
+            text: '',
+            pos: Luxe.screen.mid.clone(),
+            color: new Color(1, 1, 1, 0),
+            align: TextAlign.center,
+            align_vertical: TextAlign.center,
+            point_size: 32,
+            scene: scene,
+            depth: 100
         });
 
         game.start();
