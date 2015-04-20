@@ -27,6 +27,8 @@ import game.components.Indicators.MoveIndicator;
 import snow.api.Promise;
 
 class PlayScreenState extends State {
+    static public var StateId = 'PlayScreenState';
+
     var scene :Scene;
     var background :Visual;
     var game :core.Game;
@@ -38,7 +40,7 @@ class PlayScreenState extends State {
     var handState :HandState;
 
     public function new() {
-        super({ name: 'PlayScreenState' });
+        super({ name: StateId });
         scene = new Scene('PlayScreenScene');
 
         minionActionState = new MinionActionsState();
@@ -50,7 +52,6 @@ class PlayScreenState extends State {
         Main.states.enable('HandState');
 
         Luxe.events.listen('card_clicked', function(data :{ entity :CardEntity, card :Card }) {
-            trace('hello!');
             if (!Main.states.enabled('PlayCardState')) {
                 Main.states.enable('PlayCardState', { game: game, card: data.card });
             } else {

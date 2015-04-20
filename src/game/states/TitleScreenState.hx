@@ -63,7 +63,7 @@ class TitleScreenState extends State {
 
     override function onkeyup(e :KeyEvent) {
         switch (e.keycode) {
-            case Key.enter: Main.switch_to_state('PlayScreenState');
+            case Key.enter: Main.states.set(PlayScreenState.StateId);
             case Key.escape: Luxe.shutdown();
         }
     }
