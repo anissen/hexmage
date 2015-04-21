@@ -1,0 +1,5 @@
+{
+    "shaders" : [
+        { "ps_id": "assets/shaders/full.glsl" }
+    ]
+}
