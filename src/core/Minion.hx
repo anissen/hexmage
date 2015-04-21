@@ -2,72 +2,8 @@
 
 package core;
 
-import core.Events;
-
-// enum Property {
-//     Life;
-//     Attack;
-//     Moves;
-//     CanMove;
-//     CanBeDamaged;
-// }
-
-/*
-class Tag {
-    var _value :Int;
-    public var value(get, set) :Int;
-
-    var _enabled :Bool;
-    public var enabled(get, set) :Bool;
-
-    var listeners :List<Int -> Void>;
-
-    public function new(_value :Int, _enabled :Bool = true) {
-        this._value = _value;
-        this._enabled = _enabled;
-        listeners = new List<Int -> Void>();
-    }
-
-    public function get_value() :Int {
-        return (_enabled ? _value : 0);
-    }
-
-    public function set_value(_value :Int) :Int {
-        if (this._value == _value) return _value;
-        this._value = _value;
-        for (listener in listeners)
-            listener(value);
-        return _value;
-    }
-
-    public function get_enabled() :Bool {
-        return this._enabled;
-    }
-
-    public function set_enabled(_enabled :Bool) :Bool {
-        if (this._enabled == _enabled) return enabled;
-        this._enabled = _enabled;
-        for (listener in listeners)
-            listener(value);
-        return _enabled;
-    }
-
-    public function listen(listener :Int -> Void) {
-        listeners.add(listener);
-    }
-}
-
-typedef Properties = {
-    ?life :Int,
-    ?attack :Int,
-    ?can_be_damaged :Bool,
-    ?can_move :Bool,
-    // ...
-    moves: Tag
-};
-*/
-
-// There should be a default Property map defined in the ruleset!
+import core.enums.Events;
+import core.enums.Commands;
 
 typedef MinionOptions = {
     ?id :Int,

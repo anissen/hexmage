@@ -1,5 +1,5 @@
 
-package core;
+package core.enums;
 
 enum Command {
     DrawCards(count :Int);

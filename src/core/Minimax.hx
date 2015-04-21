@@ -2,7 +2,7 @@
 package core;
 
 import core.Game;
-import core.Actions;
+import core.enums.Actions;
 
 typedef BestActionsResult = { 
     score :Int,

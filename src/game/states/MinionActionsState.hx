@@ -1,6 +1,10 @@
 
 package game.states;
 
+import core.enums.Actions.Action.AttackAction;
+import core.enums.Actions.Action.MoveAction;
+import core.enums.Actions.MoveActionData;
+import core.enums.Actions.AttackActionData;
 import luxe.Scene;
 import luxe.States;
 import luxe.Sprite;
@@ -22,7 +26,7 @@ class MinionActionsState extends State {
         scene = new Scene('MinionActionsScene');
     }
 
-    function minion_can_move_to(data :core.Actions.MoveAction, game :Game) {
+    function minion_can_move_to(data :MoveActionData, game :Game) {
         var minionPos = game.minion_pos(game.minion(data.minionId));
         var from = minionPos.tile_to_world();
         var to = data.pos.tile_to_world();
@@ -36,13 +40,13 @@ class MinionActionsState extends State {
         moveDot.add(new OnClick(function() {
             // callback(data);
             Main.states.disable(this.name);
-            game.do_action(Move(data));
+            game.do_action(MoveAction(data));
         }));
         luxe.tween.Actuate.tween(moveDot.pos, 0.3, { x: to.x, y: to.y });
         luxe.tween.Actuate.tween(moveDot.scale, 0.3, { x: 1, y: 1 });
     }
 
-    function minion_can_attack(data :core.Actions.AttackAction, game :Game) {
+    function minion_can_attack(data :AttackActionData, game :Game) {
         var minionPos = game.minion_pos(game.minion(data.minionId));
         var victimPos = game.minion_pos(game.minion(data.victimId));
         var from = minionPos.tile_to_world();
@@ -57,7 +61,7 @@ class MinionActionsState extends State {
         attackDot.add(new OnClick(function() {
             // callback(data);
             Main.states.disable(this.name);
-            game.do_action(Attack(data));
+            game.do_action(AttackAction(data));
         }));
         luxe.tween.Actuate.tween(attackDot.pos, 0.3, { x: to.x, y: to.y });
         luxe.tween.Actuate.tween(attackDot.scale, 0.3, { x: 1, y: 1 });
@@ -77,8 +81,8 @@ class MinionActionsState extends State {
         var minion_actions = data.game.actions_for_minion(minion);
         for (action in minion_actions) {
             switch action {
-                case core.Actions.Action.Move(m): minion_can_move_to(m, data.game);
-                case core.Actions.Action.Attack(a): minion_can_attack(a, data.game);
+                case MoveAction(m): minion_can_move_to(m, data.game);
+                case AttackAction(a): minion_can_attack(a, data.game);
                 case _:
             }
         }

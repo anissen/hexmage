@@ -2,7 +2,7 @@
 package core;
 
 import core.Board;
-import core.Actions;
+import core.enums.Actions;
 import core.Game;
 
 class RuleEngine {
@@ -40,7 +40,7 @@ class RuleEngine {
             if (newx < 0 || newx >= board.board_size().x) return;
             if (newy < 0 || newy >= board.board_size().y) return;
             if (board.tile({ x: newx, y: newy }).minion != null) return;
-            moves.push(Move({ minionId: minion.id, pos: { x: newx, y: newy } }));
+            moves.push(MoveAction({ minionId: minion.id, pos: { x: newx, y: newy } }));
         }
         add_move(x, y - 1);
         add_move(x, y + 1);
@@ -61,7 +61,7 @@ class RuleEngine {
             if (newy < 0 || newy >= board.board_size().y) return;
             var other = board.tile({ x: newx, y: newy }).minion;
             if (other == null || other.playerId == minion.playerId) return;
-            attacks.push(Attack({ minionId: minion.id, victimId: other.id }));
+            attacks.push(AttackAction({ minionId: minion.id, victimId: other.id }));
         }
         add_attack(x, y - 1);
         add_attack(x, y + 1);
@@ -77,6 +77,6 @@ class RuleEngine {
         });
         if (empty_tiles.length == 0) return [];
         var tile = empty_tiles[0];
-        return [PlayCard({ card: card, target: tile.pos })];
+        return [PlayCardAction({ card: card, target: tile.pos })];
     }
 }

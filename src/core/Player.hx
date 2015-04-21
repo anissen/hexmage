@@ -1,7 +1,7 @@
 
 package core;
 
-import core.Actions;
+import core.enums.Actions;
 import core.Card;
 
 typedef PlayerOptions = { 

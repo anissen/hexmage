@@ -3,8 +3,8 @@ package core;
 
 import core.MinionLibrary;
 import core.Player;
-import core.Actions;
-import core.Events;
+import core.enums.Actions;
+import core.enums.Events;
 
 typedef GameState = {
     var board :Board;
@@ -166,9 +166,9 @@ class Game {
     public function do_action(action :Action) :Void {
         switch (action) {
             case NoAction:
-            case Move(m): move(m);
-            case Attack(a): attack(a);
-            case PlayCard(c): playCard(c);
+            case MoveAction(m): move(m);
+            case AttackAction(a): attack(a);
+            case PlayCardAction(c): playCard(c);
         }
         if (is_game_over()) {
             emit(GameOver);
@@ -191,7 +191,7 @@ class Game {
         start_turn();
     }
 
-    function move(moveAction :MoveAction) {
+    function move(moveAction :MoveActionData) {
         var minion = state.board.minion(moveAction.minionId);
         var currentPos = state.board.minion_pos(minion);
         state.board.tile(currentPos).minion = null;
@@ -200,7 +200,7 @@ class Game {
         emit(MinionMoved({ minion: minion.clone(), from: currentPos, to: moveAction.pos }));
     }
 
-    function attack(attackAction :AttackAction) {
+    function attack(attackAction :AttackActionData) {
         var minion = state.board.minion(attackAction.minionId);
         var victim = state.board.minion(attackAction.victimId);
 
@@ -229,7 +229,7 @@ class Game {
         }
     }
 
-    function playCard(playCardAction :PlayCardAction) {
+    function playCard(playCardAction :PlayCardActionData) {
         var player = current_player;
         player.hand.remove(playCardAction.card);
 

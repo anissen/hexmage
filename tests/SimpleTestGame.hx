@@ -5,7 +5,7 @@ import core.Game;
 import core.Minion;
 import core.Board;
 import core.RuleEngine;
-import core.Actions;
+import core.enums.Actions;
 import core.Player;
 import core.Minimax;
 import core.Deck;
@@ -51,9 +51,9 @@ class AIPlayer {
 class HumanPlayer {
     static public function action_to_string(action :Action, game :Game) {
         return switch (action) {
-            case Move(m): 'Move ${game.minion(m.minionId).name} to ${m.pos.x}, ${m.pos.y}';
-            case Attack(a): 'Attack ${game.minion(a.minionId).name} —> ${game.minion(a.victimId).name}';
-            case PlayCard(c): 'Play ${c.card.name} to ${c.target.x}, ${c.target.y}';
+            case MoveAction(m): 'Move ${game.minion(m.minionId).name} to ${m.pos.x}, ${m.pos.y}';
+            case AttackAction(a): 'Attack ${game.minion(a.minionId).name} —> ${game.minion(a.victimId).name}';
+            case PlayCardAction(c): 'Play ${c.card.name} to ${c.target.x}, ${c.target.y}';
             case NoAction: 'No Action';
         }
     }

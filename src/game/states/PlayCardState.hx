@@ -1,6 +1,8 @@
 
 package game.states;
 
+import core.enums.Actions.Action.PlayCardAction;
+import core.enums.Actions.PlayCardActionData;
 import luxe.Scene;
 import luxe.States;
 import luxe.Sprite;
@@ -22,7 +24,7 @@ class PlayCardState extends State {
         scene = new Scene('PlayCardScene');
     }
 
-    function can_play_at(data :core.Actions.PlayCardAction, game :Game) {
+    function can_play_at(data :PlayCardActionData, game :Game) {
         var playAtDot = new Sprite({
             pos: data.target.tile_to_world(),
             color: new Color(0.2, 0.2, 1),
@@ -33,7 +35,7 @@ class PlayCardState extends State {
         playAtDot.add(new OnClick(function() {
             // callback(data);
             Main.states.disable(this.name);
-            game.do_action(PlayCard(data));
+            game.do_action(PlayCardAction(data));
         }));
         luxe.tween.Actuate.tween(playAtDot.scale, 0.3, { x: 1, y: 1 });
     }
@@ -50,7 +52,7 @@ class PlayCardState extends State {
         var data :{ game :Game, card :core.Card } = cast _value;
         for (action in data.game.actions()) {
             switch action {
-                case core.Actions.Action.PlayCard(p): if (p.card.name == data.card.name) can_play_at(p, data.game);
+                case PlayCardAction(p): if (p.card.name == data.card.name) can_play_at(p, data.game);
                 case _:
             }
         }

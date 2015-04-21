@@ -18,7 +18,7 @@ import luxe.Vector;
 import luxe.Visual;
 import luxe.Component;
 
-import core.Events;
+import core.enums.Events;
 
 import game.entities.Button;
 import game.entities.MinionEntity;
@@ -264,13 +264,13 @@ class PlayScreenState extends State {
         var canMove = false;
         for (action in game.actions_for_minion(minion)) {
             switch (action) {
-                case Move(_): {
+                case MoveAction(_): {
                     canMove = true;
                     if (!minionEntity.has('MoveIndicator')) {
                         minionEntity.add(new MoveIndicator({ name: 'MoveIndicator' }));
                     }
                 }
-                case Attack(_): {
+                case AttackAction(_): {
                     canAttack = true;
                     if (!minionEntity.has('AttackIndicator')) {
                         minionEntity.add(new AttackIndicator({ name: 'AttackIndicator' }));

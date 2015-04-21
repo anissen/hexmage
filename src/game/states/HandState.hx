@@ -2,6 +2,8 @@
 package game.states;
 
 import core.Card;
+import core.enums.Events.CardDrawnData;
+import core.enums.Events.CardPlayedData;
 import luxe.Input.MouseEvent;
 import luxe.Scene;
 import luxe.States;
@@ -96,13 +98,13 @@ class HandState extends State {
         //     depth: 5
         // });
 
-        Luxe.events.listen('card_drawn', function(data :core.Events.CardDrawnData) {
+        Luxe.events.listen('card_drawn', function(data :CardDrawnData) {
             if (data.player.name == 'Human Player') {
                 add_card(data.card);
             }
         });
 
-        Luxe.events.listen('card_played', function(data :core.Events.CardPlayedData) {
+        Luxe.events.listen('card_played', function(data :CardPlayedData) {
             trace('HandState::card_played');
             trace(data);
             if (data.player.name == 'Human Player') {

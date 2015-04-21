@@ -1,5 +1,5 @@
 
-package core;
+package core.enums;
 
 typedef MinionMovedData = { minion :Minion, from :Point, to :Point };
 typedef MinionAttackedData = { minion :Minion, victim :Minion };

@@ -2,7 +2,7 @@
 package core;
 
 import core.Minion;
-import core.Actions;
+import core.enums.Actions;
 
 typedef Tile = { ?minion :Minion };
 typedef Tiles = Array<Array<Tile>>;
