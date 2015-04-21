@@ -87,17 +87,7 @@ class HandState extends State {
     }
 
     override function onenabled<T>(_value :T) {
-        Luxe.events.listen('card_drawn', function(data :CardDrawnData) {
-            if (data.player.name == 'Human Player') {
-                add_card(data.card);
-            }
-        });
-
-        Luxe.events.listen('card_played', function(data :CardPlayedData) {
-            if (data.player.name == 'Human Player') {
-                play_card(data.card);
-            }
-        });
+        
     }
 
     override function onmousemove(event :MouseEvent) {

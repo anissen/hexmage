@@ -247,11 +247,21 @@ class PlayScreenState extends State {
     }
 
     function handle_card_drawn(data :CardDrawnData) :Promise {
-        return handState.add_card(data.card);
+        if (data.player.name == 'Human Player') {
+            return handState.add_card(data.card);
+        }
+        return new Promise(function(resolve, reject) {
+            resolve();
+        });
     }
 
     function handle_card_played(data :CardPlayedData) :Promise {
-        return handState.play_card(data.card);
+        if (data.player.name == 'Human Player') {
+            return handState.play_card(data.card);
+        }
+        return new Promise(function(resolve, reject) {
+            resolve();
+        });
     }
 
     function update_move_indicator(minion :core.Minion) {
