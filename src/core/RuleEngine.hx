@@ -71,12 +71,10 @@ class RuleEngine {
     }
 
     static function card_plays_for_player(board :Board, player :Player, card :Card) :Array<Action> {
-        // dummy action: find first free tile
+        // dummy actions: find free tiles
         var empty_tiles = board.filter_tiles(function(tile) {
             return (tile.minion == null);
         });
-        if (empty_tiles.length == 0) return [];
-        var tile = empty_tiles[0];
-        return [PlayCardAction({ card: card, target: tile.pos })];
+        return [for (tile in empty_tiles) PlayCardAction({ card: card, target: tile.pos })];
     }
 }
