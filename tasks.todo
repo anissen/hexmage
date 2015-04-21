@@ -1,12 +1,4 @@
 
-LD Tasks:
-
-    ☐ Clickable cards in hand
-    ☐ State to target tile
-    ☐ Cast card action
-
-
-
 Tasks:
 
   ✔ Minimal game @done (10-02-15 19:40)
@@ -19,7 +11,7 @@ Tasks:
   ✔ Implement deck @done (19-03-15 21:31)
   ✔ Implement cards in hand @done (19-03-15 21:31)
   ✔ Implement casting minion cards @done (19-03-15 21:31)
-  ☐ Implement casting spell cards
+  ✔ Implement casting spell cards @done (21-04-15 19:21)
   ☐ Implement targeting spells
   ☐ Implement avatar
   ☐ Implement claimed tiles
@@ -32,9 +24,11 @@ Later:
 
 Inspiration: https://raw.githubusercontent.com/anissen/elements/master/todo.todo
 
-
-
-Today:
-    ✔ Move minimax algorithm out @done (21-02-15 11:38)
-    ✔ Move card data out @done (21-02-15 12:27)
-    ☐ Make it possible to play cards
+Card tests:
+ ☐ Improve game system to allow more complex cards (e.g. react to stage changes)
+     ☐ Test case: Unit that has "~ has +2 to attack when it is your turn and +2 to life when it is other players turns"
+     ☐ Test case: Unit that has "Draw a card when ~ damages an energy source"
+     ☐ Additional optional test cases:
+         ☐ Test case: Unit that has "Attacks the first enemy unit within range in other players turns"
+         ☐ Test case: Spell that has "Gain control of target unit"
+         ☐ Test case: Unit that has "Allies spawned within [range 1] of ~ gain +1 to attack"
