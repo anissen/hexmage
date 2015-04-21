@@ -14,7 +14,6 @@ import luxe.Vector;
 import luxe.Color;
 import snow.api.Promise;
 
-
 import core.Game;
 import game.entities.CardEntity;
 import game.components.OnClick;
@@ -88,16 +87,6 @@ class HandState extends State {
     }
 
     override function onenabled<T>(_value :T) {
-        // var bgHeight :Int = 50;
-        // var bg = new Sprite({
-        //     color: new Color(0, 0, 0, 0.2),
-        //     size: new Vector(Luxe.screen.w, bgHeight),
-        //     pos: new Vector(0, Luxe.screen.h - bgHeight),
-        //     centered: false,
-        //     scene: scene,
-        //     depth: 5
-        // });
-
         Luxe.events.listen('card_drawn', function(data :CardDrawnData) {
             if (data.player.name == 'Human Player') {
                 add_card(data.card);
@@ -105,8 +94,6 @@ class HandState extends State {
         });
 
         Luxe.events.listen('card_played', function(data :CardPlayedData) {
-            trace('HandState::card_played');
-            trace(data);
             if (data.player.name == 'Human Player') {
                 play_card(data.card);
             }
@@ -133,9 +120,7 @@ class HandState extends State {
     }
 
     override function ondisabled<T>(_value :T) {
-        // trace('MinionActionState before scene empty');
         cards = [];
         scene.empty();
-        // trace('MinionActionState after scene empty');
     }
 }

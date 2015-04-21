@@ -257,7 +257,6 @@ class PlayScreenState extends State {
     function update_move_indicator(minion :core.Minion) {
         if (minion == null) return;
         if (minion.playerId != 0) return; // HACK
-        //if (minion.player.id != game.current_player.id) return;
 
         var minionEntity = minionMap[minion.id];
         var canAttack = false;
