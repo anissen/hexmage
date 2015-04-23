@@ -1,6 +1,6 @@
 
 Simple vanilla game:
-    ☐ No minions on board
+    ✔ No minions on board @done (23-04-15 22:20)
     ☐ 5 cards in starting hand
     ☐ 10 card deck (5 card in hand, 5 in deck)
     ☐ Vanilla minions
@@ -17,6 +17,9 @@ Simple costly game:
     ☐ Simple linear mana availability (ie. +1 mana/turn)
     ☐ Highlight cards that can be cast
     ☐ Subtract card cost from mana pool
+
+Simple hexagonal game:
+    ☐ Make tiles hexagonal
 
 --- ✄ -----------------------
 
