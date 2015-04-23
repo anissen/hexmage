@@ -45,9 +45,9 @@ class Minion {
         attack           = (options.attack != null ? options.attack : 1);
         life             = (options.life != null ? options.life : 1);
         moves            = (options.moves != null ? options.moves : 1);
-        movesLeft        = (options.movesLeft != null ? options.movesLeft : moves);
+        movesLeft        = (options.movesLeft != null ? options.movesLeft : 0);
         attacks          = (options.attacks != null ? options.attacks : 1);
-        attacksLeft      = (options.attacksLeft != null ? options.attacksLeft : attacks);
+        attacksLeft      = (options.attacksLeft != null ? options.attacksLeft : 0);
         can_be_damaged   = (options.can_be_damaged != null ? options.can_be_damaged : true);
         can_move         = (options.can_move != null ? options.can_move : true);
         can_attack       = (options.can_attack != null ? options.can_attack : true);
