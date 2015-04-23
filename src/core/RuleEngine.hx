@@ -75,6 +75,8 @@ class RuleEngine {
         var empty_tiles = board.filter_tiles(function(tile) {
             return (tile.minion == null);
         });
+        // if (empty_tiles.length == 0) return [];
+        // return [ PlayCardAction({ card: card, target: empty_tiles[0].pos }) ];
         return [for (tile in empty_tiles) PlayCardAction({ card: card, target: tile.pos })];
     }
 }

@@ -11,9 +11,11 @@ class Board {
     var boardSize :Point;
     var board :Tiles;
     
-    public function new(boardWidth :Int, boardHeight :Int, create_tile :Int->Int->Tile) {
+    public function new(boardWidth :Int, boardHeight :Int, ?create_tile :Int->Int->Tile) {
         boardSize = { x: boardWidth, y: boardHeight };
-        board = [ for (y in 0 ... boardSize.y) [for (x in 0 ... boardSize.x) create_tile(x, y)]];
+        board = [ for (y in 0 ... boardSize.y) 
+                    [ for (x in 0 ... boardSize.x) (create_tile != null) ? create_tile(x, y) : {} ]
+                ];
     }
 
     // public function handle_rules_for_minion(m :Minion /* + event type */) {

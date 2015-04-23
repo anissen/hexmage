@@ -194,16 +194,16 @@ class SimpleTestGame {
         var minionLibrary = new MinionLibrary(0);
 
         var tiles = { x: 3, y: 4 };
-        function create_tile(x :Int, y :Int) :Tile {
-            if (x == 1 && y == 0) return { minion: minionLibrary.create('Troll', ai_player) };
-            if (x == 1 && y == 1) return { minion: minionLibrary.create('Goblin', ai_player) };
-            if (x == 1 && y == 3) return { minion: minionLibrary.create('Teddybear', human_player) };
-            if (x == 2 && y == 3) return { minion: minionLibrary.create('Bunny', human_player) };
-            return {};
-        }
+        // function create_tile(x :Int, y :Int) :Tile {
+        //     if (x == 1 && y == 0) return { minion: minionLibrary.create('Troll', ai_player) };
+        //     if (x == 1 && y == 1) return { minion: minionLibrary.create('Goblin', ai_player) };
+        //     if (x == 1 && y == 3) return { minion: minionLibrary.create('Teddybear', human_player) };
+        //     if (x == 2 && y == 3) return { minion: minionLibrary.create('Bunny', human_player) };
+        //     return {};
+        // }
 
         var gameState = {
-            board: new Board(tiles.x, tiles.y, create_tile), // TODO: Make from a core.Map
+            board: new Board(tiles.x, tiles.y),
             players: [human_player, ai_player],
             minionIdCounter: minionLibrary.nextMinionId
             //rules: new Rules()
