@@ -18,7 +18,6 @@ class AIPlayer {
         var minimax = new Minimax({
             max_turn_depth: 1,
             max_action_depth: 2,
-            score_function: score_board,
             min_delta_score: -4
         });
 
@@ -26,25 +25,6 @@ class AIPlayer {
         trace('AI tested ${minimax.actions_tested} different sets of actions');
         trace('AI chose $actions');
         return actions;
-    }
-
-    static function score_board(player :Player, game :Game) :Int {
-        // score the players own stuff only
-        function score_for_player(p) {
-            var score :Float = 0;
-            var intrinsicMinionScore = 1;
-            for (minion in game.minions_for_player(p)) {
-                score += intrinsicMinionScore + Math.max(minion.attack, 0) + Math.max(minion.life, 0);
-            }
-            return score;
-        }
-
-        var score = score_for_player(player);
-        for (p in game.players()) {
-            if (p.id == player.id) continue;
-            score -= score_for_player(p);
-        }
-        return Math.round(score);
     }
 }
 
