@@ -10,7 +10,7 @@ typedef GameState = {
     var board :Board;
     var players :Players; // includes deck
     @:optional var minionIdCounter :Int;
-    @:optional var current_player_index :Int;
+    @:optional var turn :Int;
 };
 
 typedef EventListenerFunction = Event -> Void;
@@ -32,14 +32,14 @@ class Game {
         state = _state;
         var nextMinionId = (_state.minionIdCounter != null ? _state.minionIdCounter : 0);
         minionLibrary = new MinionLibrary(nextMinionId);
-        if (_state.current_player_index == null) state.current_player_index = 0;
+        if (_state.turn == null) state.turn = 0;
         listeners = new List<EventListenerFunction>();
         //commandQueue = new Commands();
         Id++;
     }
 
     public function start() {
-        state.current_player_index = 0;
+        state.turn = 0;
         for (player in players()) emit(PlayerEntered({ player: player }));
         for (minion in minions()) emit(MinionEntered({ minion: minion.clone() }));
 
@@ -126,7 +126,7 @@ class Game {
         return new Game({
             board: state.board.clone_board(),
             players: state.players,
-            current_player_index: state.current_player_index,
+            turn: state.turn,
             minionIdCounter: minionLibrary.nextMinionId
             //rules: state.rules // TODO: Should clone rules list
         });
@@ -141,7 +141,7 @@ class Game {
     }
 
     function get_current_player() :Player {
-        return state.players[state.current_player_index];
+        return state.players[state.turn % state.players.length];
     }
 
     public function is_current_player(player :Player) :Bool {
@@ -149,6 +149,7 @@ class Game {
     }
 
     public function is_game_over() :Bool {
+        if (state.turn < state.players.length) return false; // HACK to not game over on the first round
         for (player in state.players) {
             if (state.board.minions_for_player(player.id).length == 0)
                 return true;
@@ -186,7 +187,7 @@ class Game {
 
     public function end_turn() :Void {
         emit(TurnEnded({ player: current_player }));
-        state.current_player_index = (state.current_player_index + 1) % state.players.length;
+        state.turn++;
 
         start_turn();
     }
