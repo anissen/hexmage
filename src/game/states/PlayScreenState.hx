@@ -2,6 +2,7 @@
 package game.states;
 
 import core.Card;
+import core.GameSetup;
 import core.Point;
 import game.entities.CardEntity;
 import luxe.Color;
@@ -45,6 +46,9 @@ class PlayScreenState extends State {
 
     public function new() {
         super({ name: StateId });
+
+        GameSetup.initialize();
+
         scene = new Scene('PlayScreenScene');
 
         minionActionState = new MinionActionsState();
@@ -331,7 +335,7 @@ class PlayScreenState extends State {
         minionMap = new Map();
         eventQueue = new List<Event>();
         idle = true;
-        game = tests.SimpleTestGame.create_game();
+        game = GameSetup.create_game();
         game.listen(function(event) {
             eventQueue.add(event);
             if (idle) handle_next_event();
