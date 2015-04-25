@@ -39,13 +39,12 @@ class Minimax {
         var currentScore = score_function(player, game);
         var result = minimax(player, game);
         var deltaScore = result.score - currentScore;
-        // trace('currentScore: $currentScore');
-        // trace('result.score: ${result.score}');
-        // trace('deltaScore: $deltaScore');
+        // trace('AI; currentScore: $currentScore');
+        // trace('AI; result.score: ${result.score}');
+        // trace('AI; deltaScore: $deltaScore');
 
         if (deltaScore < min_delta_score) {
-            // trace('Delta score of $deltaScore is not good enough');
-            // trace('Considered actions: ${result.actions}');
+            trace('AI; Actions ${result.actions} with delta score of $deltaScore is not good enough');
             return [];
         }
 
@@ -60,55 +59,77 @@ class Minimax {
             return { score: score_function(player, game) - turn, actions: [] };
         }
 
+
+        var set_of_all_actions = game.nested_actions(max_action_depth);
+        // trace('AI has ${set_of_all_actions.length} sets of actions to choose between');
+
+        // if (set_of_all_actions.length == 0) {
+        //     return { score: score_function(player, game) - turn, actions: [] };
+        // }
+
+        // TODO: Refactor this
+        function try_actions(game :Game, actionTree :ActionTree, actions :Actions) :BestActionsResult {
+            // trace('Testing $actionTree');
+            var newGame = game.clone();
+            newGame.do_action(actionTree.current); // TODO: Make this return a clone instead?
+
+            if (actionTree.next == null || actionTree.next.length == 0) {
+                // trace('actionTree has no "next" actions');
+                var result = { score: score_function(player, game) - turn, actions: actions.concat([actionTree.current]) };
+                // trace('* returning $result');
+                return result;
+            }
+
+
+            var bestActionTreeResult = {
+                score: (game.is_current_player(player) ? -1000 : 1000), 
+                actions: [] 
+            };
+            for (action in actionTree.next) {
+                var result = try_actions(newGame, action, actions.concat([actionTree.current]));
+                // trace('Result is $result');
+                if (game.is_current_player(player)) {
+                    if (result.score > bestActionTreeResult.score) {
+                        bestActionTreeResult.score = result.score;
+                        bestActionTreeResult.actions = actions;
+                    }
+                } else {
+                    if (result.score < bestActionTreeResult.score) {
+                        bestActionTreeResult.score = result.score;
+                        bestActionTreeResult.actions = actions;
+                    }
+                }
+            }
+
+            // trace('** returning $bestActionTreeResult');
+            return bestActionTreeResult;
+        }
+
         var bestResult = { 
             score: (game.is_current_player(player) ? -1000 : 1000), 
             actions: [] 
         };
-
-        var set_of_all_actions = game.nested_actions(max_action_depth);
-        trace('AI has ${set_of_all_actions.length} sets of actions to choose between');
-
-        // TODO: Refactor this
-        function try_actions(game :Game, actionTree :ActionTree, actions :Actions) :BestActionsResult {
-            if (actionTree.next == null) {
-                return { score: score_function(player, game) - turn, actions: [] };
-            }
-
-            // trace('Testing ${actionTree.current}');
-            var newGame = game.clone();
-            newGame.do_action(actionTree.current); // TODO: Make this return a clone instead?
-
-            for (action in actionTree.next) {
-                var result = try_actions(newGame, action, actions.concat([actionTree.current]));
-                if (game.is_current_player(player)) {
-                    if (result.score > bestResult.score) {
-                        bestResult.score = result.score;
-                        bestResult.actions = actions;
-                    }
-                } else {
-                    if (result.score < bestResult.score) {
-                        bestResult.score = result.score;
-                        bestResult.actions = actions;
-                    }
-                }
-            }
-            return bestResult;
-        }
-
         for (actions in set_of_all_actions) {
-            try_actions(game, actions, []);
+            var result = try_actions(game, actions, []);
+            if (result.score > bestResult.score) {
+                bestResult.score = result.score;
+                bestResult.actions = result.actions;
+            }
         }
 
+        // trace('*** returning $bestResult');
         return bestResult;
     }
 
     function default_score_function(player :Player, game :Game) :Int {
         // score the players own stuff only
-        function score_for_player(p) {
+        function score_for_player(p :Player) {
             var score :Float = 0;
             var intrinsicMinionScore = 1;
             for (minion in game.minions_for_player(p)) {
-                score += intrinsicMinionScore + Math.max(minion.attack, 0) + Math.max(minion.life, 0);
+                var minionScore = intrinsicMinionScore + Math.max(minion.attack, 0) + Math.max(minion.life, 0);
+                // trace('Score for ${minion.name} is $minionScore');
+                score += minionScore;
             }
             return score;
         }
