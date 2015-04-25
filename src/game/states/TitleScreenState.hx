@@ -24,11 +24,11 @@ class TitleScreenState extends State {
     }
 
     override function init() {
-        trace('INIT $StateId');
+        // trace('INIT $StateId');
     }
 
     override function onenter<T>(_value :T) {
-        trace('ENTER $StateId');
+        // trace('ENTER $StateId');
 
         background = new Visual({
             pos: new Vector(0, Luxe.screen.h),
@@ -55,7 +55,7 @@ class TitleScreenState extends State {
     }
 
     override function onleave<T>(_value :T) {
-        trace('LEAVE $StateId');
+        // trace('LEAVE $StateId');
         Actuate
             .tween(background.pos, 0.3, { y: -Luxe.screen.h })
             .onComplete(function() {

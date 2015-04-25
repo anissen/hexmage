@@ -22,8 +22,8 @@ class AIPlayer {
         });
 
         var actions = minimax.best_actions(game);
-        trace('AI tested ${minimax.actions_tested} different sets of actions');
-        trace('AI chose $actions');
+        // trace('AI tested ${minimax.actions_tested} different sets of actions');
+        // trace('AI chose $actions');
         return actions;
     }
 }

@@ -77,7 +77,7 @@ class PlayScreenState extends State {
     }
 
     function handle_event(event :Event) {
-        trace('Handling event $event');
+        // trace('Handling event $event');
         idle = false;
         var handler = switch (event) {
             case GameStarted: handle_game_started();
@@ -191,7 +191,6 @@ class PlayScreenState extends State {
     }
 
     function handle_turn_started(data :TurnStartedData) :Promise {
-        trace('Player: ' + data.player.name);
         if (data.player.name == 'Human Player') { // HACK HACK HACK
             // if (!Main.states.enabled(HandState.StateId)) {
             //     Main.states.enable(HandState.StateId);
@@ -209,10 +208,10 @@ class PlayScreenState extends State {
 
     function handle_players_turn(data :PlayersTurnData) :Promise {
         if (data.player.name == 'AI Player') { // HACK HACK HACK
-            trace('Actions for AI:');
-            trace(game.actions());
+            // trace('Actions for AI:');
+            // trace(game.actions());
             var actions = tests.SimpleTestGame.AIPlayer.actions_for_turn(game);
-            trace('AI chose $actions');
+            trace('AI; Actions chosen: $actions');
             game.do_turn(actions);
         }
 
@@ -418,7 +417,7 @@ class PlayScreenState extends State {
 
     override function onkeyup(e :KeyEvent) {
         switch (e.keycode) {
-            case Key.enter: if (!e.mod.alt) { trace('End Turn triggered!'); game.end_turn(); }
+            case Key.enter: if (!e.mod.alt) game.end_turn();
             case Key.key_r: reset();
             case Key.escape: Luxe.shutdown(); //Main.states.set(TitleScreenState.StateId);
         }
