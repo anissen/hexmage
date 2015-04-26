@@ -42,6 +42,9 @@ class Game {
         state.turn = 0;
         for (player in players()) emit(PlayerEntered({ player: player }));
         for (minion in minions()) emit(MinionEntered({ minion: minion.clone() }));
+        for (player in players()) {
+            for (i in 0 ... 4) draw_card(player);
+        };
 
         emit(GameStarted);
 
@@ -55,9 +58,9 @@ class Game {
         }
     }
 
-    function draw_cards() :Void {
-        //trace('draw_cards');
-        var player = current_player;
+    function draw_card(player :Player) {
+        //trace('draw_card');
+        // var player = current_player;
         var card = player.deck.draw();
         if (card == null) {
             // player is out of cards!
@@ -84,7 +87,7 @@ class Game {
                 case Print(s): trace('handle_commands: Print "$s"');
                 case DrawCards(count):
                     trace('handle_commands: Draw $count card(s)');
-                    for (i in 0 ... count) draw_cards();
+                    for (i in 0 ... count) draw_card();
             }
         }
     }
@@ -160,7 +163,7 @@ class Game {
     function start_turn() :Void {
         emit(TurnStarted({ player: current_player }));
         reset_minion_stats();
-        draw_cards();
+        draw_card(current_player);
         emit(PlayersTurn({ player: current_player }));
     }
 

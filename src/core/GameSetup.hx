@@ -31,18 +31,6 @@ class GameSetup {
     */
 
     static public function initialize() {
-        CardLibrary.add(new Unicorn());
-        CardLibrary.add(new core.Card({ 
-            name: 'Bunny',
-            cost: 1,
-            type: MinionCard('Bunny')
-        }));
-        CardLibrary.add(new core.Card({ 
-            name: 'Teddybear',
-            cost: 2,
-            type: MinionCard('Teddybear')
-        }));
-
         MinionLibrary.Add(new Minion({
             name: 'Goblin',
             attack: 1,
@@ -72,6 +60,28 @@ class GameSetup {
             attack: 1,
             life: 2,
         }));
+
+        CardLibrary.add(new Unicorn());
+        CardLibrary.add(new core.Card({ 
+            name: 'Bunny',
+            cost: 1,
+            type: MinionCard('Bunny')
+        }));
+        CardLibrary.add(new core.Card({ 
+            name: 'Teddybear',
+            cost: 2,
+            type: MinionCard('Teddybear')
+        }));
+        CardLibrary.add(new core.Card({ 
+            name: 'Troll',
+            cost: 3,
+            type: MinionCard('Troll')
+        }));
+        CardLibrary.add(new core.Card({ 
+            name: 'Goblin',
+            cost: 2,
+            type: MinionCard('Goblin')
+        }));
     }
 
     static public function create_game() :Game {
@@ -80,14 +90,18 @@ class GameSetup {
             deck: new Deck({
                 name: 'Test Deck',
                 cards: [
-                    CardLibrary.create('Teddybear'),
                     CardLibrary.create('Bunny'),
+                    CardLibrary.create('Bunny'),
+                    CardLibrary.create('Bunny'),
+                    CardLibrary.create('Teddybear'),
+                    CardLibrary.create('Teddybear'),
+                    CardLibrary.create('Teddybear'),
+                    CardLibrary.create('Unicorn'),
+                    CardLibrary.create('Unicorn'),
+                    CardLibrary.create('Unicorn'),
                     CardLibrary.create('Unicorn')
                 ]
-            }),
-            hand: [
-                CardLibrary.create('Unicorn')
-            ]
+            })
         });
 
         var ai_player = new Player({
@@ -95,7 +109,16 @@ class GameSetup {
             deck: new Deck({
                 name: 'AI Test Deck',
                 cards: [
-                    CardLibrary.create('Unicorn')
+                    CardLibrary.create('Troll'),
+                    CardLibrary.create('Troll'),
+                    CardLibrary.create('Troll'),
+                    CardLibrary.create('Troll'),
+                    CardLibrary.create('Troll'),
+                    CardLibrary.create('Goblin'),
+                    CardLibrary.create('Goblin'),
+                    CardLibrary.create('Goblin'),
+                    CardLibrary.create('Goblin'),
+                    CardLibrary.create('Goblin')
                 ]
             })
         });
