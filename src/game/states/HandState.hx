@@ -19,7 +19,8 @@ import game.entities.CardEntity;
 import game.components.OnClick;
 
 class HandState extends State {
-    static public var StateId = 'HandState';
+    // static public var StateId = 'HandState';
+    public var stateId :String;
 
     var scene :Scene;
     var cards :Array<CardEntity>;
@@ -28,12 +29,13 @@ class HandState extends State {
     var card_depth = 5;
     var cards_y :Float;
 
-    public function new() {
-        super({ name: StateId });
+    public function new(id :String, y :Float) {
+        super({ name: id });
+        stateId = id;
         scene = new Scene('HandScene');
         cards = [];
 
-        cards_y = Luxe.screen.h - 20;
+        cards_y = y;
     }
 
     public function add_card(card :Card) :Promise {

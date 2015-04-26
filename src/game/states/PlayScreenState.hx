@@ -42,7 +42,8 @@ class PlayScreenState extends State {
     var text :Text;
 
     var minionActionState :MinionActionsState;
-    var handState :HandState;
+    var ownHand :HandState;
+    var enemyHand :HandState;
 
     public function new() {
         super({ name: StateId });
@@ -54,10 +55,13 @@ class PlayScreenState extends State {
         minionActionState = new MinionActionsState();
         Main.states.add(minionActionState);
 
-        handState = new HandState();
-        Main.states.add(handState);
+        ownHand = new HandState('own-hand', Luxe.screen.h - 20);
+        Main.states.add(ownHand);
+        Main.states.enable(ownHand.stateId);
 
-        Main.states.enable(HandState.StateId);
+        enemyHand = new HandState('enemy-hand', 120);
+        Main.states.add(enemyHand);
+        Main.states.enable(enemyHand.stateId);
 
         Luxe.events.listen('card_clicked', function(data :{ entity :CardEntity, card :Card }) {
             if (!Main.states.enabled(PlayCardState.StateId)) {
@@ -251,7 +255,9 @@ class PlayScreenState extends State {
 
     function handle_card_drawn(data :CardDrawnData) :Promise {
         if (data.player.name == 'Human Player') {
-            return handState.add_card(data.card);
+            return ownHand.add_card(data.card);
+        } else {
+            return enemyHand.add_card(data.card); 
         }
         return new Promise(function(resolve, reject) {
             resolve();
@@ -260,7 +266,9 @@ class PlayScreenState extends State {
 
     function handle_card_played(data :CardPlayedData) :Promise {
         if (data.player.name == 'Human Player') {
-            return handState.play_card(data.card);
+            return ownHand.play_card(data.card);
+        } else {
+            return enemyHand.play_card(data.card);
         }
         return new Promise(function(resolve, reject) {
             resolve();

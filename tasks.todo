@@ -3,7 +3,7 @@ Simple vanilla game:
     ✔ No minions on board @done (23-04-15 22:20)
     ✔ 5 cards in starting hand @done (26-04-15 14:25)
     ✔ 10 card deck (5 card in hand, 5 in deck) @done (26-04-15 14:25)
-    ☐ Vanilla minions
+    ✔ Vanilla minions @done (26-04-15 14:25)
 
 Simple challenging game:
     ☐ Believable AI through minimax
