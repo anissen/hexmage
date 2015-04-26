@@ -43,6 +43,7 @@ class Game {
         for (player in players()) emit(PlayerEntered({ player: player }));
         for (minion in minions()) emit(MinionEntered({ minion: minion.clone() }));
         for (player in players()) {
+            player.deck.shuffle();
             for (i in 0 ... 4) draw_card(player);
         };
 

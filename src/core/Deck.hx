@@ -23,7 +23,15 @@ class Deck {
     }
 
     public function shuffle() :Void {
-        
+        var t = [ for (i in 0 ... cards.length) i ];
+        var array = [];
+        while (t.length > 0) {
+            var pos = Std.random(t.length),
+            index = t[pos];
+            t.splice(pos, 1);
+            array.push(cards[index]);
+        }
+        cards = array;
     }
 
     public function draw() :Null<Card> {
