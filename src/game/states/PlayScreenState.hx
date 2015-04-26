@@ -55,11 +55,11 @@ class PlayScreenState extends State {
         minionActionState = new MinionActionsState();
         Main.states.add(minionActionState);
 
-        ownHand = new HandState('own-hand', Luxe.screen.h - 20);
+        ownHand = new HandState('own-hand', Luxe.screen.h - 20, false);
         Main.states.add(ownHand);
         Main.states.enable(ownHand.stateId);
 
-        enemyHand = new HandState('enemy-hand', 120);
+        enemyHand = new HandState('enemy-hand', -40, true);
         Main.states.add(enemyHand);
         Main.states.enable(enemyHand.stateId);
 

@@ -28,14 +28,16 @@ class HandState extends State {
 
     var card_depth = 5;
     var cards_y :Float;
+    var flipped :Bool;
 
-    public function new(id :String, y :Float) {
+    public function new(id :String, y :Float, flip :Bool /* HACK */) {
         super({ name: id });
         stateId = id;
         scene = new Scene('HandScene');
         cards = [];
 
         cards_y = y;
+        flipped = flip;
     }
 
     public function add_card(card :Card) :Promise {
@@ -80,9 +82,9 @@ class HandState extends State {
                 var cardEntity = cards[i];
                 var cardCount = cards.length;
                 var startX :Float = (Luxe.screen.w / 2) - (cards.length * 120) / 2;
-                var startRot :Float = -((cards.length - 1) * 3) / 2;
+                var startRot :Float = -((cards.length - 1) * 3) / 2 + (flipped ? 180 : 0);
                 Actuate.tween(cardEntity.pos, 0.3, { x: startX + i * 120 });
-                Actuate.tween(cardEntity, 0.3, { rotation_z: startRot + i * 3 });
+                Actuate.tween(cardEntity, 0.3, { rotation_z: startRot + (flipped ? -i : i) * 3 });
             }
             Luxe.timer.schedule(0.3, resolve);
         });
