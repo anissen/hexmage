@@ -3,6 +3,7 @@ package game.states;
 
 import core.Card;
 import core.GameSetup;
+import core.Minimax;
 import core.Point;
 import game.entities.CardEntity;
 import luxe.Color;
@@ -212,9 +213,15 @@ class PlayScreenState extends State {
 
     function handle_players_turn(data :PlayersTurnData) :Promise {
         if (data.player.name == 'AI Player') { // HACK HACK HACK
-            // trace('Actions for AI:');
-            // trace(game.actions());
-            var actions = tests.SimpleTestGame.AIPlayer.actions_for_turn(game);
+            var minimax = new Minimax({
+                max_turn_depth: 1,
+                max_action_depth: 2,
+                min_delta_score: -4
+            });
+
+            var actions = minimax.best_actions(game);
+            // trace('AI tested ${minimax.actions_tested} different sets of actions');
+            // trace('AI chose $actions');
             trace('AI; Actions chosen: $actions');
             game.do_turn(actions);
         }
