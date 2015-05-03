@@ -22,10 +22,10 @@ import game.states.*;
 class Main extends luxe.Game {
     static public var states :States;
 
-    var final_output: RenderTexture;
-    var final_batch: Batcher;
-    var final_view: Sprite;
-    var final_shader: Shader;
+    // var final_output: RenderTexture;
+    // var final_batch: Batcher;
+    // var final_view: Sprite;
+    // var final_shader: Shader;
 
     override function ready() {
         // Luxe.loadJSON("assets/parcel.json", function(jsonParcel) {
@@ -68,6 +68,7 @@ class Main extends luxe.Game {
         } */
     }
 
+    /*
     function setup_render_to_texture() {
         final_output = new RenderTexture(Luxe.resources, Luxe.screen.size);
         final_batch = Luxe.renderer.create_batcher({ no_add: true });
@@ -100,4 +101,5 @@ class Main extends luxe.Game {
         final_batch.draw();
         Luxe.renderer.blend_mode();
     }
+    */
 }
