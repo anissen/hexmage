@@ -30,8 +30,8 @@ class MinionEntity extends Visual {
     public function new(options :MinionOptions) {
         super({
             pos: options.pos,
-            color: new ColorHSV(100 - options.minion.playerId * 100, 0.8, 0.8),
-            geometry: Luxe.draw.circle({ r: 55 }),
+            color: new ColorHSV(100 - options.minion.playerId * 100, 0.7, 0.8),
+            geometry: Luxe.draw.circle({ r: 50 }),
             scene: options.scene
         });
         minion = options.minion;

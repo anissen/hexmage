@@ -36,7 +36,7 @@ class MoveIndicator extends Component {
     override function onadded() {
         bg = new Sprite({
             color: new ColorHSV(0, 0, 1),
-            geometry: Luxe.draw.circle({ r: 65 }),
+            geometry: Luxe.draw.circle({ r: 60 }),
             scale: new Vector(0, 0),
             parent: entity,
             depth: -10
@@ -57,7 +57,7 @@ class AttackIndicator extends Component {
     override function onadded() {
         bg = new Sprite({
             color: new Color(1, 0, 0),
-            geometry: Luxe.draw.circle({ r: 61 }),
+            geometry: Luxe.draw.circle({ r: 56 }),
             scale: new Vector(0, 0),
             parent: entity,
             depth: -5
