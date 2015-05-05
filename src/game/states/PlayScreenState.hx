@@ -196,14 +196,8 @@ class PlayScreenState extends State {
     }
 
     function handle_turn_started(data :TurnStartedData) :Promise {
-        if (data.player.name == 'Human Player') { // HACK HACK HACK
-            // if (!Main.states.enabled(HandState.StateId)) {
-            //     Main.states.enable(HandState.StateId);
-            // }
-
-            for (minion in game.minions_for_player(game.current_player)) {
-                update_move_indicator(minion);
-            }
+        for (minion in game.minions_for_player(game.current_player)) {
+            update_move_indicator(minion);
         }
 
         return new Promise(function(resolve, reject) {
@@ -238,12 +232,6 @@ class PlayScreenState extends State {
 
     function handle_turn_ended(data :TurnEndedData) :Promise {
         return new Promise(function(resolve, reject) {
-            if (data.player.name == 'Human Player') {
-                // if (Main.states.enabled(HandState.StateId)) {
-                //     Main.states.disable(HandState.StateId);
-                // }
-            }
-
             for (minion in game.minions_for_player(data.player)) {
                 var minionEntity = minionMap[minion.id];
                 if (minionEntity.has('MoveIndicator')) {
@@ -284,9 +272,12 @@ class PlayScreenState extends State {
 
     function update_move_indicator(minion :core.Minion) {
         if (minion == null) return;
-        if (minion.playerId != 0) return; // HACK
 
         var minionEntity = minionMap[minion.id];
+        if (minionEntity == null) {
+            trace('[update_move_indicator] minionEntity is null -- should this be able to happen?');
+            return;
+        }
         var canAttack = false;
         var canMove = false;
         for (action in game.actions_for_minion(minion)) {

@@ -40,7 +40,7 @@ class Game {
 
     public function start() {
         state.turn = 0;
-        for (player in players()) emit(PlayerEntered({ player: player }));
+        // for (player in players()) emit(PlayerEntered({ player: player }));
         for (minion in minions()) emit(MinionEntered({ minion: minion.clone() }));
         for (player in players()) {
             player.deck.shuffle();
