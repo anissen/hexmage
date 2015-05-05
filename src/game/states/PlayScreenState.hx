@@ -358,22 +358,32 @@ class PlayScreenState extends State {
         background = new Visual({
             pos: new Vector(0, 0),
             size: Luxe.screen.size.clone(),
-            color: new ColorHSV(200, 0.5, 0.7),
+            color: new ColorHSV(359, 0.0, 0.13),
             scene: scene,
             depth: -100
         });
 
         var boardSize = game.board_size();
         var tileSize = 120;
+        var tileBorder = 8;
         for (y in 0 ... boardSize.y) {
             for (x in 0 ... boardSize.x) {
                 var point :Point = { x: x, y: y };
+                var hue = 360 * Math.random();
                 var tile = new Sprite({
                     pos: point.tile_to_world(),
-                    color: new ColorHSV(360 * Math.random(), 0.5, 0.5),
+                    color: new ColorHSV(hue, 0.5, 1),
                     size: new Vector(tileSize, tileSize),
                     scale: new Vector(0, 0),
                     scene: scene,
+                    depth: -50
+                });
+                new Sprite({
+                    pos: new Vector(tileSize / 2, tileSize / 2),
+                    size: new Vector(tileSize - tileBorder, tileSize - tileBorder),
+                    color: new ColorHSV(hue, 0.5, 0.8),
+                    scene: scene,
+                    parent: tile,
                     depth: -50
                 });
                 tile.rotation_z = -25 + 50 * Math.random();
