@@ -59,7 +59,6 @@ class Minimax {
             return { score: score_function(player, game) - turn, actions: [] };
         }
 
-        // TODO: Handle multiple turns
 
         var actionTrees = game.nested_actions(max_action_depth);
         // trace('AI has ${actionTrees.length} sets of actions to choose between');
@@ -72,6 +71,9 @@ class Minimax {
             score: (game.is_current_player(player) ? -1000 : 1000), 
             actions: [] 
         };
+        
+        // TODO: Handle multiple turns
+
         for (actionTree in actionTrees) {
             var result = try_actions(game, player, actionTree);
             if (result.score > bestResult.score) {
@@ -85,7 +87,7 @@ class Minimax {
     }
 
     // TODO: Refactor this
-    function try_actions(game :Game, player :Player, actionTree :ActionTree /*, actions :Actions */) :BestActionsResult {
+    function try_actions(game :Game, player :Player, actionTree :ActionTree) :BestActionsResult {
         // trace('Testing $actionTree');
         var newGame = game.clone();
         newGame.do_action(actionTree.current); // TODO: Make this return a clone instead?
@@ -97,28 +99,24 @@ class Minimax {
             return result;
         }
 
-        var bestActionTreeResult = {
+        var bestResult = {
             score: (game.is_current_player(player) ? -1000 : 1000), 
             actions: [] 
         };
         for (actionSubTree in actionTree.next) {
-            var result = try_actions(newGame, player, actionSubTree /*, actions.concat([actionTree.current] )*/);
+            var result = try_actions(newGame, player, actionSubTree);
             // trace('Result is $result');
-            if (game.is_current_player(player)) {
-                if (result.score > bestActionTreeResult.score) {
-                    bestActionTreeResult.score = result.score;
-                    bestActionTreeResult.actions = [actionTree.current].concat(result.actions);
-                }
-            } else {
-                if (result.score < bestActionTreeResult.score) {
-                    bestActionTreeResult.score = result.score;
-                    bestActionTreeResult.actions = [actionTree.current].concat(result.actions);
-                }
+            var ownTurn   = game.is_current_player(player);
+            var ownBest   =  ownTurn && (result.score > bestResult.score);
+            var enemyBest = !ownTurn && (result.score < bestResult.score);
+            if (ownBest || enemyBest) {
+                bestResult.score = result.score;
+                bestResult.actions = [actionTree.current].concat(result.actions);
             }
         }
 
-        // trace('** returning $bestActionTreeResult');
-        return bestActionTreeResult;
+        // trace('** returning $bestResult');
+        return bestResult;
     }
 
     function default_score_function(player :Player, game :Game) :Int {
