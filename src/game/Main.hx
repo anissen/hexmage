@@ -27,6 +27,12 @@ class Main extends luxe.Game {
     // var final_view: Sprite;
     // var final_shader: Shader;
 
+    override function config(config :luxe.AppConfig) {
+        // if you have errors about the window being created, lower this to 2, or 0. it can also be 8
+        config.render.antialiasing = 4;
+        return config;
+    }
+
     override function ready() {
         // Luxe.loadJSON("assets/parcel.json", function(jsonParcel) {
         //     var parcel = new Parcel();
