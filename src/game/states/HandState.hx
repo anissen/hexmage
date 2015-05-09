@@ -25,6 +25,7 @@ class HandState extends State {
     var scene :Scene;
     var cards :Array<CardEntity>;
     var card_hovered :CardEntity;
+    var card_clicked :CardEntity;
 
     var card_depth = 5;
     var cards_y :Float;
@@ -66,6 +67,7 @@ class HandState extends State {
                                     cards.remove(cardEntity);
                                     cardEntity.destroy();
                                     position_cards().then(function(res, rej) {
+                                        card_clicked = null;
                                         resolve();
                                     });
                                 });
@@ -91,10 +93,18 @@ class HandState extends State {
     }
 
     override function onenabled<T>(_value :T) {
-        
+        Luxe.events.listen('card_clicked', function(data :{ entity :CardEntity, card :Card }) {
+            if (data.entity != card_clicked) {
+                card_clicked = data.entity;
+            } else {
+                card_clicked = null;
+            }
+        });
     }
 
     override function onmousemove(event :MouseEvent) {
+        if (card_clicked != null) return;
+
         for (cardEntity in cards) {
             var mouseover = Luxe.utils.geometry.point_in_geometry(event.pos, cardEntity.geometry);
             if (mouseover && card_hovered != cardEntity) {
