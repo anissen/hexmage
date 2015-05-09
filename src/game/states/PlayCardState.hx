@@ -34,6 +34,8 @@ class PlayCardState extends State {
         });
         playAtDot.add(new OnClick(function() {
             // callback(data);
+            trace('PlayCardState: Playing card');
+            trace(data);
             Main.states.disable(this.name);
             game.do_action(PlayCardAction(data));
         }));
@@ -52,7 +54,7 @@ class PlayCardState extends State {
         var data :{ game :Game, card :core.Card } = cast _value;
         for (action in data.game.actions()) {
             switch action {
-                case PlayCardAction(p): if (p.card.name == data.card.name) can_play_at(p, data.game);
+                case PlayCardAction(p): if (p.card.id == data.card.id) can_play_at(p, data.game);
                 case _:
             }
         }
