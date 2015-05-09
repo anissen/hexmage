@@ -355,7 +355,11 @@ class PlayScreenState extends State {
         });
 
         var boardSize = game.board_size();
-        var tileSize = 120;
+        var minSize = Math.min(Luxe.screen.w, Luxe.screen.h);
+        var tileCount = 5;
+        var tileMargin = 10;
+        var tileSize = (minSize - tileMargin * tileCount) / tileCount; // 120;
+        // var tileSize = 120;
         var tileBorder = 8;
         for (y in 0 ... boardSize.y) {
             for (x in 0 ... boardSize.x) {
