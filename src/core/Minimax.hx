@@ -52,13 +52,10 @@ class Minimax {
     }
 
     function minimax(player :Player, game :Game, turn :Int = 0) :BestActionsResult {
-        actions_tested++;
-
         if (game.is_game_over() || turn >= max_turn_depth) {
             // TODO: Choose a different scoring algorithm for self and other player(s)
             return { score: score_function(player, game) - turn, actions: [] };
         }
-
 
         var actionTrees = game.nested_actions(max_action_depth);
         // trace('AI has ${actionTrees.length} sets of actions to choose between');
@@ -75,7 +72,7 @@ class Minimax {
         // TODO: Handle multiple turns
 
         for (actionTree in actionTrees) {
-            var result = try_actions(game, player, actionTree);
+            var result = try_actions(game, player, actionTree, 0);
             if (result.score > bestResult.score) {
                 bestResult.score = result.score;
                 bestResult.actions = result.actions;
@@ -87,14 +84,21 @@ class Minimax {
     }
 
     // TODO: Refactor this
-    function try_actions(game :Game, player :Player, actionTree :ActionTree) :BestActionsResult {
+    function try_actions(game :Game, player :Player, actionTree :ActionTree, actionCount :Int) :BestActionsResult {
+        actions_tested++;
+        
         // trace('Testing $actionTree');
         var newGame = game.clone();
         newGame.do_action(actionTree.current); // TODO: Make this return a clone instead?
 
-        if (actionTree.next == null || actionTree.next.length == 0) {
+        var max_action_depth_reached = (actionCount >= max_action_depth);
+        var no_more_actions = (actionTree.next == null || actionTree.next.length == 0);
+        if (max_action_depth_reached || no_more_actions) {
             // trace('actionTree has no "next" actions');
-            var result = { score: score_function(player, game) /* - turn */, actions: [actionTree.current] };
+            var result = { 
+                score: score_function(player, game) /* - turn */,
+                actions: [actionTree.current] 
+            };
             // trace('* returning $result');
             return result;
         }
@@ -104,11 +108,11 @@ class Minimax {
             actions: [] 
         };
         for (actionSubTree in actionTree.next) {
-            var result = try_actions(newGame, player, actionSubTree);
+            var result = try_actions(newGame, player, actionSubTree, actionCount + 1);
             // trace('Result is $result');
             var ownTurn   = game.is_current_player(player);
-            var ownBest   =  ownTurn && (result.score > bestResult.score);
-            var enemyBest = !ownTurn && (result.score < bestResult.score);
+            var ownBest   =  ownTurn && (result.score >= bestResult.score);
+            var enemyBest = !ownTurn && (result.score <= bestResult.score);
             if (ownBest || enemyBest) {
                 bestResult.score = result.score;
                 bestResult.actions = [actionTree.current].concat(result.actions);
