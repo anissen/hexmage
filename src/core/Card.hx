@@ -8,6 +8,7 @@ enum CardType {
 }
 
 typedef CardOptions = { 
+    ?id: Int,
     name :String,
     ?cost :Int,
     type :CardType
@@ -24,11 +25,13 @@ new Card({
 typedef Cards = Array<Card>;
 
 class Card {
+    public var id :Int; 
     public var name :String; 
     public var cost :Int;
     public var type :CardType;
 
     public function new(options :CardOptions) {
+        id   = options.id;
         name = options.name;
         cost = (options.cost != null ? options.cost : 0);
         type = options.type;
@@ -36,6 +39,7 @@ class Card {
 
     public function clone() {
         return new Card({
+            id: id,
             name: name,
             cost: cost,
             type: type

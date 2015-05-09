@@ -14,7 +14,6 @@ class MinionLibrary {
         minions.set(minion.name, minion);
     }
 
-
     public var nextMinionId(default, null) :Int;
 
     public function new(nextId :Int) {

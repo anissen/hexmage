@@ -14,10 +14,19 @@ class CardLibrary {
         cards.set(card.name, card);
     }
 
-    static public function create(name :String) {
-        var card = cards.get(name);
-        if (card == null)
+    public var nextCardId(default, null) :Int;
+
+    public function new(nextId :Int) {
+        nextCardId = nextId;
+    }
+
+    public function create(name :String) {
+        var cardPrototype = cards.get(name);
+        if (cardPrototype == null)
             throw 'Card with name "$name" does not exist!';
-        return card.clone();
+        
+        var card = cardPrototype.clone();
+        card.id = nextCardId++;
+        return card;
     }
 }

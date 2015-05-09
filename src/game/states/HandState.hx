@@ -55,7 +55,7 @@ class HandState extends State {
     public function play_card(card :Card) :Promise {
         return new Promise(function(resolve, reject) {
             for (cardEntity in cards) {
-                if (cardEntity.card.name == card.name) {
+                if (cardEntity.card.id == card.id) {
                     Actuate.tween(cardEntity, 0.3, { rotation_z: 0 });
                     Actuate
                         .tween(cardEntity.pos, 0.3, { x: Luxe.screen.w / 2, y: Luxe.screen.h / 2 })

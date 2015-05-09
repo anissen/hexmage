@@ -1,6 +1,7 @@
 
 package core;
 
+import core.CardLibrary;
 import core.MinionLibrary;
 import core.Player;
 import core.enums.Actions;
@@ -9,6 +10,7 @@ import core.enums.Events;
 typedef GameState = {
     var board :Board;
     var players :Players; // includes deck
+    @:optional var cardIdCounter :Int;
     @:optional var minionIdCounter :Int;
     @:optional var turn :Int;
 };
@@ -20,6 +22,8 @@ typedef ActionTree = { current :Action, ?next :Array<ActionTree> };
 class Game {
     var state :GameState;
     static public var Id :Int = 0;
+
+    var cardLibrary :CardLibrary;
     var minionLibrary :MinionLibrary;
     // @:isVar public var id(default, null) :Int;
 
@@ -30,8 +34,13 @@ class Game {
 
     public function new(_state :GameState) {
         state = _state;
+        
         var nextMinionId = (_state.minionIdCounter != null ? _state.minionIdCounter : 0);
         minionLibrary = new MinionLibrary(nextMinionId);
+
+        var nextCardId = (_state.cardIdCounter != null ? _state.cardIdCounter : 0);
+        cardLibrary = new CardLibrary(nextCardId);
+        
         if (_state.turn == null) state.turn = 0;
         listeners = new List<EventListenerFunction>();
         //commandQueue = new Commands();
@@ -131,6 +140,7 @@ class Game {
             board: state.board.clone_board(),
             players: state.players,
             turn: state.turn,
+            cardIdCounter: cardLibrary.nextCardId,
             minionIdCounter: minionLibrary.nextMinionId
             //rules: state.rules // TODO: Should clone rules list
         });

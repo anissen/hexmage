@@ -85,21 +85,24 @@ class GameSetup {
     }
 
     static public function create_game() :Game {
+        var cardLibrary   = new CardLibrary(0);
+        var minionLibrary = new MinionLibrary(0);
+
         var human_player = new Player({
             name: 'Human Player',
             deck: new Deck({
                 name: 'Test Deck',
                 cards: [
-                    CardLibrary.create('Bunny'),
-                    CardLibrary.create('Bunny'),
-                    CardLibrary.create('Bunny'),
-                    CardLibrary.create('Teddybear'),
-                    CardLibrary.create('Teddybear'),
-                    CardLibrary.create('Teddybear'),
-                    CardLibrary.create('Unicorn'),
-                    CardLibrary.create('Unicorn'),
-                    CardLibrary.create('Unicorn'),
-                    CardLibrary.create('Unicorn')
+                    cardLibrary.create('Bunny'),
+                    cardLibrary.create('Bunny'),
+                    cardLibrary.create('Bunny'),
+                    cardLibrary.create('Teddybear'),
+                    cardLibrary.create('Teddybear'),
+                    cardLibrary.create('Teddybear'),
+                    cardLibrary.create('Unicorn'),
+                    cardLibrary.create('Unicorn'),
+                    cardLibrary.create('Unicorn'),
+                    cardLibrary.create('Unicorn')
                 ]
             })
         });
@@ -109,25 +112,25 @@ class GameSetup {
             deck: new Deck({
                 name: 'AI Test Deck',
                 cards: [
-                    CardLibrary.create('Troll'),
-                    CardLibrary.create('Troll'),
-                    CardLibrary.create('Troll'),
-                    CardLibrary.create('Troll'),
-                    CardLibrary.create('Troll'),
-                    CardLibrary.create('Goblin'),
-                    CardLibrary.create('Goblin'),
-                    CardLibrary.create('Goblin'),
-                    CardLibrary.create('Goblin'),
-                    CardLibrary.create('Goblin')
+                    cardLibrary.create('Troll'),
+                    cardLibrary.create('Troll'),
+                    cardLibrary.create('Troll'),
+                    cardLibrary.create('Troll'),
+                    cardLibrary.create('Troll'),
+                    cardLibrary.create('Goblin'),
+                    cardLibrary.create('Goblin'),
+                    cardLibrary.create('Goblin'),
+                    cardLibrary.create('Goblin'),
+                    cardLibrary.create('Goblin')
                 ]
             })
         });
 
-        var minionLibrary = new MinionLibrary(0);
         var tiles = { x: 3, y: 4 };
         var gameState = {
             board: new Board(tiles.x, tiles.y),
             players: [human_player, ai_player],
+            cardIdCounter: cardLibrary.nextCardId,
             minionIdCounter: minionLibrary.nextMinionId
         };
         return new Game(gameState);
