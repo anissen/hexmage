@@ -56,7 +56,7 @@ class MinionEntity extends Visual {
         text.text = '${minion.name}\n${minion.attack}/${minion.life}';
         return new Promise(function(resolve, reject) {
             Actuate
-                .tween(this.color, 0.6, { s: 0 })
+                .tween(this.color, 0.6 * Settings.TweenFactor, { s: 0 })
                 .reverse()
                 .onComplete(resolve);
         });

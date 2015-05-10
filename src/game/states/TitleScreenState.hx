@@ -48,16 +48,16 @@ class TitleScreenState extends State {
         });
 
         Actuate
-            .tween(background.pos, 0.3, { y: 0 })
+            .tween(background.pos, 0.3 * Settings.TweenFactor, { y: 0 })
             .onComplete(function() {
-                Actuate.tween(titleText.color, 0.3, { a: 1 });
+                Actuate.tween(titleText.color, 0.3 * Settings.TweenFactor, { a: 1 });
             });
     }
 
     override function onleave<T>(_value :T) {
         // trace('LEAVE $StateId');
         Actuate
-            .tween(background.pos, 0.3, { y: -Luxe.screen.h })
+            .tween(background.pos, 0.3 * Settings.TweenFactor, { y: -Luxe.screen.h })
             .onComplete(function() {
                 scene.empty();
             });

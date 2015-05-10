@@ -55,13 +55,13 @@ class HandState extends State {
     public function play_card(card :Card) :Promise {
         return new Promise(function(resolve, reject) {
             var cardEntity = get_card_entity(card.id);
-            Actuate.tween(cardEntity, 0.3, { rotation_z: 0 });
+            Actuate.tween(cardEntity, 0.3 * Settings.TweenFactor, { rotation_z: 0 });
             Actuate
-                .tween(cardEntity.pos, 0.3, { x: Luxe.screen.w / 2, y: Luxe.screen.h / 2 })
+                .tween(cardEntity.pos, 0.3 * Settings.TweenFactor, { x: Luxe.screen.w / 2, y: Luxe.screen.h / 2 })
                 .onComplete(function() {
-                    Actuate.tween(cardEntity.scale, 0.4, { x: 0.6, y: 0.6 });
+                    Actuate.tween(cardEntity.scale, 0.4 * Settings.TweenFactor, { x: 0.6, y: 0.6 });
                     Actuate
-                        .tween(cardEntity.color, 0.4, { a: 0 })
+                        .tween(cardEntity.color, 0.4 * Settings.TweenFactor, { a: 0 })
                         .onComplete(function() {
                             cards.remove(cardEntity);
                             cardEntity.destroy();
@@ -85,15 +85,16 @@ class HandState extends State {
 
     function position_cards() :Promise {
         return new Promise(function(resolve, reject) {
+            var tweenTime = 0.3 * Settings.TweenFactor;
             for (i in 0 ... cards.length) {
                 var cardEntity = cards[i];
                 var cardCount = cards.length;
                 var startX :Float = (Luxe.screen.w / 2) - (cards.length * 120) / 2;
                 var startRot :Float = -((cards.length - 1) * 3) / 2 + (flipped ? 180 : 0);
-                Actuate.tween(cardEntity.pos, 0.3, { x: startX + i * 120 });
-                Actuate.tween(cardEntity, 0.3, { rotation_z: startRot + (flipped ? -i : i) * 3 });
+                Actuate.tween(cardEntity.pos, tweenTime, { x: startX + i * 120 });
+                Actuate.tween(cardEntity, tweenTime, { rotation_z: startRot + (flipped ? -i : i) * 3 });
             }
-            Luxe.timer.schedule(0.3, resolve);
+            Luxe.timer.schedule(tweenTime, resolve);
         });
     }
 
@@ -113,23 +114,23 @@ class HandState extends State {
         for (cardEntity in cards) {
             var mouseover = Luxe.utils.geometry.point_in_geometry(event.pos, cardEntity.geometry);
             if (mouseover && card_hovered != cardEntity) {
-                Actuate.tween(cardEntity.scale, 0.3, { x: 1.5, y: 1.5 });
-                Actuate.tween(cardEntity.pos, 0.3, { y: cards_y - 70 });
+                Actuate.tween(cardEntity.scale, 0.3 * Settings.TweenFactor, { x: 1.5, y: 1.5 });
+                Actuate.tween(cardEntity.pos, 0.3 * Settings.TweenFactor, { y: cards_y - 70 });
                 if (card_hovered != null) {
-                    Actuate.tween(card_hovered.scale, 0.5, { x: 1.0, y: 1.0 });
-                    Actuate.tween(card_hovered.pos, 0.5, { y: cards_y });
+                    Actuate.tween(card_hovered.scale, 0.5 * Settings.TweenFactor, { x: 1.0, y: 1.0 });
+                    Actuate.tween(card_hovered.pos, 0.5 * Settings.TweenFactor, { y: cards_y });
                 }
                 card_hovered = cardEntity;
             } else if (!mouseover && card_hovered == cardEntity) {
-                Actuate.tween(cardEntity.scale, 0.5, { x: 1.0, y: 1.0 });
-                Actuate.tween(cardEntity.pos, 0.5, { y: cards_y });
+                Actuate.tween(cardEntity.scale, 0.5 * Settings.TweenFactor, { x: 1.0, y: 1.0 });
+                Actuate.tween(cardEntity.pos, 0.5 * Settings.TweenFactor, { y: cards_y });
                 card_hovered = null;
             }   
         }
     }
 
     override function ondisabled<T>(_value :T) {
-        cards = [];
         scene.empty();
+        cards = [];
     }
 }

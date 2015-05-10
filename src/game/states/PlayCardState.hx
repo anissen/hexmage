@@ -18,6 +18,7 @@ class PlayCardState extends State {
     static public var StateId = 'PlayCardState';
 
     var scene :Scene;
+    var dots :Array<Sprite>;
 
     public function new() {
         super({ name: StateId });
@@ -36,10 +37,11 @@ class PlayCardState extends State {
             // callback(data);
             trace('PlayCardState: Playing card');
             trace(data);
-            Main.states.disable(this.name);
             game.do_action(PlayCardAction(data));
+            Main.states.disable(StateId);
         }));
-        luxe.tween.Actuate.tween(playAtDot.scale, 0.3, { x: 1, y: 1 });
+        dots.push(playAtDot);
+        luxe.tween.Actuate.tween(playAtDot.scale, 0.3 * Settings.TweenFactor, { x: 1, y: 1 });
     }
 
     override function onenabled<T>(_value :T) {
@@ -51,6 +53,8 @@ class PlayCardState extends State {
             depth: -20
         });
 
+        dots = [];
+
         var data :{ game :Game, card :core.Card } = cast _value;
         for (action in data.game.actions()) {
             switch action {
@@ -61,6 +65,8 @@ class PlayCardState extends State {
     }
 
     override function ondisabled<T>(_value :T) {
+        trace('PlayCardState: Emptying scene...');
+        for (dot in dots) dot.destroy(); // HACK: This *seems* to solve the problem with emptying scenes with entities with components
         scene.empty();
     }
 }

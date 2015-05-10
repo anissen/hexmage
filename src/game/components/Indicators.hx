@@ -18,7 +18,7 @@ class ActionIndicator extends Component {
 
     override function onadded() {
         Actuate
-            .tween(entity.scale, pulse_speed, { x: pulse_size, y: pulse_size })
+            .tween(entity.scale, pulse_speed * Settings.TweenFactor, { x: pulse_size, y: pulse_size })
             .reflect()
             .repeat();
     }
@@ -26,7 +26,7 @@ class ActionIndicator extends Component {
     override function onremoved() {
         if (initial_scale == null) return;
         Actuate
-            .tween(entity.scale, 0.3, { x: initial_scale.x, y: initial_scale.y });
+            .tween(entity.scale, 0.3 * Settings.TweenFactor, { x: initial_scale.x, y: initial_scale.y });
     }
 }
 
@@ -41,12 +41,12 @@ class MoveIndicator extends Component {
             parent: entity,
             depth: -10
         });
-        Actuate.tween(bg.scale, 0.4, { x: 1.0, y: 1.0 });
+        Actuate.tween(bg.scale, 0.4 * Settings.TweenFactor, { x: 1.0, y: 1.0 });
     }
 
     override function onremoved() {
         Actuate
-            .tween(bg.scale, 0.3, { x: 0.0, y: 0.0 })
+            .tween(bg.scale, 0.3 * Settings.TweenFactor, { x: 0.0, y: 0.0 })
             .onComplete(bg.destroy);
     }
 }
@@ -62,12 +62,12 @@ class AttackIndicator extends Component {
             parent: entity,
             depth: -5
         });
-        Actuate.tween(bg.scale, 0.4, { x: 1.0, y: 1.0 });
+        Actuate.tween(bg.scale, 0.4 * Settings.TweenFactor, { x: 1.0, y: 1.0 });
     }
 
     override function onremoved() {
         Actuate
-            .tween(bg.scale, 0.3, { x: 0.0, y: 0.0 })
+            .tween(bg.scale, 0.3 * Settings.TweenFactor, { x: 0.0, y: 0.0 })
             .onComplete(bg.destroy);
     }
 }

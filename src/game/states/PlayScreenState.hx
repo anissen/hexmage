@@ -111,7 +111,7 @@ class PlayScreenState extends State {
         return new Promise(function(resolve, reject) {
             text.text = 'Game Started!';
             text.color
-                .tween(2, { a: 1 })
+                .tween(2 * Settings.TweenFactor, { a: 1 })
                 .reverse()
                 .onComplete(resolve);
         });
@@ -121,7 +121,7 @@ class PlayScreenState extends State {
         return new Promise(function(resolve, reject) {
             text.text = 'Game Over!';
             text.color
-                .tween(2, { a: 1 })
+                .tween(2 * Settings.TweenFactor, { a: 1 })
                 .reverse()
                 .onComplete(resolve);
         });
@@ -132,7 +132,7 @@ class PlayScreenState extends State {
             var minionEntity = id_to_minion_entity(data.minion.id);
             var newPos = data.to.tile_to_world();
             Actuate
-                .tween(minionEntity.pos, 0.6, { x: newPos.x, y: newPos.y })
+                .tween(minionEntity.pos, 0.6 * Settings.TweenFactor, { x: newPos.x, y: newPos.y })
                 .onComplete(function() {
                     update_move_indicator(game.minion(data.minion.id));
                     resolve();
@@ -146,10 +146,10 @@ class PlayScreenState extends State {
             var minionPos = minionEntity.pos.clone();
             var victimEntityPos = id_to_minion_entity(data.victim.id).pos;
             Actuate
-                .tween(minionEntity.pos, 0.1, { x: victimEntityPos.x, y: victimEntityPos.y })
+                .tween(minionEntity.pos, 0.1 * Settings.TweenFactor, { x: victimEntityPos.x, y: victimEntityPos.y })
                 .onComplete(function() {
                     Actuate
-                        .tween(minionEntity.pos, 0.2, { x: minionPos.x, y: minionPos.y })
+                        .tween(minionEntity.pos, 0.2 * Settings.TweenFactor, { x: minionPos.x, y: minionPos.y })
                         .onComplete(function() {
                             update_move_indicator(game.minion(data.minion.id));
                             resolve();
@@ -162,7 +162,7 @@ class PlayScreenState extends State {
         return new Promise(function(resolve, reject) {
             var minionEntity = id_to_minion_entity(data.minion.id);
             Actuate
-                .tween(minionEntity.scale, 0.2, { x: 0, y: 0 })
+                .tween(minionEntity.scale, 0.2 * Settings.TweenFactor, { x: 0, y: 0 })
                 .onComplete(function() {
                     minionMap.remove(data.minion.id);
                     minionEntity.destroy();
@@ -185,7 +185,7 @@ class PlayScreenState extends State {
 
             minionEntity.scale.set_xy(0, 0);
             Actuate
-                .tween(minionEntity.scale, 0.3, { x: 1.0, y: 1.0 })
+                .tween(minionEntity.scale, 0.3 * Settings.TweenFactor, { x: 1.0, y: 1.0 })
                 .onComplete(function() {
                     Luxe.camera.shake(1);
 
@@ -276,6 +276,9 @@ class PlayScreenState extends State {
         var minionEntity = minionMap[minion.id];
         if (minionEntity == null) {
             trace('[update_move_indicator] minionEntity is null -- should this be able to happen?');
+            trace('Getting minion entity from minion with id: ${minion.id}');
+            trace('minionMap:');
+            trace(minionMap);
             return;
         }
         var canAttack = false;
@@ -383,11 +386,11 @@ class PlayScreenState extends State {
                 });
                 tile.rotation_z = -25 + 50 * Math.random();
                 Actuate
-                    .tween(tile, 0.2, { rotation_z: 0 })
-                    .delay((y * boardSize.x + x) / 20);
+                    .tween(tile, 0.2 * Settings.TweenFactor, { rotation_z: 0 })
+                    .delay(((y * boardSize.x + x) / 20) * Settings.TweenFactor);
                 Actuate
-                    .tween(tile.scale, 0.2, { x: 1, y: 1 })
-                    .delay((y * boardSize.x + x) / 20);
+                    .tween(tile.scale, 0.2 * Settings.TweenFactor, { x: 1, y: 1 })
+                    .delay(((y * boardSize.x + x) / 20) * Settings.TweenFactor);
             }
         }
 
