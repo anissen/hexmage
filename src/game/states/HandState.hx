@@ -54,28 +54,33 @@ class HandState extends State {
 
     public function play_card(card :Card) :Promise {
         return new Promise(function(resolve, reject) {
-            for (cardEntity in cards) {
-                if (cardEntity.card.id == card.id) {
-                    Actuate.tween(cardEntity, 0.3, { rotation_z: 0 });
+            var cardEntity = get_card_entity(card.id);
+            Actuate.tween(cardEntity, 0.3, { rotation_z: 0 });
+            Actuate
+                .tween(cardEntity.pos, 0.3, { x: Luxe.screen.w / 2, y: Luxe.screen.h / 2 })
+                .onComplete(function() {
+                    Actuate.tween(cardEntity.scale, 0.4, { x: 0.6, y: 0.6 });
                     Actuate
-                        .tween(cardEntity.pos, 0.3, { x: Luxe.screen.w / 2, y: Luxe.screen.h / 2 })
+                        .tween(cardEntity.color, 0.4, { a: 0 })
                         .onComplete(function() {
-                            Actuate.tween(cardEntity.scale, 0.4, { x: 0.6, y: 0.6 });
-                            Actuate
-                                .tween(cardEntity.color, 0.4, { a: 0 })
-                                .onComplete(function() {
-                                    cards.remove(cardEntity);
-                                    cardEntity.destroy();
-                                    position_cards().then(function(res, rej) {
-                                        card_clicked = null;
-                                        resolve();
-                                    });
-                                });
+                            cards.remove(cardEntity);
+                            cardEntity.destroy();
+                            position_cards().then(function(res, rej) {
+                                card_clicked = null;
+                                resolve();
+                            });
                         });
-                    return;
-                }
-            }
+                });
         });
+    }
+
+    function get_card_entity(cardId :Int) :CardEntity {
+        for (cardEntity in cards) {
+            if (cardEntity.card.id == cardId) {
+                return cardEntity;       
+            }
+        }
+        return null;
     }
 
     function position_cards() :Promise {
