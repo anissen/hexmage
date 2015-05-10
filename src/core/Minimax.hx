@@ -72,8 +72,11 @@ class Minimax {
         // TODO: Handle multiple turns
 
         for (actionTree in actionTrees) {
-            var result = try_actions(game, player, actionTree, 0);
-            if (result.score > bestResult.score) {
+            var result    = try_actions(game, player, actionTree, 0);
+            var ownTurn   = game.is_current_player(player);
+            var ownBest   =  ownTurn && (result.score >= bestResult.score);
+            var enemyBest = !ownTurn && (result.score <= bestResult.score);
+            if (ownBest || enemyBest) {
                 bestResult.score = result.score;
                 bestResult.actions = result.actions;
             }
@@ -104,16 +107,13 @@ class Minimax {
         }
 
         var bestResult = {
-            score: (game.is_current_player(player) ? -1000 : 1000), 
+            score: -1000,
             actions: [] 
         };
         for (actionSubTree in actionTree.next) {
             var result = try_actions(newGame, player, actionSubTree, actionCount + 1);
             // trace('Result is $result');
-            var ownTurn   = game.is_current_player(player);
-            var ownBest   =  ownTurn && (result.score >= bestResult.score);
-            var enemyBest = !ownTurn && (result.score <= bestResult.score);
-            if (ownBest || enemyBest) {
+            if (result.score >= bestResult.score) {
                 bestResult.score = result.score;
                 bestResult.actions = [actionTree.current].concat(result.actions);
             }
