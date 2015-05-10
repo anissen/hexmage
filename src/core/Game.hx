@@ -226,8 +226,10 @@ class Game {
         victim.life -= minion.attack;
         emit(MinionDamaged({ minion: victim.clone(), damage: minion.attack }));
 
-        minion.life -= victim.attack;
-        emit(MinionDamaged({ minion: minion.clone(), damage: victim.attack }));
+        if (victim.attack > 0) {
+            minion.life -= victim.attack;
+            emit(MinionDamaged({ minion: minion.clone(), damage: victim.attack }));
+        }   
         
         if (victim.life <= 0) {
             emit(MinionDied({ minion: victim.clone() })); // temp!
