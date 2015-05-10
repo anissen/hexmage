@@ -60,9 +60,9 @@ class Minimax {
         var actionTrees = game.nested_actions(max_action_depth);
         // trace('AI has ${actionTrees.length} sets of actions to choose between');
 
-        // if (actionTrees.length == 0) {
-        //     return { score: score_function(player, game) - turn, actions: [] };
-        // }
+        if (actionTrees.length == 0) {
+            return { score: score_function(player, game) - turn, actions: [] };
+        }
 
         var bestResult = { 
             score: (game.is_current_player(player) ? -1000 : 1000), 
