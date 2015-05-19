@@ -104,7 +104,8 @@ class GameSetup {
                     cardLibrary.create('Unicorn'),
                     cardLibrary.create('Unicorn')
                 ]
-            })
+            }),
+            ai: false
         });
 
         var ai_player = new Player({
@@ -123,7 +124,8 @@ class GameSetup {
                     cardLibrary.create('Goblin'),
                     cardLibrary.create('Goblin')
                 ]
-            })
+            }),
+            ai: true
         });
 
         var tiles = { x: 3, y: 4 };

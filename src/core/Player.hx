@@ -8,7 +8,8 @@ typedef PlayerOptions = {
     ?id :Int,
     name :String,
     ?deck :Deck,
-    ?hand :Cards
+    ?hand :Cards,
+    ai :Bool
 };
 
 typedef Players = Array<Player>;
@@ -20,6 +21,7 @@ class Player {
     public var name :String;
     public var deck :Deck;
     public var hand :Cards;
+    public var ai :Bool;
 
     public function new(options :PlayerOptions) {
         id = (options.id != null ? options.id : Id++);
@@ -27,5 +29,6 @@ class Player {
         name = options.name;
         deck = (options.deck != null ? options.deck : new Deck());
         hand = (options.hand != null ? options.hand : []);
+        ai   = options.ai;
     }
 }
