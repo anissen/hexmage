@@ -6,6 +6,19 @@ import core.enums.Actions;
 import core.Game;
 
 class RuleEngine {
+    // static public function available_actions_without_minions(state :GameState, player :Player) :Array<Action> 
+    // {
+    //     var board = state.board;
+    //     var actions = [];
+    //     function add_actions(a) {
+    //         actions = actions.concat(a);
+    //     }
+    //     for (card in player.hand) {
+    //         add_actions(card_plays_for_player(board, player, card));
+    //     }
+    //     return actions;
+    // }
+
     static public function available_actions(state :GameState, player :Player) :Array<Action> {
         var board = state.board;
         var actions = [];

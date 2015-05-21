@@ -11,6 +11,7 @@ typedef DeckOptions = {
 class Deck {
     public var name :String; 
     var cards :Array<Card>;
+    public var length(get, null) :Int;
 
     public function new(?options :DeckOptions) {
         if (options == null) {
@@ -41,15 +42,15 @@ class Deck {
     public function clone() :Deck {
         return new Deck({
             name: name,
-            cards: cards.copy() // TODO: This is probably not enough, use clone_cards()
+            cards: clone_cards()
         });
     }
 
-    // function clone_cards() {
-    //     var clonedCards = [];
-    //     for (card in cards) {
-    //         clonedCards.push(card.clone());
-    //     }
-    //     return clonedCards;
-    // }
+    function get_length() :Int {
+        return cards.length;
+    }
+
+    function clone_cards()  :Array<Card> {
+        return [ for (card in cards) card.clone() ];
+    }
 }

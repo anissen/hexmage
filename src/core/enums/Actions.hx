@@ -20,7 +20,7 @@ typedef PlayCardActionData = {
 typedef Actions = Array<Action>;
 
 enum Action {
-    NoAction();
+    // NoAction();
     MoveAction(p :MoveActionData);
     AttackAction(a :AttackActionData);
     PlayCardAction(c :PlayCardActionData);

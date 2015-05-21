@@ -31,4 +31,18 @@ class Player {
         hand = (options.hand != null ? options.hand : []);
         ai   = options.ai;
     }
+
+    public function clone() :Player {
+        return new Player({
+            id: id,
+            name: name,
+            deck: deck.clone(),
+            hand: clone_hand(),
+            ai: ai
+        });
+    }
+
+    function clone_hand() :Array<Card> {
+        return [ for (card in hand) card.clone() ];
+    }
 }

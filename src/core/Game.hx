@@ -117,28 +117,32 @@ class Game {
         return RuleEngine.available_actions(state, current_player);
     }
 
-    public function nested_actions(actionDepthRemaining :Int) :Array<ActionTree> {
-        if (actionDepthRemaining <= 0)
-            return [{ current: NoAction }];
+    // public function actions_without_minions() :Array<Action> {
+    //     return RuleEngine.available_actions_without_minions(state, current_player);
+    // }
 
-        var actions :Array<ActionTree> = [];
-        for (action in this.actions()) {
-            var newGame = this.clone();
-            newGame.do_action(action);
+    // public function nested_actions(actionDepthRemaining :Int) :Array<ActionTree> {
+    //     if (actionDepthRemaining <= 0)
+    //         return [{ current: NoAction }];
 
-            // trace(action);
+    //     var actions :Array<ActionTree> = [];
+    //     for (action in this.actions()) {
+    //         var newGame = this.clone();
+    //         newGame.do_action(action);
 
-            var result = newGame.nested_actions(actionDepthRemaining - 1);
-            actions.push({ current: action, next: result });
-        }
+    //         // trace(action);
 
-        return actions;
-    }
+    //         var result = newGame.nested_actions(actionDepthRemaining - 1);
+    //         actions.push({ current: action, next: result });
+    //     }
+
+    //     return actions;
+    // }
 
     public function clone() :Game {
         return new Game({
             board: state.board.clone_board(),
-            players: state.players,
+            players: clone_players(),
             turn: state.turn,
             cardIdCounter: cardLibrary.nextCardId,
             minionIdCounter: minionLibrary.nextMinionId
@@ -149,6 +153,10 @@ class Game {
     // public function state() :GameState {
     //     return state;
     // }
+
+    function clone_players() :Array<Player> {
+        return [ for (p in state.players) p.clone() ];
+    }
 
     public function players() :Array<Player> {
         return state.players;
@@ -180,7 +188,7 @@ class Game {
 
     public function do_action(action :Action) :Void {
         switch (action) {
-            case NoAction:
+            // case NoAction:
             case MoveAction(m): move(m);
             case AttackAction(a): attack(a);
             case PlayCardAction(c): playCard(c);
@@ -248,7 +256,12 @@ class Game {
 
     function playCard(playCardAction :PlayCardActionData) {
         var player = current_player;
-        player.hand.remove(playCardAction.card);
+        for (card in player.hand) {
+            if (card.id == playCardAction.card.id) {
+                player.hand.remove(card);
+                break;
+            }
+        }
 
         emit(CardPlayed({ card: playCardAction.card, player: player }));
 

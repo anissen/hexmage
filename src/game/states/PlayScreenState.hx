@@ -208,8 +208,8 @@ class PlayScreenState extends State {
     function handle_players_turn(data :PlayersTurnData) :Promise {
         if (data.player.name == 'AI Player') { // HACK HACK HACK
             var minimax = new Minimax({
-                max_turn_depth: 1,
-                max_action_depth: 2,
+                max_turn_depth: 3,
+                max_action_depth: 3,
                 min_delta_score: -4
             });
 
