@@ -6,7 +6,8 @@ Simple vanilla game (0.1):
     ✔ Vanilla minions @done (26-04-15 14:25)
 
 Simple challenging game (0.2):
-    ☐ Believable AI through minimax
+    ✔ Believable AI through minimax @done (21-05-15 22:31)
+        Very basic AI!!
 
 Simple magical game (0.3):
     ☐ Spell card: 2 damage to a minion
@@ -18,7 +19,13 @@ Simple costly game (0.4):
     ☐ Highlight cards that can be cast
     ☐ Subtract card cost from mana pool
 
-Simple hexagonal game (0.5):
+Simple heroic game (0.5):
+    ☐ Hero that must be killed for winning/losing
+
+Simple claimable game (0.6):
+    ☐ The hero claims tiles that provide the mana
+
+Simple hexagonal game (0.7):
     ☐ Make tiles hexagonal
 
 --- ✄ -----------------------
