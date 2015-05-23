@@ -25,7 +25,11 @@ class CardEntity extends Sprite {
     var cardMargin :Int = 8;
 
     public function new(options :CardOptions) {
-        var colorHue = 250 + Math.random() * 50;
+        var baseHue = switch (options.card.type) {
+            case MinionCard(_): 250;
+            case SpellCard(_): 340;
+        };
+        var colorHue = baseHue + Math.random() * 50;
         super({
             pos: options.pos,
             size: new Vector(cardWidth, cardHeight),

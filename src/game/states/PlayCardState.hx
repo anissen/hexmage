@@ -32,9 +32,10 @@ class PlayCardState extends State {
                 new Sprite({
                     pos: pos.tile_to_world(),
                     color: new Color(0.2, 0.2, 1),
-                    geometry: Luxe.draw.circle({ r: 25 }),
+                    geometry: Luxe.draw.circle({ r: 35 }),
                     scale: new Vector(0.0, 0.0),
-                    scene: scene
+                    scene: scene,
+                    depth: 100
                 });
             case Tile(tile):
                 new Sprite({
@@ -42,15 +43,17 @@ class PlayCardState extends State {
                     color: new Color(0.4, 0.2, 1),
                     geometry: Luxe.draw.box({ w: 100, h: 100 }),
                     scale: new Vector(0.0, 0.0),
-                    scene: scene
+                    scene: scene,
+                    depth: 100
                 });
             case Global:
                 new Sprite({
                     pos: Luxe.screen.mid.clone(),
                     color: new Color(0.2, 0.4, 1),
-                    geometry: Luxe.draw.ngon({ sides: 6, r: 200, solid: true }),
+                    geometry: Luxe.draw.ngon({ sides: 6, r: 250, solid: true }),
                     scale: new Vector(0.0, 0.0),
-                    scene: scene
+                    scene: scene,
+                    depth: 100
                 });
         }
         playAtDot.add(new OnClick(function() {
