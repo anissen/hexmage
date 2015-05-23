@@ -54,7 +54,9 @@ class GameSetup {
         MinionLibrary.Add(new Minion({
             name: 'Bunny',
             attack: 0,
-            life: 1
+            life: 1,
+            baseMoves: 2,
+            moves: 1
         }));
 
         MinionLibrary.Add(new Minion({
@@ -65,7 +67,7 @@ class GameSetup {
 
         CardLibrary.add(new Unicorn());
         CardLibrary.add(new core.Card({ 
-            name: 'Bunny',
+            name: 'Rapid Bunny',
             cost: 1,
             type: MinionCard('Bunny')
         }));

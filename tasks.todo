@@ -10,7 +10,7 @@ Simple slightly challenging game (0.2):
 
 Simple magical game (0.3):
     ✔ Spell card: 2 damage to a minion @done (23-05-15 21:33)
-    ☐ Minion with 2 moves/turn
+    ✔ Minion with 2 moves/turn @done (23-05-15 21:47)
     ☐ Minion with rule: "When this minion takes damage, draw a card"
 
 Simple costly game (0.4):
