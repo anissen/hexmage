@@ -6,6 +6,8 @@ import core.MinionLibrary;
 import core.Player;
 import core.enums.Actions;
 import core.enums.Events;
+import core.enums.Commands;
+import core.Card;
 
 typedef GameState = {
     var board :Board;
@@ -52,6 +54,9 @@ class Game {
         // for (player in players()) emit(PlayerEntered({ player: player }));
         for (minion in minions()) emit(MinionEntered({ minion: minion.clone() }));
         for (player in players()) {
+            for (card in player.hand) {
+                emit(CardDrawn({ card: card, player: player }));
+            }
             player.deck.shuffle();
             for (i in 0 ... 4) draw_card(player);
         };
@@ -90,18 +95,23 @@ class Game {
         */
     }
 
-    /*
     function handle_commands(commands :Commands) :Void {
         for (command in commands) {
             switch (command) {
-                case Print(s): trace('handle_commands: Print "$s"');
-                case DrawCards(count):
-                    trace('handle_commands: Draw $count card(s)');
-                    for (i in 0 ... count) draw_card();
+                case Damage(id, amount):
+                    var minion = minion(id);
+                    minion.life -= amount;
+                    emit(MinionDamaged({ minion: minion.clone(), damage: amount }));
+                    if (minion.life <= 0) {
+                        emit(MinionDied({ minion: minion.clone() }));
+                        var pos = minion_pos(minion);
+                        state.board.tile(pos).minion = null;
+                    }
+                case DrawCard:
+                    draw_card(current_player);
             }
         }
     }
-    */
 
     function emit(event :Event) :Void {
         for (listener in listeners) {
@@ -268,15 +278,24 @@ class Game {
         // handle
         switch (playCardAction.card.type) {
             case MinionCard(minionName): playMinion(minionName, playCardAction.target);
+            case SpellCard(castFunc): playSpell(castFunc, playCardAction.target);
         }
     }
 
-    function playMinion(minionName :String, target :Point) {
-        var minion = minionLibrary.create(minionName, current_player);
-        state.board.tile(target).minion = minion;
-        // handle_commands(minion.handle_event(SelfEntered));
+    function playMinion(minionName :String, target :Target) {
+        switch target {
+            case Tile(tile): 
+                var minion = minionLibrary.create(minionName, current_player);
+                state.board.tile(tile).minion = minion;
+                // handle_commands(minion.handle_event(SelfEntered));
 
-        emit(MinionEntered({ minion: minion.clone() }));
+                emit(MinionEntered({ minion: minion.clone() }));
+            case _: throw 'Cannot play minion with this target: "$target"';
+        }
+    }
+
+    function playSpell(castFunc :CastFunction, target :Target) {
+        handle_commands(castFunc(target));
     }
 
     public function has_won(player :Player) :Bool {

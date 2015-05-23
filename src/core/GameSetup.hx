@@ -6,6 +6,8 @@ import core.Minion;
 import core.Board;
 import core.RuleEngine;
 import core.enums.Actions;
+import core.enums.Commands;
+import core.Card;
 import core.Player;
 import core.Minimax;
 import core.Deck;
@@ -82,6 +84,53 @@ class GameSetup {
             cost: 2,
             type: MinionCard('Goblin')
         }));
+
+        function ouchFunction(target :Target) :Array<Command> {
+            switch target {
+                case Character(id): return [Damage(id, 2)];
+                case _: throw 'Ouch cannot target $target';
+            }
+        }
+
+        CardLibrary.add(new core.Card({ 
+            name: 'Ouch',
+            cost: 2,
+            type: SpellCard(ouchFunction),
+            targetType: TargetType.Minion
+            // type: SpellCard(function(event :Event) :Array<Command> {
+            //     return switch event {
+            //         case Cast
+            //     }
+            // })
+        }));
+
+        // function healFunction(target :Target) :Array<Command> {
+        //     switch target {
+        //         case Global: return [Heal(ALL_OWN_MINIONS, 2)];
+        //         case _: throw 'Ouch cannot target $target';
+        //     }
+        // }
+
+        // CardLibrary.add(new core.Card({ 
+        //     name: 'Heal Own',
+        //     cost: 2,
+        //     type: SpellCard(ouchFunction),
+        //     targetType: TargetType.Minion
+        // }));
+
+        function drawTwoCardsFunction(target :Target) :Array<Command> {
+            switch target {
+                case Global: return [DrawCard, DrawCard];
+                case _: throw 'Ouch cannot target $target';
+            }
+        }
+
+        CardLibrary.add(new core.Card({ 
+            name: 'It\'s Raining Cards!',
+            cost: 2,
+            type: SpellCard(drawTwoCardsFunction),
+            targetType: TargetType.Global
+        }));
     }
 
     static public function create_game() :Game {
@@ -90,6 +139,10 @@ class GameSetup {
 
         var human_player = new Player({
             name: 'Human Player',
+            hand: [
+                cardLibrary.create('Ouch'),
+                cardLibrary.create('It\'s Raining Cards!')
+            ],
             deck: new Deck({
                 name: 'Test Deck',
                 cards: [
@@ -110,6 +163,7 @@ class GameSetup {
 
         var ai_player = new Player({
             name: 'AI Player',
+            hand: [],
             deck: new Deck({
                 name: 'AI Test Deck',
                 cards: [

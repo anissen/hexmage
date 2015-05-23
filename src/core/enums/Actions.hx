@@ -13,8 +13,7 @@ typedef AttackActionData = {
 
 typedef PlayCardActionData = {
     card :Card,
-    target :Point
-    //targets :Array<Point>
+    target :Card.Target
 }
 
 typedef Actions = Array<Action>;

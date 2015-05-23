@@ -26,13 +26,33 @@ class PlayCardState extends State {
     }
 
     function can_play_at(data :PlayCardActionData, game :Game) {
-        var playAtDot = new Sprite({
-            pos: data.target.tile_to_world(),
-            color: new Color(0.2, 0.2, 1),
-            geometry: Luxe.draw.circle({ r: 25 }),
-            scale: new Vector(0.0, 0.0),
-            scene: scene
-        });
+        var playAtDot = switch (data.target) {
+            case Character(characterId): 
+                var pos = game.minion_pos(game.minion(characterId));
+                new Sprite({
+                    pos: pos.tile_to_world(),
+                    color: new Color(0.2, 0.2, 1),
+                    geometry: Luxe.draw.circle({ r: 25 }),
+                    scale: new Vector(0.0, 0.0),
+                    scene: scene
+                });
+            case Tile(tile):
+                new Sprite({
+                    pos: tile.tile_to_world().subtract(new Vector(50, 50)),
+                    color: new Color(0.4, 0.2, 1),
+                    geometry: Luxe.draw.box({ w: 100, h: 100 }),
+                    scale: new Vector(0.0, 0.0),
+                    scene: scene
+                });
+            case Global:
+                new Sprite({
+                    pos: Luxe.screen.mid.clone(),
+                    color: new Color(0.2, 0.4, 1),
+                    geometry: Luxe.draw.ngon({ sides: 6, r: 200, solid: true }),
+                    scale: new Vector(0.0, 0.0),
+                    scene: scene
+                });
+        }
         playAtDot.add(new OnClick(function() {
             // callback(data);
             trace('PlayCardState: Playing card');

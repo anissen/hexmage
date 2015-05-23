@@ -3,15 +3,37 @@ package core;
 
 import core.Minion;
 
+typedef CastFunction = Target -> Array<core.enums.Commands.Command>;
+
 enum CardType {
-    MinionCard(minionId :String); // TODO: Should be minion ID instead of Minion
+    MinionCard(minionId :String);
+    SpellCard(castFunc :CastFunction);
+    // SpellCard(func :Event->Array<Command>); // TODO: Should *probably* be spellId :String
+    // SingleMinionTargetSpellCard(func :String->Array<core.enums.Commands.Command>);
+}
+
+// targets: Minion, Hero, Character (Minion or Hero), Tile (empty), Global
+
+enum TargetType {
+    Minion;
+    // Hero;
+    // Character;
+    Tile;
+    Global;
+}
+
+enum Target {
+    Character(characterId :Int);
+    Tile(tile :Point);
+    Global;
 }
 
 typedef CardOptions = { 
     ?id: Int,
     name :String,
     ?cost :Int,
-    type :CardType
+    type :CardType,
+    ?targetType :TargetType
 }
 
 /*
@@ -29,12 +51,14 @@ class Card {
     public var name :String; 
     public var cost :Int;
     public var type :CardType;
+    public var targetType :TargetType;
 
     public function new(options :CardOptions) {
         id   = options.id;
         name = options.name;
         cost = (options.cost != null ? options.cost : 0);
         type = options.type;
+        targetType = (options.targetType != null ? options.targetType : TargetType.Tile);
     }
 
     public function clone() {
@@ -42,7 +66,8 @@ class Card {
             id: id,
             name: name,
             cost: cost,
-            type: type
+            type: type,
+            targetType : targetType
         });
     }
 }

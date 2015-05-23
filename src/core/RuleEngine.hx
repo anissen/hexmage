@@ -4,6 +4,7 @@ package core;
 import core.Board;
 import core.enums.Actions;
 import core.Game;
+import core.Card;
 
 class RuleEngine {
     // static public function available_actions_without_minions(state :GameState, player :Player) :Array<Action> 
@@ -43,7 +44,7 @@ class RuleEngine {
     }
 
     static function moves_for_minion(board :Board, minion :Minion) :Array<Action> {
-        if (!minion.can_move || minion.movesLeft <= 0) return [];
+        if (minion == null || !minion.can_move || minion.movesLeft <= 0) return [];
 
         var pos = board.minion_pos(minion);
         var x = pos.x;
@@ -63,7 +64,7 @@ class RuleEngine {
     }
 
     static function attacks_for_minion(board :Board, minion :Minion) :Array<Action> {
-        if (!minion.can_attack || minion.attacksLeft <= 0 || minion.attack <= 0) return [];
+        if (minion == null || !minion.can_attack || minion.attacksLeft <= 0 || minion.attack <= 0) return [];
 
         var pos = board.minion_pos(minion);
         var x = pos.x;
@@ -84,12 +85,19 @@ class RuleEngine {
     }
 
     static function card_plays_for_player(board :Board, player :Player, card :Card) :Array<Action> {
-        // dummy actions: find free tiles
-        var empty_tiles = board.filter_tiles(function(tile) {
-            return (tile.minion == null);
-        });
-        // if (empty_tiles.length == 0) return [];
-        // return [ PlayCardAction({ card: card, target: empty_tiles[0].pos }) ];
-        return [for (tile in empty_tiles) PlayCardAction({ card: card, target: tile.pos })];
+        return switch card.targetType {
+            case Minion: 
+                [ for (minion in board.minions()) PlayCardAction({ card: card, target: Target.Character(minion.id) }) ];
+            case Tile:
+                // dummy actions: find free tiles
+                var empty_tiles = board.filter_tiles(function(tile) {
+                    return (tile.minion == null);
+                });
+                // if (empty_tiles.length == 0) return [];
+                // return [ PlayCardAction({ card: card, target: empty_tiles[0].pos }) ];
+                [ for (tile in empty_tiles) PlayCardAction({ card: card, target: Target.Tile(tile.pos) }) ];
+            case Global:
+                [ PlayCardAction({ card: card, target: Target.Global }) ];
+        }
     }
 }
