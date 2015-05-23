@@ -5,9 +5,8 @@ Simple vanilla game (0.1):
     ✔ 10 card deck (5 card in hand, 5 in deck) @done (26-04-15 14:25)
     ✔ Vanilla minions @done (26-04-15 14:25)
 
-Simple challenging game (0.2):
-    ✔ Believable AI through minimax @done (21-05-15 22:31)
-        Very basic AI!!
+Simple slightly challenging game (0.2):
+    ✔ Basic AI @done (21-05-15 22:31)
 
 Simple magical game (0.3):
     ☐ Spell card: 2 damage to a minion
