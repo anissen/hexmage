@@ -68,8 +68,8 @@ class Game {
 
     function reset_minion_stats() :Void {
         for (minion in state.board.minions_for_player(current_player.id)) {
-            minion.movesLeft = minion.moves;
-            minion.attacksLeft = minion.attacks;
+            minion.moves = minion.baseMoves;
+            minion.attacks = minion.baseAttacks;
         }
     }
 
@@ -229,7 +229,7 @@ class Game {
         var currentPos = state.board.minion_pos(minion);
         state.board.tile(currentPos).minion = null;
         state.board.tile(moveAction.pos).minion = minion;
-        minion.movesLeft--;
+        minion.moves--;
         emit(MinionMoved({ minion: minion.clone(), from: currentPos, to: moveAction.pos }));
     }
 
@@ -237,7 +237,7 @@ class Game {
         var minion = state.board.minion(attackAction.minionId);
         var victim = state.board.minion(attackAction.victimId);
 
-        minion.attacksLeft--;
+        minion.attacks--;
         
         emit(MinionAttacked({ minion: minion.clone(), victim: victim.clone() }));
 
