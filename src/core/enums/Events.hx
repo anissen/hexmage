@@ -12,6 +12,7 @@ typedef TurnEndedData = { player :Player };
 typedef PlayersTurnData = { player :Player };
 typedef CardDrawnData = { card :Card, player :Player };
 typedef CardPlayedData = { card :Card, player :Player };
+typedef ManaSpentData = { spent :Int, player :Player };
 
 enum Event {
     GameStarted;
@@ -26,6 +27,8 @@ enum Event {
     MinionAttacked(data :MinionAttackedData);
     MinionDamaged(data :MinionDamagedData);
     PlayersTurn(data :PlayersTurnData);
+    
+    ManaSpent(data :ManaSpentData);
 
     PlayerEntered(data :PlayerEnteredData); // also triggered on game start 
     MinionEntered(data :MinionEnteredData); // also triggered on game start (minions should be added *after* initial setup)

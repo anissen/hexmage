@@ -14,7 +14,7 @@ Simple magical game (0.3):
     ✔ Minion with rule: "When this minion dies, draw a card" @done (24-05-15 11:03)
 
 Simple costly game (0.4):
-    ☐ Simple linear mana availability (ie. +1 mana/turn)
+    ✔ Simple linear mana availability (ie. +1 mana/turn) @done (24-05-15 21:09)
     ☐ Highlight cards that can be cast
     ☐ Subtract card cost from mana pool
 

@@ -27,7 +27,7 @@ class RuleEngine {
             actions = actions.concat(a);
         }
         for (card in player.hand) {
-            add_actions(card_plays_for_player(board, player, card));
+            add_actions(available_actions_for_card(state, card));
         }
         for (minion in board.minions_for_player(player.id)) {
             add_actions(available_actions_for_minion(state, minion));
@@ -84,7 +84,9 @@ class RuleEngine {
         return attacks;
     }
 
-    static function card_plays_for_player(board :Board, player :Player, card :Card) :Array<Action> {
+    static public function available_actions_for_card(state :GameState, player :Player, card :Card) :Array<Action> {
+        var board = state.board;
+        if (card.cost > player.mana) return []; // TEMP
         return switch card.targetType {
             case Minion: 
                 [ for (minion in board.minions()) PlayCardAction({ card: card, target: Target.Character(minion.id) }) ];

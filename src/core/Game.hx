@@ -73,6 +73,10 @@ class Game {
         }
     }
 
+    function reset_mana() :Void {
+        current_player.mana = current_player.baseMana;
+    }
+
     function draw_card(player :Player) {
         //trace('draw_card');
         // var player = current_player;
@@ -122,6 +126,10 @@ class Game {
 
     public function actions_for_minion(minion :Minion) :Array<Action> {
         return RuleEngine.available_actions_for_minion(state, minion);
+    }
+
+    public function actions_for_card(card :Card) :Array<Action> {
+        return RuleEngine.available_actions_for_card(state, card);
     }
 
     public function actions() :Array<Action> {
@@ -192,8 +200,12 @@ class Game {
 
     function start_turn() :Void {
         emit(TurnStarted({ player: current_player }));
+
         reset_minion_stats();
+        if (current_player.baseMana < 10) current_player.baseMana++; // TEMP
+        reset_mana();
         draw_card(current_player);
+
         emit(PlayersTurn({ player: current_player }));
     }
 
@@ -276,6 +288,9 @@ class Game {
             }
         }
 
+        var cardCost = playCardAction.card.cost;
+        player.mana -= cardCost;
+        emit(ManaSpent({ spent: cardCost, player: player }));
         emit(CardPlayed({ card: playCardAction.card, player: player }));
 
         // handle

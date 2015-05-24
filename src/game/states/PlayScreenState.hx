@@ -41,6 +41,7 @@ class PlayScreenState extends State {
     var eventQueue :List<Event>;
     var idle :Bool;
     var text :Text;
+    var manaText :Text;
 
     var minionActionState :MinionActionsState;
     var ownHand :HandState;
@@ -97,6 +98,7 @@ class PlayScreenState extends State {
             case MinionDamaged(data): handle_minion_damaged(data);
             case CardDrawn(data): handle_card_drawn(data);
             case CardPlayed(data): handle_card_played(data);
+            case ManaSpent(data): handle_mana_spent(data);
             case _: {
                 trace('$event is unhandled');
                 new Promise(function(resolve, reject) {
@@ -199,6 +201,20 @@ class PlayScreenState extends State {
         for (minion in game.minions_for_player(game.current_player)) {
             update_move_indicator(minion);
         }
+
+        var mana = data.player.mana;
+        var baseMana = data.player.baseMana;
+        manaText.text = '$mana/$baseMana Mana';
+
+        return new Promise(function(resolve, reject) {
+            resolve();
+        });
+    }
+
+    function handle_mana_spent(data :ManaSpentData) :Promise {
+        var mana = data.player.mana;
+        var baseMana = data.player.baseMana;
+        manaText.text = '$mana/$baseMana Mana';
 
         return new Promise(function(resolve, reject) {
             resolve();
@@ -414,6 +430,17 @@ class PlayScreenState extends State {
             text: '',
             pos: Luxe.screen.mid.clone(),
             color: new Color(1, 1, 1, 0),
+            align: TextAlign.center,
+            align_vertical: TextAlign.center,
+            point_size: 32,
+            scene: scene,
+            depth: 100
+        });
+
+        manaText = new Text({
+            text: '',
+            pos: new Vector(Luxe.screen.w * 3/4, Luxe.screen.h / 2),
+            color: new Color(1, 1, 1, 1),
             align: TextAlign.center,
             align_vertical: TextAlign.center,
             point_size: 32,
