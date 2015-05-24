@@ -32,10 +32,10 @@ class PlayCardState extends State {
                 new Sprite({
                     pos: pos.tile_to_world(),
                     color: new Color(0.2, 0.2, 1),
-                    geometry: Luxe.draw.circle({ r: 35 }),
+                    geometry: Luxe.draw.circle({ r: 40 }),
                     scale: new Vector(0.0, 0.0),
                     scene: scene,
-                    depth: 100
+                    depth: 0
                 });
             case Tile(tile):
                 new Sprite({
