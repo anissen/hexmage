@@ -19,7 +19,8 @@ Simple costly game (0.4):
     ✔ Subtract card cost from mana pool @done (24-05-15 21:38)
 
 Simple heroic game (0.5):
-    ☐ Hero that must be killed for winning/losing
+    ✔ Hero type that starts on board @done (24-05-15 22:03)
+    ☐ Hero must be killed for winning/losing
 
 Simple claimable game (0.6):
     ☐ The hero claims tiles that provide the mana

@@ -35,6 +35,22 @@ class GameSetup {
 
     static public function initialize() {
         MinionLibrary.Add(new Minion({
+            name: 'Orc Chieftain',
+            attack: 3,
+            life: 10,
+            hero: true
+        }));
+
+        MinionLibrary.Add(new Minion({
+            name: 'Princess',
+            attack: 1,
+            life: 10,
+            hero: true
+        }));
+
+        // ---------
+
+        MinionLibrary.Add(new Minion({
             name: 'Goblin',
             attack: 1,
             life: 2
@@ -42,7 +58,7 @@ class GameSetup {
 
         MinionLibrary.Add(new Minion({
             name: 'Troll',
-            attack: 4,
+            attack: 3,
             life: 1
         }));
 
@@ -189,8 +205,11 @@ class GameSetup {
         });
 
         var tiles = { x: 3, y: 4 };
+        var board = new Board(tiles.x, tiles.y);
+        board.tile({ x: 1, y: 0 }).minion = minionLibrary.create('Orc Chieftain', ai_player);
+        board.tile({ x: 1, y: 3 }).minion = minionLibrary.create('Princess', human_player);
         var gameState = {
-            board: new Board(tiles.x, tiles.y),
+            board: board,
             players: [human_player, ai_player],
             cardIdCounter: cardLibrary.nextCardId,
             minionIdCounter: minionLibrary.nextMinionId

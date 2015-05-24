@@ -252,8 +252,12 @@ class Minimax {
             var intrinsicMinionScore = 2;
             var minionAttackScore = 1;
             var minionLifeScore = 1;
+            var heroLifeScore = 3;
             for (minion in game.minions_for_player(p)) {
-                var minionScore = intrinsicMinionScore + Math.max(minion.attack, 0) * minionAttackScore + Math.max(minion.life, 0) * minionLifeScore;
+                var minionScore = intrinsicMinionScore + 
+                    Math.max(minion.attack, 0) * minionAttackScore + 
+                    Math.max(minion.life, 0) * (minion.hero ? heroLifeScore : minionLifeScore);
+                if (minion.hero && minion.life <= 0) score -= 1000;
                 // trace('Score for ${minion.name} is $minionScore');
                 score += minionScore;
             }

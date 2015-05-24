@@ -1,6 +1,7 @@
 
 package game.entities;
 
+import luxe.Sprite;
 import luxe.Text;
 import luxe.tween.Actuate;
 import luxe.Vector;
@@ -35,6 +36,18 @@ class MinionEntity extends Visual {
             scene: options.scene
         });
         minion = options.minion;
+
+        if (minion.hero) {
+            Luxe.resources.load_texture('assets/images/crown.png').then(function(texture) {
+                new Sprite({
+                    pos: new Vector(0, -50),
+                    texture: texture,
+                    scene: options.scene,
+                    scale: new Vector(0.14, 0.14),
+                    parent: this
+                });
+            });
+        }
 
         text = new Text({
             text: '${minion.name}\n${minion.attack}/${minion.life}',
