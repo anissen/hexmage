@@ -6,6 +6,7 @@ import core.GameSetup;
 import core.Minimax;
 import core.Point;
 import game.entities.CardEntity;
+import game.entities.TileEntity;
 import luxe.Color;
 import luxe.Input.KeyEvent;
 import luxe.Input.Key;
@@ -37,7 +38,7 @@ class PlayScreenState extends State {
     var scene :Scene;
     var background :Visual;
     var game :core.Game;
-    var tiles :Array<Array<Sprite>>;
+    var tiles :Array<Array<TileEntity>>;
     var minionMap :Map<Int, MinionEntity>;
     var eventQueue :List<Event>;
     var idle :Bool;
@@ -240,11 +241,7 @@ class PlayScreenState extends State {
 
     function handle_tile_claimed(data :TileClaimedData) :Promise {
         var tile = tiles[data.tileId.y][data.tileId.x];
-        tile.color.tween(0.3, { h: 100 - data.minion.playerId * 100, s: 0.7, v: 0.8 }); // HACK
-
-        return new Promise(function(resolve, reject) {
-            resolve();
-        });
+        return tile.claimed(data.minion.playerId);
     }
 
     function handle_players_turn(data :PlayersTurnData) :Promise {
@@ -405,26 +402,13 @@ class PlayScreenState extends State {
             tiles[y] = new Array();
             for (x in 0 ... boardSize.x) {
                 var point :Point = { x: x, y: y };
-                var hue = 360 * Math.random();
-                var tile = new Sprite({
+                var tile = new TileEntity({
                     pos: point.tile_to_world(),
-                    // color: new ColorHSV(hue, 0.5, 1),
-                    color: new ColorHSV(hue, 0, 1),
                     size: new Vector(tileSize, tileSize),
-                    scale: new Vector(0, 0),
-                    scene: scene,
-                    depth: -50
+                    border: new Vector(tileBorder, tileBorder),
+                    scene: scene
                 });
                 tiles[y].push(tile);
-                new Sprite({
-                    pos: new Vector(tileSize / 2, tileSize / 2),
-                    size: new Vector(tileSize - tileBorder, tileSize - tileBorder),
-                    // color: new ColorHSV(hue, 0.5, 0.8),
-                    color: new ColorHSV(hue, 0, 0.8),
-                    scene: scene,
-                    parent: tile,
-                    depth: -50
-                });
                 tile.rotation_z = -25 + 50 * Math.random();
                 Actuate
                     .tween(tile, 0.2 * Settings.TweenFactor, { rotation_z: 0 })
