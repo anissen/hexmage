@@ -19,6 +19,7 @@ typedef CardOptions = {
 
 class CardEntity extends Sprite {
     public var card :core.Card;
+    var cardFaceColor :ColorHSV;
     var text :Text;
     var cardWidth :Int = 140;
     var cardHeight :Int = 200;
@@ -39,17 +40,18 @@ class CardEntity extends Sprite {
         });
         card = options.card;
 
+        cardFaceColor = new ColorHSV(colorHue, 0.8, 0.9);
         new Sprite({
             pos: new Vector(cardWidth / 2, cardHeight / 2),
             size: new Vector(cardWidth - cardMargin, cardHeight - cardMargin),
-            color: new ColorHSV(colorHue, 0.8, 0.9),
+            color: cardFaceColor,
             scene: options.scene,
             depth: options.depth,
             parent: this
         });
 
         text = new Text({
-            text: '${card.name}', //  (${card.cost})
+            text: '${card.name} (${card.cost})',
             pos: new Vector(cardWidth / 2, cardMargin + 15),
             color: new Color(1, 1, 1, 1),
             align: TextAlign.center,
@@ -59,6 +61,10 @@ class CardEntity extends Sprite {
             parent: this,
             depth: options.depth
         });
+    }
+
+    public function set_color_value(value :Float) {
+        cardFaceColor.tween(0.3, { s: value });
     }
 
     override function init() {

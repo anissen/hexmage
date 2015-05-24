@@ -129,7 +129,7 @@ class Game {
     }
 
     public function actions_for_card(card :Card) :Array<Action> {
-        return RuleEngine.available_actions_for_card(state, card);
+        return RuleEngine.available_actions_for_card(state, current_player, card);
     }
 
     public function actions() :Array<Action> {

@@ -206,6 +206,13 @@ class PlayScreenState extends State {
         var baseMana = data.player.baseMana;
         manaText.text = '$mana/$baseMana Mana';
 
+        // HACK, highlight should be updated after each command
+        if (!data.player.ai) {
+            ownHand.highlight_cards(game);
+        } else {
+            enemyHand.highlight_cards(game);
+        }
+
         return new Promise(function(resolve, reject) {
             resolve();
         });
@@ -215,6 +222,13 @@ class PlayScreenState extends State {
         var mana = data.player.mana;
         var baseMana = data.player.baseMana;
         manaText.text = '$mana/$baseMana Mana';
+
+        // HACK, highlight should be updated after each command
+        if (!data.player.ai) {
+            ownHand.highlight_cards(game);
+        } else {
+            enemyHand.highlight_cards(game);
+        }
 
         return new Promise(function(resolve, reject) {
             resolve();
@@ -270,9 +284,6 @@ class PlayScreenState extends State {
         } else {
             return enemyHand.add_card(data.card); 
         }
-        return new Promise(function(resolve, reject) {
-            resolve();
-        });
     }
 
     function handle_card_played(data :CardPlayedData) :Promise {
@@ -281,9 +292,6 @@ class PlayScreenState extends State {
         } else {
             return enemyHand.play_card(data.card);
         }
-        return new Promise(function(resolve, reject) {
-            resolve();
-        });
     }
 
     function update_move_indicator(minion :core.Minion) {

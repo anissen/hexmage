@@ -74,6 +74,17 @@ class HandState extends State {
         });
     }
 
+    public function highlight_cards(game :Game) :Void {
+        for (cardEntity in cards) {
+            highlight_card_entity(cardEntity, game);
+        }
+    }
+
+    public function highlight_card_entity(cardEntity :CardEntity, game :Game) :Void {
+        var canCast = (game.actions_for_card(cardEntity.card).length > 0);
+        cardEntity.set_color_value(canCast ? 0.8 : 0.3);
+    }
+
     function get_card_entity(cardId :Int) :CardEntity {
         for (cardEntity in cards) {
             if (cardEntity.card.id == cardId) {

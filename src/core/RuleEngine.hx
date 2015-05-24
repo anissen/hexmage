@@ -27,7 +27,7 @@ class RuleEngine {
             actions = actions.concat(a);
         }
         for (card in player.hand) {
-            add_actions(available_actions_for_card(state, card));
+            add_actions(available_actions_for_card(state, player, card));
         }
         for (minion in board.minions_for_player(player.id)) {
             add_actions(available_actions_for_minion(state, minion));
