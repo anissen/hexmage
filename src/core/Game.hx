@@ -104,6 +104,7 @@ class Game {
                     emit(MinionDamaged({ minion: minion.clone(), damage: amount }));
                     if (minion.life <= 0) {
                         emit(MinionDied({ minion: minion.clone() }));
+                        handle_commands(minion.handle_event(MinionEvent.Died));
                         var pos = minion_pos(minion);
                         state.board.tile(pos).minion = null;
                     }
@@ -251,6 +252,7 @@ class Game {
         
         if (victim.life <= 0) {
             emit(MinionDied({ minion: victim.clone() })); // temp!
+            handle_commands(victim.handle_event(MinionEvent.Died));
             var pos = minion_pos(victim);
             //if (victim.on_death != null)
             //    handle_commands(victim.on_death());
@@ -258,6 +260,7 @@ class Game {
         }
         if (minion.life <= 0) {
             emit(MinionDied({ minion: minion.clone() })); // temp!
+            handle_commands(minion.handle_event(MinionEvent.Died));
             var pos = minion_pos(minion);
             //handle_commands(minion.handle_event(MinionDied, { minionId: minion.id }));
             state.board.tile(pos).minion = null;

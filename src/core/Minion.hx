@@ -18,7 +18,7 @@ typedef MinionOptions = {
     ?can_be_damaged :Bool,
     ?can_move :Bool,
     ?can_attack :Bool,
-    ?on_event :Map<Event, Void -> Commands>
+    ?on_event :Map<MinionEvent, Void -> Commands>
 };
 
 class Minion {
@@ -36,7 +36,7 @@ class Minion {
     public var can_move :Bool;
     public var can_attack :Bool;
 
-    public var on_event :Map<Event, Void -> Commands>;
+    public var on_event :Map<MinionEvent, Void -> Commands>;
 
     public function new(options :MinionOptions) {
         id               = options.id;
@@ -52,10 +52,10 @@ class Minion {
         can_move         = (options.can_move != null ? options.can_move : true);
         can_attack       = (options.can_attack != null ? options.can_attack : true);
 
-        on_event = (options.on_event != null ? options.on_event : new Map<Event, Void -> Commands>());
+        on_event = (options.on_event != null ? options.on_event : new Map<MinionEvent, Void -> Commands>());
     }
 
-    public function handle_event(event :Event) :Commands {
+    public function handle_event(event :MinionEvent) :Commands {
         var event_func = on_event.get(event);
         if (event_func == null) return [];
         return event_func();

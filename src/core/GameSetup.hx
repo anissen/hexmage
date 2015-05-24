@@ -7,6 +7,7 @@ import core.Board;
 import core.RuleEngine;
 import core.enums.Actions;
 import core.enums.Commands;
+import core.enums.Events;
 import core.Card;
 import core.Player;
 import core.Minimax;
@@ -48,7 +49,10 @@ class GameSetup {
         MinionLibrary.Add(new Minion({
             name: 'Teddybear',
             attack: 2,
-            life: 2
+            life: 2,
+            on_event: [
+                Died => function() { return [ DrawCard ]; }
+            ]
         }));
 
         MinionLibrary.Add(new Minion({
@@ -148,9 +152,9 @@ class GameSetup {
             deck: new Deck({
                 name: 'Test Deck',
                 cards: [
-                    cardLibrary.create('Bunny'),
-                    cardLibrary.create('Bunny'),
-                    cardLibrary.create('Bunny'),
+                    cardLibrary.create('Rapid Bunny'),
+                    cardLibrary.create('Rapid Bunny'),
+                    cardLibrary.create('Rapid Bunny'),
                     cardLibrary.create('Teddybear'),
                     cardLibrary.create('Teddybear'),
                     cardLibrary.create('Teddybear'),

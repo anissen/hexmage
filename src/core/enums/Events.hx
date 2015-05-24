@@ -31,4 +31,8 @@ enum Event {
     MinionEntered(data :MinionEnteredData); // also triggered on game start (minions should be added *after* initial setup)
 }
 
+enum MinionEvent {
+    Died;
+}
+
 typedef Events = Array<Event>;
