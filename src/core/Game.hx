@@ -189,11 +189,16 @@ class Game {
         return current_player.id == player.id;
     }
 
+    public function has_lost(player :Player) :Bool {
+        for (minion in minions_for_player(player)) {
+            if (minion.hero) return false;
+        }
+        return true;
+    }
+
     public function is_game_over() :Bool {
-        if (state.turn < state.players.length) return false; // HACK to not game over on the first round
         for (player in state.players) {
-            if (state.board.minions_for_player(player.id).length == 0)
-                return true;
+            if (has_lost(player)) return true;
         }
         return false;
     }
@@ -314,15 +319,6 @@ class Game {
 
     function playSpell(castFunc :CastFunction, target :Target) {
         handle_commands(castFunc(target));
-    }
-
-    public function has_won(player :Player) :Bool {
-        for (other_player in state.players) {
-            if (other_player.id == player.id) continue;
-            if (state.board.minions_for_player(other_player.id).length > 0)
-                return false;
-        }
-        return true;
     }
 
     public function listen(func: EventListenerFunction) {
