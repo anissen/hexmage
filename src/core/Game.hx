@@ -246,9 +246,17 @@ class Game {
         var minion = state.board.minion(moveAction.minionId);
         var currentPos = state.board.minion_pos(minion);
         state.board.tile(currentPos).minion = null;
-        state.board.tile(moveAction.pos).minion = minion;
+        var toTile = state.board.tile(moveAction.pos);
+        toTile.minion = minion;
         minion.moves--;
         emit(MinionMoved({ minion: minion.clone(), from: currentPos, to: moveAction.pos }));
+        if (minion.hero) {
+            if (toTile.claimed == null) {
+                emit(TileClaimed({ tileId: moveAction.pos, minion: minion.clone() }));
+            } else if (toTile.claimed != minion.playerId) {
+                emit(TileReclaimed({ tileId: moveAction.pos, minion: minion.clone() }));
+            }
+        }
     }
 
     function attack(attackAction :AttackActionData) {

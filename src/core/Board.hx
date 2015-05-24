@@ -4,7 +4,7 @@ package core;
 import core.Minion;
 import core.enums.Actions;
 
-typedef Tile = { ?minion :Minion };
+typedef Tile = { ?claimed: Int, ?minion :Minion };
 typedef Tiles = Array<Array<Tile>>;
 
 class Board {
@@ -35,7 +35,7 @@ class Board {
     public function clone_board() :Board {
         function create_tile(x, y) {
             var tile = tile({ x: x, y: y });
-            return { minion: (tile.minion != null ? tile.minion.clone() : null) };
+            return { claimed: tile.claimed, minion: (tile.minion != null ? tile.minion.clone() : null) };
         }
         return new Board(boardSize.x, boardSize.y, create_tile);
     }

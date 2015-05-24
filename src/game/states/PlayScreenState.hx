@@ -37,6 +37,7 @@ class PlayScreenState extends State {
     var scene :Scene;
     var background :Visual;
     var game :core.Game;
+    var tiles :Array<Array<Sprite>>;
     var minionMap :Map<Int, MinionEntity>;
     var eventQueue :List<Event>;
     var idle :Bool;
@@ -99,6 +100,8 @@ class PlayScreenState extends State {
             case CardDrawn(data): handle_card_drawn(data);
             case CardPlayed(data): handle_card_played(data);
             case ManaSpent(data): handle_mana_spent(data);
+            case TileClaimed(data): handle_tile_claimed(data);
+            case TileReclaimed(data): handle_tile_claimed(data);
             case _: {
                 trace('$event is unhandled');
                 new Promise(function(resolve, reject) {
@@ -229,6 +232,15 @@ class PlayScreenState extends State {
         } else {
             enemyHand.highlight_cards(game);
         }
+
+        return new Promise(function(resolve, reject) {
+            resolve();
+        });
+    }
+
+    function handle_tile_claimed(data :TileClaimedData) :Promise {
+        var tile = tiles[data.tileId.y][data.tileId.x];
+        tile.color.tween(0.3, { h: 100 - data.minion.playerId * 100, s: 0.7, v: 0.8 }); // HACK
 
         return new Promise(function(resolve, reject) {
             resolve();
@@ -388,22 +400,27 @@ class PlayScreenState extends State {
         var tileSize = (minSize - tileMargin * tileCount) / tileCount; // 120;
         // var tileSize = 120;
         var tileBorder = 8;
+        tiles = [];
         for (y in 0 ... boardSize.y) {
+            tiles[y] = new Array();
             for (x in 0 ... boardSize.x) {
                 var point :Point = { x: x, y: y };
                 var hue = 360 * Math.random();
                 var tile = new Sprite({
                     pos: point.tile_to_world(),
-                    color: new ColorHSV(hue, 0.5, 1),
+                    // color: new ColorHSV(hue, 0.5, 1),
+                    color: new ColorHSV(hue, 0, 1),
                     size: new Vector(tileSize, tileSize),
                     scale: new Vector(0, 0),
                     scene: scene,
                     depth: -50
                 });
+                tiles[y].push(tile);
                 new Sprite({
                     pos: new Vector(tileSize / 2, tileSize / 2),
                     size: new Vector(tileSize - tileBorder, tileSize - tileBorder),
-                    color: new ColorHSV(hue, 0.5, 0.8),
+                    // color: new ColorHSV(hue, 0.5, 0.8),
+                    color: new ColorHSV(hue, 0, 0.8),
                     scene: scene,
                     parent: tile,
                     depth: -50
