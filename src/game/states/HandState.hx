@@ -41,13 +41,14 @@ class HandState extends State {
         flipped = flip;
     }
 
-    public function add_card(card :Card) :Promise {
+    public function add_card(card :Card, game :Game /* HACK */) :Promise {
         var cardEntity = new CardEntity({ 
             pos: new Vector(Luxe.screen.w * Math.random(), cards_y),
             card: card,
             scene: scene,
             depth: card_depth++
         });
+        highlight_card_entity(cardEntity, game);
         cards.push(cardEntity);
         return position_cards();
     }

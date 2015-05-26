@@ -25,7 +25,7 @@ Simple heroic game (0.5):
 Simple claimable game (0.6):
     ✔ Hero claims tiles @done (24-05-15 23:04)
     ✔ Claimed tiles provide the mana @done (26-05-15 21:28)
-    ☐ Minions must be played along claimed tiles
+    ✔ Minions must be played along claimed tiles @done (26-05-15 22:19)
 
 Simple hexagonal game (0.7):
     ☐ Make tiles hexagonal

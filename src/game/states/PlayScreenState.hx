@@ -215,8 +215,6 @@ class PlayScreenState extends State {
 
     function handle_mana_gained(data :ManaGainedData) :Promise {
         var tile = tiles[data.tileId.y][data.tileId.x];
-        trace('handle_mana_gained');
-        trace(data);
         tile.set_mana_text(data.total);
 
         if (!data.player.ai) {
@@ -232,8 +230,6 @@ class PlayScreenState extends State {
 
     function handle_mana_spent(data :ManaSpentData) :Promise {
         var tile = tiles[data.tileId.y][data.tileId.x];
-        trace('handle_mana_spent');
-        trace(data);
         tile.set_mana_text(data.left);
 
         if (!data.player.ai) {
@@ -297,9 +293,9 @@ class PlayScreenState extends State {
 
     function handle_card_drawn(data :CardDrawnData) :Promise {
         if (data.player.name == 'Human Player') {
-            return ownHand.add_card(data.card);
+            return ownHand.add_card(data.card, game);
         } else {
-            return enemyHand.add_card(data.card); 
+            return enemyHand.add_card(data.card, game); 
         }
     }
 

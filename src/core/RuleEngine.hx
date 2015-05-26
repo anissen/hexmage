@@ -88,19 +88,50 @@ class RuleEngine {
         var board = state.board;
         if (board.mana_for_player(player.id) < card.cost) return [];
 
-        return switch card.targetType {
-            case Minion: 
-                [ for (minion in board.minions()) PlayCardAction({ card: card, target: Target.Character(minion.id) }) ];
-            case Tile:
-                // dummy actions: find free tiles
-                var empty_tiles = board.filter_tiles(function(tile) {
-                    return (tile.minion == null);
-                });
-                // if (empty_tiles.length == 0) return [];
-                // return [ PlayCardAction({ card: card, target: empty_tiles[0].pos }) ];
-                [ for (tile in empty_tiles) PlayCardAction({ card: card, target: Target.Tile(tile) }) ];
-            case Global:
-                [ PlayCardAction({ card: card, target: Target.Global }) ];
+        function is_tile_claimed(x :Int, y :Int) {
+            var boardSize = board.board_size();
+            if (x < 0 || x >= boardSize.x) return false;
+            if (y < 0 || y >= boardSize.y) return false;
+            var tile = board.tile({ x: x, y: y });
+            if (tile == null) return false;
+            return (tile.claimed == player.id);
         }
+
+        function minion_card_targets() {
+            var valid_tiles = board.filter_tiles(function(tile) {
+                if (tile.claimed != null) return false;
+                if (tile.minion != null) return false;
+                if (is_tile_claimed(tile.x, tile.y - 1)) return true;
+                if (is_tile_claimed(tile.x, tile.y + 1)) return true;
+                if (is_tile_claimed(tile.x - 1, tile.y)) return true;
+                if (is_tile_claimed(tile.x + 1, tile.y)) return true;
+                return false;
+            });
+            return [ for (tile in valid_tiles) Target.Tile(tile) ];
+        }
+
+        function spell_card_targets() {
+            return switch card.targetType {
+                case Minion: 
+                    [ for (minion in board.minions()) Target.Character(minion.id) ];
+                case Tile:
+                    // dummy actions: find free tiles
+                    var empty_tiles = board.filter_tiles(function(tile) {
+                        return (tile.minion == null);
+                    });
+                    // if (empty_tiles.length == 0) return [];
+                    // return [ PlayCardAction({ card: card, target: empty_tiles[0].pos }) ];
+                    [ for (tile in empty_tiles) Target.Tile(tile) ];
+                case Global:
+                    [ Target.Global ];
+            }
+        }
+
+        var targets = switch card.type {
+            case MinionCard(_): minion_card_targets();
+            case SpellCard(_): spell_card_targets();
+        };
+
+        return [ for (target in targets) PlayCardAction({ card: card, target: target }) ];
     }
 }

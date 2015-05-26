@@ -161,10 +161,7 @@ class GameSetup {
 
         var human_player = new Player({
             name: 'Human Player',
-            hand: [
-                cardLibrary.create('Ouch'),
-                cardLibrary.create('It\'s Raining Cards!')
-            ],
+            hand: [],
             deck: new Deck({
                 name: 'Test Deck',
                 cards: [
@@ -177,7 +174,9 @@ class GameSetup {
                     cardLibrary.create('Unicorn'),
                     cardLibrary.create('Unicorn'),
                     cardLibrary.create('Unicorn'),
-                    cardLibrary.create('Unicorn')
+                    cardLibrary.create('Unicorn'),
+                    cardLibrary.create('Ouch'),
+                    cardLibrary.create('It\'s Raining Cards!')
                 ]
             }),
             ai: false

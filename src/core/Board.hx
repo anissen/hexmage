@@ -44,20 +44,19 @@ class Board {
         return new Board(boardSize.x, boardSize.y, create_tile);
     }
 
-    public function tile(pos :Point) {
+    public function tile(pos :Point) :Tile {
         return board[pos.y][pos.x];
     }
 
-    public function filter_tiles(func :Tile -> Bool) :Array<PositionedTile> {
+    public function filter_tiles(func :PositionedTile -> Bool) :Array<PositionedTile> {
         var tiles = [];
         for (y in 0 ... board.length) {
             var row = board[y];
             for (x in 0 ... row.length) {
-                var tile = row[x];
-                if (func(tile)) {
-                    var positionedTile :PositionedTile = cast tile;
-                    positionedTile.x = x;
-                    positionedTile.y = y;
+                var positionedTile :PositionedTile = cast row[x];
+                positionedTile.x = x;
+                positionedTile.y = y;
+                if (func(positionedTile)) {
                     tiles.push(positionedTile);
                 }
             }
