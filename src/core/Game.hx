@@ -52,7 +52,11 @@ class Game {
     public function start() {
         state.turn = 0;
         // for (player in players()) emit(PlayerEntered({ player: player }));
-        for (minion in minions()) emit(MinionEntered({ minion: minion.clone() }));
+        for (minion in minions()) {
+            emit(MinionEntered({ minion: minion.clone() }));
+            var pos = minion_pos(minion);
+            claim_tile(pos, minion, minion.playerId);
+        }
         for (player in players()) {
             for (card in player.hand) {
                 emit(CardDrawn({ card: card, player: player }));
@@ -74,7 +78,12 @@ class Game {
     }
 
     function reset_mana() :Void {
-        current_player.mana = current_player.baseMana;
+        for (tile in state.board.claimed_tiles_for_player(current_player.id)) {
+            if (tile.mana == 0) { // HACK, should check against tile.baseMana
+                tile.mana = 1;
+                emit(ManaGained({ gained: tile.mana, total: tile.mana, tileId: tile, player: current_player }));
+            }
+        }
     }
 
     function draw_card(player :Player) {
@@ -181,6 +190,10 @@ class Game {
         return state.players;
     }
 
+    function player(playerId :Int) :Player {
+        return state.players[playerId % state.players.length];
+    }
+
     function get_current_player() :Player {
         return state.players[state.turn % state.players.length];
     }
@@ -207,7 +220,7 @@ class Game {
         emit(TurnStarted({ player: current_player }));
 
         reset_minion_stats();
-        if (current_player.baseMana < 10) current_player.baseMana++; // TEMP
+        // if (current_player.baseMana < 10) current_player.baseMana++; // TEMP
         reset_mana();
         draw_card(current_player);
 
@@ -251,12 +264,20 @@ class Game {
         minion.moves--;
         emit(MinionMoved({ minion: minion.clone(), from: currentPos, to: moveAction.pos }));
         if (minion.hero) {
-            if (toTile.claimed == null) {
-                emit(TileClaimed({ tileId: moveAction.pos, minion: minion.clone() }));
-            } else if (toTile.claimed != minion.playerId) {
-                emit(TileReclaimed({ tileId: moveAction.pos, minion: minion.clone() }));
-            }
+            claim_tile(moveAction.pos, minion, minion.playerId);
         }
+    }
+
+    function claim_tile(tileId :Point, minion :Minion, playerId :Int) {
+        var tile = state.board.tile(tileId);
+        if (tile.claimed == null) {
+            emit(TileClaimed({ tileId: tileId, minion: minion.clone() }));
+        } else if (tile.claimed != playerId) {
+            emit(TileReclaimed({ tileId: tileId, minion: minion.clone() }));
+        }
+        tile.claimed = playerId;
+
+        emit(ManaGained({ gained: tile.mana, total: tile.mana, tileId: tileId, player: player(playerId) }));
     }
 
     function attack(attackAction :AttackActionData) {
@@ -302,8 +323,21 @@ class Game {
         }
 
         var cardCost = playCardAction.card.cost;
-        player.mana -= cardCost;
-        emit(ManaSpent({ spent: cardCost, player: player }));
+        var remainingCost = cardCost;
+        for (tile in state.board.claimed_tiles_for_player(player.id)) {
+            var manaPaid = 0;
+            if (remainingCost >= tile.mana) {
+                manaPaid = tile.mana;
+                tile.mana = 0;
+            } else {
+                var diff = (tile.mana - remainingCost);
+                manaPaid -= diff;
+                tile.mana -= diff; 
+            }
+            remainingCost -= manaPaid;
+            emit(ManaSpent({ spent: manaPaid, left: tile.mana, tileId: tile, player: player }));
+        }
+
         emit(CardPlayed({ card: playCardAction.card, player: player }));
 
         // handle

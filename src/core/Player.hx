@@ -9,9 +9,9 @@ typedef PlayerOptions = {
     name :String,
     ?deck :Deck,
     ?hand :Cards,
-    ai :Bool,
-    ?baseMana :Int,
-    ?mana :Int
+    ai :Bool
+    // ?baseMana :Int,
+    // ?mana :Int
 };
 
 typedef Players = Array<Player>;
@@ -24,8 +24,8 @@ class Player {
     public var deck :Deck;
     public var hand :Cards;
     public var ai :Bool;
-    public var baseMana :Int; // TEMP
-    public var mana :Int; // TEMP
+    // public var baseMana :Int; // TEMP
+    // public var mana :Int; // TEMP
 
     public function new(options :PlayerOptions) {
         id = (options.id != null ? options.id : Id++);
@@ -34,8 +34,8 @@ class Player {
         deck = (options.deck != null ? options.deck : new Deck());
         hand = (options.hand != null ? options.hand : []);
         ai   = options.ai;
-        baseMana = (options.baseMana != null ? options.baseMana : 0);
-        mana = (options.mana != null ? options.mana : 0);
+        // baseMana = (options.baseMana != null ? options.baseMana : 0);
+        // mana = (options.mana != null ? options.mana : 0);
     }
 
     public function clone() :Player {
@@ -44,9 +44,9 @@ class Player {
             name: name,
             deck: deck.clone(),
             hand: clone_hand(),
-            ai: ai,
-            baseMana: baseMana,
-            mana: mana
+            ai: ai
+            // baseMana: baseMana,
+            // mana: mana
         });
     }
 

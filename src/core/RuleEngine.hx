@@ -86,7 +86,8 @@ class RuleEngine {
 
     static public function available_actions_for_card(state :GameState, player :Player, card :Card) :Array<Action> {
         var board = state.board;
-        if (card.cost > player.mana) return []; // TEMP
+        if (board.mana_for_player(player.id) < card.cost) return [];
+
         return switch card.targetType {
             case Minion: 
                 [ for (minion in board.minions()) PlayCardAction({ card: card, target: Target.Character(minion.id) }) ];
@@ -97,7 +98,7 @@ class RuleEngine {
                 });
                 // if (empty_tiles.length == 0) return [];
                 // return [ PlayCardAction({ card: card, target: empty_tiles[0].pos }) ];
-                [ for (tile in empty_tiles) PlayCardAction({ card: card, target: Target.Tile(tile.pos) }) ];
+                [ for (tile in empty_tiles) PlayCardAction({ card: card, target: Target.Tile(tile) }) ];
             case Global:
                 [ PlayCardAction({ card: card, target: Target.Global }) ];
         }

@@ -6,6 +6,7 @@ import luxe.tween.Actuate;
 import luxe.Vector;
 import luxe.Scene;
 import luxe.Color;
+import luxe.Text;
 import snow.api.Promise;
 
 typedef TileOptions = {
@@ -17,6 +18,7 @@ typedef TileOptions = {
 
 class TileEntity extends Sprite {
     var center :Sprite;
+    var text :Text;
 
     public function new(options :TileOptions) {
         var hue = 360 * Math.random();
@@ -38,6 +40,18 @@ class TileEntity extends Sprite {
             parent: this,
             depth: -50
         });
+
+        text = new Text({
+            text: '',
+            pos: new Vector(options.size.x / 2, options.size.y - 10), //Vector.Divide(options.size, 2),
+            color: new Color(0, 0, 1, 1),
+            align: TextAlign.center,
+            align_vertical: TextAlign.center,
+            point_size: 20,
+            scene: options.scene,
+            parent: this,
+            depth: -50
+        });
     }
 
     public function claimed(playerId :Int) :Promise {
@@ -47,5 +61,9 @@ class TileEntity extends Sprite {
         return new Promise(function(resolve, reject) {
             resolve();
         });
+    }
+
+    public function set_mana_text(mana :Int) {
+        text.text = '$mana mana';
     }
 }

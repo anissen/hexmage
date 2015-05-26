@@ -12,7 +12,8 @@ typedef TurnEndedData = { player :Player };
 typedef PlayersTurnData = { player :Player };
 typedef CardDrawnData = { card :Card, player :Player };
 typedef CardPlayedData = { card :Card, player :Player };
-typedef ManaSpentData = { spent :Int, player :Player };
+typedef ManaGainedData = { gained :Int, total :Int, tileId :Point, player :Player };
+typedef ManaSpentData = { spent :Int, left :Int, tileId :Point, player :Player };
 typedef TileClaimedData = { tileId :Point, minion :Minion };
 
 enum Event {
@@ -29,6 +30,7 @@ enum Event {
     MinionDamaged(data :MinionDamagedData);
     PlayersTurn(data :PlayersTurnData);
     
+    ManaGained(data :ManaGainedData);
     ManaSpent(data :ManaSpentData);
     TileClaimed(data :TileClaimedData);
     TileReclaimed(data :TileClaimedData);

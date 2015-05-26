@@ -4,8 +4,12 @@ package core;
 import core.Minion;
 import core.enums.Actions;
 
-typedef Tile = { ?claimed: Int, ?minion :Minion };
+typedef Tile = { ?claimed :Int, ?mana :Int, ?minion :Minion };
 typedef Tiles = Array<Array<Tile>>;
+typedef PositionedTile = {
+    > Tile,
+    > Point,
+}
 
 class Board {
     var boardSize :Point;
@@ -14,7 +18,7 @@ class Board {
     public function new(boardWidth :Int, boardHeight :Int, ?create_tile :Int->Int->Tile) {
         boardSize = { x: boardWidth, y: boardHeight };
         board = [ for (y in 0 ... boardSize.y) 
-                    [ for (x in 0 ... boardSize.x) (create_tile != null) ? create_tile(x, y) : {} ]
+                    [ for (x in 0 ... boardSize.x) (create_tile != null) ? create_tile(x, y) : { mana: 1 } ]
                 ];
     }
 
@@ -35,7 +39,7 @@ class Board {
     public function clone_board() :Board {
         function create_tile(x, y) {
             var tile = tile({ x: x, y: y });
-            return { claimed: tile.claimed, minion: (tile.minion != null ? tile.minion.clone() : null) };
+            return { claimed: tile.claimed, mana: (tile.mana != null ? tile.mana : 1 /* HACK */), minion: (tile.minion != null ? tile.minion.clone() : null) };
         }
         return new Board(boardSize.x, boardSize.y, create_tile);
     }
@@ -44,18 +48,35 @@ class Board {
         return board[pos.y][pos.x];
     }
 
-    public function filter_tiles(func :Tile -> Bool) :Array<{ tile: Tile, pos :Point }> {
+    public function filter_tiles(func :Tile -> Bool) :Array<PositionedTile> {
         var tiles = [];
         for (y in 0 ... board.length) {
             var row = board[y];
             for (x in 0 ... row.length) {
                 var tile = row[x];
                 if (func(tile)) {
-                    tiles.push({ tile: tile, pos: { x: x, y: y } });
+                    var positionedTile :PositionedTile = cast tile;
+                    positionedTile.x = x;
+                    positionedTile.y = y;
+                    tiles.push(positionedTile);
                 }
             }
         }
         return tiles;
+    }
+
+    public function claimed_tiles_for_player(playerId :Int) :Array<PositionedTile> {
+        return filter_tiles(function(tile :Tile) {
+            return (tile.claimed == playerId);
+        });
+    }
+
+    public function mana_for_player(playerId :Int) :Int {
+        var mana = 0;
+        for (tile in claimed_tiles_for_player(playerId)) {
+            mana += (tile.mana != null ? tile.mana : 0);
+        }
+        return mana;
     }
 
     public function board_size() :Point {

@@ -43,7 +43,6 @@ class PlayScreenState extends State {
     var eventQueue :List<Event>;
     var idle :Bool;
     var text :Text;
-    var manaText :Text;
 
     var minionActionState :MinionActionsState;
     var ownHand :HandState;
@@ -100,9 +99,10 @@ class PlayScreenState extends State {
             case MinionDamaged(data): handle_minion_damaged(data);
             case CardDrawn(data): handle_card_drawn(data);
             case CardPlayed(data): handle_card_played(data);
-            case ManaSpent(data): handle_mana_spent(data);
             case TileClaimed(data): handle_tile_claimed(data);
             case TileReclaimed(data): handle_tile_claimed(data);
+            case ManaGained(data): handle_mana_gained(data);
+            case ManaSpent(data): handle_mana_spent(data);
             case _: {
                 trace('$event is unhandled');
                 new Promise(function(resolve, reject) {
@@ -206,11 +206,19 @@ class PlayScreenState extends State {
             update_move_indicator(minion);
         }
 
-        var mana = data.player.mana;
-        var baseMana = data.player.baseMana;
-        manaText.text = '$mana/$baseMana Mana';
+        // TODO: Clear mana for claimed tiles?
 
-        // HACK, highlight should be updated after each command
+        return new Promise(function(resolve, reject) {
+            resolve();
+        });
+    }
+
+    function handle_mana_gained(data :ManaGainedData) :Promise {
+        var tile = tiles[data.tileId.y][data.tileId.x];
+        trace('handle_mana_gained');
+        trace(data);
+        tile.set_mana_text(data.total);
+
         if (!data.player.ai) {
             ownHand.highlight_cards(game);
         } else {
@@ -223,11 +231,11 @@ class PlayScreenState extends State {
     }
 
     function handle_mana_spent(data :ManaSpentData) :Promise {
-        var mana = data.player.mana;
-        var baseMana = data.player.baseMana;
-        manaText.text = '$mana/$baseMana Mana';
+        var tile = tiles[data.tileId.y][data.tileId.x];
+        trace('handle_mana_spent');
+        trace(data);
+        tile.set_mana_text(data.left);
 
-        // HACK, highlight should be updated after each command
         if (!data.player.ai) {
             ownHand.highlight_cards(game);
         } else {
@@ -439,17 +447,6 @@ class PlayScreenState extends State {
             text: '',
             pos: Luxe.screen.mid.clone(),
             color: new Color(1, 1, 1, 0),
-            align: TextAlign.center,
-            align_vertical: TextAlign.center,
-            point_size: 32,
-            scene: scene,
-            depth: 100
-        });
-
-        manaText = new Text({
-            text: '',
-            pos: new Vector(Luxe.screen.w * 3/4, Luxe.screen.h / 2),
-            color: new Color(1, 1, 1, 1),
             align: TextAlign.center,
             align_vertical: TextAlign.center,
             point_size: 32,
