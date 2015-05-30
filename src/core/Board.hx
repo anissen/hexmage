@@ -47,7 +47,12 @@ class Board {
         //     return { claimed: tile.claimed, mana: (tile.mana != null ? tile.mana : 1 /* HACK */), minion: (tile.minion != null ? tile.minion.clone() : null) };
         // }
         // return new Board(boardSize.x, boardSize.y, create_tile);
-        return new Board(tiles);
+        var newTiles = new Map<TileId, Tile>();
+        for (key in tiles.keys()) {
+            var tile = tiles[key];
+            newTiles[key] = { hex: tile.hex, claimed: tile.claimed, mana: tile.mana, minion: (tile.minion != null ? tile.minion.clone() : null) };
+        }
+        return new Board(newTiles);
     }
 
     public function tile(key :TileId) :Tile {
