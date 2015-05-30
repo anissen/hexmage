@@ -1,5 +1,5 @@
 
-package core.hex;
+package core;
 
 class Point
 {

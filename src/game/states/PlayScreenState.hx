@@ -4,7 +4,6 @@ package game.states;
 import core.Card;
 import core.GameSetup;
 import core.Minimax;
-import core.Point;
 import game.entities.CardEntity;
 import game.entities.TileEntity;
 import luxe.Color;
@@ -30,10 +29,9 @@ import game.components.Indicators.AttackIndicator;
 import game.components.Indicators.MoveIndicator;
 import snow.api.Promise;
 
-import core.hex.HexLibrary.Hex;
-import core.hex.HexLibrary.Layout;
+import core.HexLibrary;
 
-using core.hex.HexLibrary.HexTools;
+using core.HexLibrary.HexTools;
 
 typedef HexTileOptions = {
     > luxe.options.VisualOptions,
@@ -442,7 +440,7 @@ class PlayScreenState extends State {
         var hexSize = 60;
         var margin = 5;
 
-        var layout = new Layout(Layout.pointy, new core.hex.HexLibrary.Point(hexSize + margin, hexSize + margin), new core.hex.HexLibrary.Point(Luxe.screen.mid.x, Luxe.screen.mid.y));
+        var layout = new Layout(Layout.pointy, new Point(hexSize + margin, hexSize + margin), new Point(Luxe.screen.mid.x, Luxe.screen.mid.y));
 
         hexMap = new Map();
 

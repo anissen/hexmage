@@ -4,7 +4,7 @@ package core;
 import core.Minion;
 import core.enums.Actions;
 
-import core.hex.HexLibrary;
+import core.HexLibrary;
 import core.TileId;
 
 typedef Tile = { ?claimed :Int, ?mana :Int, ?minion :Minion };
