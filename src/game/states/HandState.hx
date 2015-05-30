@@ -46,6 +46,7 @@ class HandState extends State {
             pos: new Vector(Luxe.screen.w * Math.random(), cards_y),
             card: card,
             scene: scene,
+            secret: flipped, // HACK
             depth: card_depth++
         });
         highlight_card_entity(cardEntity, game);
@@ -60,7 +61,10 @@ class HandState extends State {
             Actuate
                 .tween(cardEntity.pos, 0.3 * Settings.TweenFactor, { x: Luxe.screen.w / 2, y: Luxe.screen.h / 2 })
                 .onComplete(function() {
-                    Actuate.tween(cardEntity.scale, 0.4 * Settings.TweenFactor, { x: 0.6, y: 0.6 });
+                    cardEntity.secret = false;
+                    Actuate
+                        .tween(cardEntity.scale, 0.4 * Settings.TweenFactor, { x: 0.6, y: 0.6 })
+                        .delay(0.3 * Settings.TweenFactor);
                     Actuate
                         .tween(cardEntity.color, 0.4 * Settings.TweenFactor, { a: 0 })
                         .onComplete(function() {
@@ -70,7 +74,8 @@ class HandState extends State {
                                 card_clicked = null;
                                 resolve();
                             });
-                        });
+                        })
+                        .delay(0.3 * Settings.TweenFactor);
                 });
         });
     }

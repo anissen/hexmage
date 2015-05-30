@@ -56,8 +56,8 @@ class PlayCardState extends State {
         }
         playAtDot.add(new OnClick(function() {
             // callback(data);
-            trace('PlayCardState: Playing card');
-            trace(data);
+            // trace('PlayCardState: Playing card');
+            // trace(data);
             game.do_action(PlayCardAction(data));
             Main.states.disable(StateId);
         }));

@@ -14,6 +14,7 @@ typedef CardOptions = {
     card :core.Card,
     pos :Vector,
     scene :Scene,
+    secret :Bool,
     depth :Int
 }
 
@@ -24,6 +25,7 @@ class CardEntity extends Sprite {
     var cardWidth :Int = 140;
     var cardHeight :Int = 200;
     var cardMargin :Int = 8;
+    @:isVar public var secret (get, set) :Bool;
 
     public function new(options :CardOptions) {
         var baseHue = switch (options.card.type) {
@@ -51,7 +53,7 @@ class CardEntity extends Sprite {
         });
 
         text = new Text({
-            text: '${card.name} (${card.cost})',
+            text: '',
             pos: new Vector(cardWidth / 2, cardMargin + 15),
             color: new Color(1, 1, 1, 1),
             align: TextAlign.center,
@@ -61,6 +63,8 @@ class CardEntity extends Sprite {
             parent: this,
             depth: options.depth
         });
+
+        secret = options.secret;
     }
 
     public function set_color_value(value :Float) {
@@ -73,5 +77,14 @@ class CardEntity extends Sprite {
 
     function on_click() {
         Luxe.events.fire('card_clicked', { entity: this, card: card });
+    }
+
+    function get_secret() :Bool {
+        return secret;
+    }
+
+    function set_secret(val :Bool) {
+        text.text = (val ? '???' : '${card.name} (${card.cost})');
+        return val;
     }
 }
