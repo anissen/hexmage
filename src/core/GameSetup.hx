@@ -207,7 +207,7 @@ class GameSetup {
 
         var map = new Map<TileId, Tile>();
         for (hex in create_hexagon_map()) {
-            map[hex.key] = { hex: hex };
+            map[hex.key] = { hex: hex, mana: 1 };
         }
         var board = new Board(map);
         var orcTile = new Hex(1, -2, 0);

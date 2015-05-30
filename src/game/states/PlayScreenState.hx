@@ -47,7 +47,7 @@ class HexTile extends luxe.Visual {
     public function new(options :HexTileOptions) {
         super({
             pos: options.pos,
-            color: new Color(0.55, 0.10, 0.55),
+            color: new ColorHSV(0.55, 0.10, 0.55),
             geometry: Luxe.draw.ngon({ sides: 6, r: options.r, angle: 30, solid: true }),
             depth: -50
         });
@@ -57,13 +57,13 @@ class HexTile extends luxe.Visual {
 
         new Visual({
             pos: options.pos,
-            color: new Color(0.85, 0.1, 0.85),
+            color: new ColorHSV(0.85, 0.1, 0.85),
             geometry: Luxe.draw.ngon({ sides: 6, r: options.r, angle: 30 }),
             depth: -50
         });
 
         text = new Text({
-            text: options.hex.key,
+            text: '', // options.hex.key
             // pos: new Vector(options.size.x / 2, options.size.y - 10), //Vector.Divide(options.size, 2),
             color: new Color(0, 0, 1, 1),
             align: TextAlign.center,
@@ -103,7 +103,7 @@ class HexTile extends luxe.Visual {
     // }
 
     public function set_mana_text(mana :Int) {
-        // text.text = '$mana mana';
+        text.text = '$mana mana';
     }
 }
 
@@ -291,8 +291,8 @@ class PlayScreenState extends State {
 
     function handle_mana_gained(data :ManaGainedData) :Promise {
         // var tile = tiles[data.tileId.y][data.tileId.x];
-        // var tile = hexMap['${data.tileId.x},${data.tileId.y}'];
-        // tile.set_mana_text(data.total);
+        var tile = hexMap[data.tileId];
+        tile.set_mana_text(data.total);
 
         if (!data.player.ai) {
             ownHand.highlight_cards(game);
@@ -307,8 +307,8 @@ class PlayScreenState extends State {
 
     function handle_mana_spent(data :ManaSpentData) :Promise {
         // var tile = tiles[data.tileId.y][data.tileId.x];
-        // var tile = hexMap['${data.tileId.x},${data.tileId.y}'];
-        // tile.set_mana_text(data.left);
+        var tile = hexMap[data.tileId];
+        tile.set_mana_text(data.left);
 
         if (!data.player.ai) {
             ownHand.highlight_cards(game);

@@ -109,12 +109,6 @@ class RuleEngine {
         var board = state.board;
         if (board.mana_for_player(player.id) < card.cost) return [];
 
-        function is_tile_claimed(x :Int, y :Int) {
-            var tile = board.tile('{ x: x, y: y }');
-            if (tile == null) return false;
-            return (tile.claimed == player.id);
-        }
-
         function minion_card_targets() {
             var valid_tiles = board.filter_tiles(function(tile) {
                 if (tile.claimed != null) return false;

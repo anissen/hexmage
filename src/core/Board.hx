@@ -7,7 +7,7 @@ import core.enums.Actions;
 import core.HexLibrary;
 import core.TileId;
 
-typedef Tile = { hex :Hex, ?claimed :Int, ?mana :Int, ?minion :Minion };
+typedef Tile = { hex :Hex, ?claimed :Int, mana :Int, ?minion :Minion };
 // typedef Tiles = Array<Array<Tile>>;
 typedef PositionedTile = {
     > Tile,
@@ -67,7 +67,7 @@ class Board {
     }
 
     public function claimed_tiles_for_player(playerId :Int) :Array<PositionedTile> {
-        return filter_tiles(function(tile :Tile) {
+        return filter_tiles(function(tile) {
             return (tile.claimed == playerId);
         });
     }
