@@ -48,7 +48,8 @@ class HexTile extends luxe.Visual {
         super({
             pos: options.pos,
             color: new Color(0.55, 0.10, 0.55),
-            geometry: Luxe.draw.ngon({ sides: 6, r: options.r, angle: 30, solid: true })
+            geometry: Luxe.draw.ngon({ sides: 6, r: options.r, angle: 30, solid: true }),
+            depth: -50
         });
 
         this.hex = options.hex;
@@ -57,7 +58,8 @@ class HexTile extends luxe.Visual {
         new Visual({
             pos: options.pos,
             color: new Color(0.85, 0.1, 0.85),
-            geometry: Luxe.draw.ngon({ sides: 6, r: options.r, angle: 30 })
+            geometry: Luxe.draw.ngon({ sides: 6, r: options.r, angle: 30 }),
+            depth: -50
         });
 
         text = new Text({
@@ -68,21 +70,21 @@ class HexTile extends luxe.Visual {
             align_vertical: TextAlign.center,
             point_size: 20,
             scene: options.scene,
-            parent: this
-            // depth: -50
+            parent: this,
+            depth: -50
         });
     }
 
-    override function onmousedown(e :MouseEvent) {
-        if (Luxe.utils.geometry.point_in_geometry(e.pos, this.geometry)) {
-            if (e.button == MouseButton.left) {
-                this.events.fire('clicked');
-            } else {
-                this.walkable = !this.walkable;
-                this.color = walkable ? new Color(0.55, 0.10, 0.55) : new Color(0.25, 0.10, 0.25);
-            }
-        }
-    }
+    // override function onmousedown(e :MouseEvent) {
+    //     if (Luxe.utils.geometry.point_in_geometry(e.pos, this.geometry)) {
+    //         if (e.button == MouseButton.left) {
+    //             this.events.fire('clicked');
+    //         } else {
+    //             this.walkable = !this.walkable;
+    //             this.color = walkable ? new Color(0.55, 0.10, 0.55) : new Color(0.25, 0.10, 0.25);
+    //         }
+    //     }
+    // }
 
     public function claimed(playerId :Int) :Promise {
         this.color.tween(0.3, { h: 100 - playerId * 100, s: 0.6, v: 1 }); // HACK
@@ -93,12 +95,12 @@ class HexTile extends luxe.Visual {
         });
     }
 
-    public function flash(delay :Float = 0.0) {
-        this.color
-            .tween(0.8, { g: 0.9 })
-            .reverse()
-            .delay(delay);
-    }
+    // public function flash(delay :Float = 0.0) {
+    //     this.color
+    //         .tween(0.8, { g: 0.9 })
+    //         .reverse()
+    //         .delay(delay);
+    // }
 
     public function set_mana_text(mana :Int) {
         // text.text = '$mana mana';
@@ -437,8 +439,8 @@ class PlayScreenState extends State {
     }
 
     function setup_map() {
-        var hexSize = 60;
-        var margin = 5;
+        var hexSize = 70;
+        var margin = 8;
 
         var layout = new Layout(Layout.pointy, new Point(hexSize + margin, hexSize + margin), new Point(Luxe.screen.mid.x, Luxe.screen.mid.y));
 
@@ -453,21 +455,21 @@ class PlayScreenState extends State {
                 hex: hex
             });
             hexMap[hex.key] = tile;
-            tile.events.listen('clicked', function(_) {
-                tile.flash();
-                var ring_hexes = hex.reachable(function(h :Hex) :Bool { 
-                    var t = hexMap[h.key];
-                    return (t != null ? t.walkable : false);
-                }, 2); //Hex.rings(hex, 1, 2);
-                var count = 0;
-                for (h in ring_hexes) {
-                    var t = hexMap[h.key];
-                    if (t != null) {
-                        count++;
-                        t.flash(count * 0.02);
-                    }
-                }
-            });
+            // tile.events.listen('clicked', function(_) {
+            //     tile.flash();
+            //     var ring_hexes = hex.reachable(function(h :Hex) :Bool { 
+            //         var t = hexMap[h.key];
+            //         return (t != null ? t.walkable : false);
+            //     }, 2); //Hex.rings(hex, 1, 2);
+            //     var count = 0;
+            //     for (h in ring_hexes) {
+            //         var t = hexMap[h.key];
+            //         if (t != null) {
+            //             count++;
+            //             t.flash(count * 0.02);
+            //         }
+            //     }
+            // });
         }
     }
 

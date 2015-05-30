@@ -6,6 +6,10 @@ import core.enums.Actions;
 import core.Game;
 import core.Card;
 
+import core.HexLibrary;
+
+using core.HexLibrary.HexTools;
+
 class RuleEngine {
     // static public function available_actions_without_minions(state :GameState, player :Player) :Array<Action> 
     // {
@@ -47,9 +51,16 @@ class RuleEngine {
         if (minion == null || !minion.can_move || minion.moves <= 0) return [];
 
         var pos = board.minion_pos(minion);
+        var hex = board.tile(pos).hex;
         // var x = pos.x;
         // var y = pos.y;
         var moves = [];
+        for (tile in hex.neighbors()) {
+            var tileId = tile.key;
+            if (board.tile(tileId) == null) continue;
+            if (board.tile(tileId).minion != null) continue;
+            moves.push(MoveAction({ minionId: minion.id, tileId: tileId }));
+        }
         // TODO: Check neighbors
         
         // function add_move(newx, newy) {

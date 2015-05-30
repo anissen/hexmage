@@ -78,6 +78,10 @@ class HexTools {
         return results;
     }
 
+    static public function neighbors(hex :Hex) :Array<Hex> {
+        return ring(hex, 1);
+    }
+
     static public function rings(center :Hex, start_radius :Int = 1, radius :Int = 1) :Array<Hex> {
         var results = [];
         for (k in start_radius ... start_radius + radius) {

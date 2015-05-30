@@ -392,8 +392,8 @@ class Game {
         // var tile = state.board.tile(tileId);
 
         // GIANT HACK!!!
-        var hexSize = 60;
-        var margin = 5;
+        var hexSize = 70;
+        var margin = 8;
 
         var layout = new Layout(Layout.pointy, new Point(hexSize + margin, hexSize + margin), new Point(Luxe.screen.mid.x, Luxe.screen.mid.y));
         var hex = state.board.tile(tileId).hex;
