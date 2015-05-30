@@ -337,6 +337,7 @@ class Game {
             }
             remainingCost -= manaPaid;
             emit(ManaSpent({ spent: manaPaid, left: tile.mana, tileId: tile.id, player: player }));
+            if (remainingCost <= 0) break;
         }
 
         emit(CardPlayed({ card: playCardAction.card, player: player }));
