@@ -528,21 +528,21 @@ class PlayScreenState extends State {
 
         setup_map();
 
-        var buttonWidth  = 150;
-        var buttonHeight = 50;
-        new Button({
-            centered: false,
-            pos: Vector.Subtract(Luxe.screen.size, new Vector(buttonWidth + 20, buttonHeight + 60)),
-            size: new Vector(buttonWidth, buttonHeight),
-            color: new Color(0, 0, 0),
-            text: 'End Turn',
-            text_color: new Color(1, 1, 1),
-            scene: scene,
-            callback: function() {
-                trace('End Turn pressed!');
-                game.end_turn();
-            }
-        });
+        // var buttonWidth  = 150;
+        // var buttonHeight = 50;
+        // new Button({
+        //     centered: false,
+        //     pos: Vector.Subtract(Luxe.screen.size, new Vector(buttonWidth + 20, buttonHeight + 60)),
+        //     size: new Vector(buttonWidth, buttonHeight),
+        //     color: new Color(0, 0, 0),
+        //     text: 'End Turn',
+        //     text_color: new Color(1, 1, 1),
+        //     scene: scene,
+        //     callback: function() {
+        //         trace('End Turn pressed!');
+        //         game.end_turn();
+        //     }
+        // });
 
         text = new Text({
             text: '',
