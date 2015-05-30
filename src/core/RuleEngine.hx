@@ -55,8 +55,8 @@ class RuleEngine {
         // var x = pos.x;
         // var y = pos.y;
         var moves = [];
-        for (tile in hex.neighbors()) {
-            var tileId = tile.key;
+        for (neighbor in hex.neighbors()) {
+            var tileId = neighbor.key;
             if (board.tile(tileId) == null) continue;
             if (board.tile(tileId).minion != null) continue;
             moves.push(MoveAction({ minionId: minion.id, tileId: tileId }));
@@ -80,6 +80,7 @@ class RuleEngine {
         if (minion == null || !minion.can_attack || minion.attacks <= 0 || minion.attack <= 0) return [];
 
         var pos = board.minion_pos(minion);
+        var hex = board.tile(pos).hex;
         var attacks = [];
         // function add_attack(newx, newy) {
         //     var tile = board.tile({ x: newx, y: newy });
@@ -93,6 +94,14 @@ class RuleEngine {
         // add_attack(x, y + 1);
         // add_attack(x - 1, y);
         // add_attack(x + 1, y);
+        for (neighbor in hex.neighbors()) {
+            var tileId = neighbor.key;
+            if (board.tile(tileId) == null) continue;
+            var other = board.tile(tileId).minion;
+            if (other == null || other.playerId == minion.playerId) continue;
+            attacks.push(AttackAction({ minionId: minion.id, victimId: other.id }));
+        }
+
         return attacks;
     }
 
@@ -110,11 +119,11 @@ class RuleEngine {
             var valid_tiles = board.filter_tiles(function(tile) {
                 if (tile.claimed != null) return false;
                 if (tile.minion != null) return false;
-                // TODO: Check neighbors
-                // if (is_tile_claimed(tile.x, tile.y - 1)) return true;
-                // if (is_tile_claimed(tile.x, tile.y + 1)) return true;
-                // if (is_tile_claimed(tile.x - 1, tile.y)) return true;
-                // if (is_tile_claimed(tile.x + 1, tile.y)) return true;
+                for (neighbor in tile.hex.neighbors()) {
+                    var tileId = neighbor.key;
+                    if (board.tile(tileId) == null) continue;
+                    if (board.tile(tileId).claimed == player.id) return true;
+                }
                 return false;
             });
             return [ for (tile in valid_tiles) Target.Tile(tile.id) ];
