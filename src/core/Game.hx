@@ -81,7 +81,7 @@ class Game {
         for (tile in state.board.claimed_tiles_for_player(current_player.id)) {
             if (tile.mana == 0) { // HACK, should check against tile.baseMana
                 tile.mana = 1;
-                emit(ManaGained({ gained: tile.mana, total: tile.mana, tileId: tile, player: current_player }));
+                emit(ManaGained({ gained: tile.mana, total: tile.mana, tileId: tile.id, player: current_player }));
             }
         }
     }
@@ -259,16 +259,16 @@ class Game {
         var minion = state.board.minion(moveAction.minionId);
         var currentPos = state.board.minion_pos(minion);
         state.board.tile(currentPos).minion = null;
-        var toTile = state.board.tile(moveAction.pos);
+        var toTile = state.board.tile(moveAction.tileId);
         toTile.minion = minion;
         minion.moves--;
-        emit(MinionMoved({ minion: minion.clone(), from: currentPos, to: moveAction.pos }));
+        emit(MinionMoved({ minion: minion.clone(), from: currentPos, to: moveAction.tileId }));
         if (minion.hero) {
-            claim_tile(moveAction.pos, minion, minion.playerId);
+            claim_tile(moveAction.tileId, minion, minion.playerId);
         }
     }
 
-    function claim_tile(tileId :Point, minion :Minion, playerId :Int) {
+    function claim_tile(tileId :TileId, minion :Minion, playerId :Int) {
         var tile = state.board.tile(tileId);
         if (tile.claimed == null) {
             emit(TileClaimed({ tileId: tileId, minion: minion.clone() }));
@@ -335,7 +335,7 @@ class Game {
                 tile.mana -= diff; 
             }
             remainingCost -= manaPaid;
-            emit(ManaSpent({ spent: manaPaid, left: tile.mana, tileId: tile, player: player }));
+            emit(ManaSpent({ spent: manaPaid, left: tile.mana, tileId: tile.id, player: player }));
         }
 
         emit(CardPlayed({ card: playCardAction.card, player: player }));
@@ -371,11 +371,11 @@ class Game {
         return state.board.minions_for_player(player.id);
     }
 
-    public function board_size() :Point {
-        return state.board.board_size();
-    }
+    // public function board_size() :Point {
+    //     return state.board.board_size();
+    // }
 
-    public function minion_pos(m :Minion) :Point {
+    public function minion_pos(m :Minion) :TileId {
         return state.board.minion_pos(m);
     }
 
@@ -387,11 +387,16 @@ class Game {
         return state.board.minions();
     }
 
+    public function tile_to_world(tileId :TileId) :luxe.Vector {
+        // var tile = state.board.tile(tileId);
+        return new luxe.Vector(0, 0);
+    }
+
     // public function tile(pos :Point) :Board.Tile {
     //     return state.board.tile(pos);
     // }
 
-    public function print() {
-        state.board.print_big();
-    }
+    // public function print() {
+    //     state.board.print_big();
+    // }
 }

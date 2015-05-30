@@ -1,5 +1,5 @@
 
 package core;
 
-typedef Point = { x :Int, y :Int };
-typedef Points = Array<Point>;
+typedef Point_unused = { x :Int, y :Int };
+typedef Points_unused = Array<Point_unused>;

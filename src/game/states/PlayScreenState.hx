@@ -30,7 +30,82 @@ import game.components.Indicators.AttackIndicator;
 import game.components.Indicators.MoveIndicator;
 import snow.api.Promise;
 
-using game.extensions.PointTools;
+import core.hex.HexLibrary.Hex;
+import core.hex.HexLibrary.Layout;
+
+using core.hex.HexLibrary.HexTools;
+
+typedef HexTileOptions = {
+    > luxe.options.VisualOptions,
+    r :Float,
+    hex :Hex
+}
+
+class HexTile extends luxe.Visual {
+    public var hex :Hex;
+    public var walkable :Bool;
+    var text :Text;
+
+    public function new(options :HexTileOptions) {
+        super({
+            pos: options.pos,
+            color: new Color(0.55, 0.10, 0.55),
+            geometry: Luxe.draw.ngon({ sides: 6, r: options.r, angle: 30, solid: true })
+        });
+
+        this.hex = options.hex;
+        this.walkable = true;
+
+        new Visual({
+            pos: options.pos,
+            color: new Color(0.85, 0.1, 0.85),
+            geometry: Luxe.draw.ngon({ sides: 6, r: options.r, angle: 30 })
+        });
+
+        text = new Text({
+            text: options.hex.key,
+            // pos: new Vector(options.size.x / 2, options.size.y - 10), //Vector.Divide(options.size, 2),
+            color: new Color(0, 0, 1, 1),
+            align: TextAlign.center,
+            align_vertical: TextAlign.center,
+            point_size: 20,
+            scene: options.scene,
+            parent: this
+            // depth: -50
+        });
+    }
+
+    override function onmousedown(e :MouseEvent) {
+        if (Luxe.utils.geometry.point_in_geometry(e.pos, this.geometry)) {
+            if (e.button == MouseButton.left) {
+                this.events.fire('clicked');
+            } else {
+                this.walkable = !this.walkable;
+                this.color = walkable ? new Color(0.55, 0.10, 0.55) : new Color(0.25, 0.10, 0.25);
+            }
+        }
+    }
+
+    public function claimed(playerId :Int) :Promise {
+        this.color.tween(0.3, { h: 100 - playerId * 100, s: 0.6, v: 1 }); // HACK
+        // center.color.tween(0.3, { h: 100 - playerId * 100, s: 0.6, v: 0.8 }); // HACK
+
+        return new Promise(function(resolve, reject) {
+            resolve();
+        });
+    }
+
+    public function flash(delay :Float = 0.0) {
+        this.color
+            .tween(0.8, { g: 0.9 })
+            .reverse()
+            .delay(delay);
+    }
+
+    public function set_mana_text(mana :Int) {
+        // text.text = '$mana mana';
+    }
+}
 
 class PlayScreenState extends State {
     static public var StateId = 'PlayScreenState';
@@ -38,7 +113,8 @@ class PlayScreenState extends State {
     var scene :Scene;
     var background :Visual;
     var game :core.Game;
-    var tiles :Array<Array<TileEntity>>;
+    // var tiles :Array<Array<TileEntity>>;
+    var hexMap :Map<String, HexTile>;
     var minionMap :Map<Int, MinionEntity>;
     var eventQueue :List<Event>;
     var idle :Bool;
@@ -136,7 +212,7 @@ class PlayScreenState extends State {
     function handle_minion_moved(data :MinionMovedData) :Promise {
         return new Promise(function(resolve, reject) {
             var minionEntity = id_to_minion_entity(data.minion.id);
-            var newPos = data.to.tile_to_world();
+            var newPos = game.tile_to_world(data.to); //data.to.tile_to_world();
             Actuate
                 .tween(minionEntity.pos, 0.6 * Settings.TweenFactor, { x: newPos.x, y: newPos.y })
                 .onComplete(function() {
@@ -183,7 +259,7 @@ class PlayScreenState extends State {
             var pos = game.minion_pos(minion);
             var minionEntity = new MinionEntity({
                 minion: minion,
-                pos: pos.tile_to_world(),
+                pos: game.tile_to_world(pos), //pos.tile_to_world(),
                 scene: scene
             });
             minionMap[minion.id] = minionEntity;
@@ -214,8 +290,9 @@ class PlayScreenState extends State {
     }
 
     function handle_mana_gained(data :ManaGainedData) :Promise {
-        var tile = tiles[data.tileId.y][data.tileId.x];
-        tile.set_mana_text(data.total);
+        // var tile = tiles[data.tileId.y][data.tileId.x];
+        // var tile = hexMap['${data.tileId.x},${data.tileId.y}'];
+        // tile.set_mana_text(data.total);
 
         if (!data.player.ai) {
             ownHand.highlight_cards(game);
@@ -229,8 +306,9 @@ class PlayScreenState extends State {
     }
 
     function handle_mana_spent(data :ManaSpentData) :Promise {
-        var tile = tiles[data.tileId.y][data.tileId.x];
-        tile.set_mana_text(data.left);
+        // var tile = tiles[data.tileId.y][data.tileId.x];
+        // var tile = hexMap['${data.tileId.x},${data.tileId.y}'];
+        // tile.set_mana_text(data.left);
 
         if (!data.player.ai) {
             ownHand.highlight_cards(game);
@@ -244,7 +322,14 @@ class PlayScreenState extends State {
     }
 
     function handle_tile_claimed(data :TileClaimedData) :Promise {
-        var tile = tiles[data.tileId.y][data.tileId.x];
+        // var tile = tiles[data.tileId.y][data.tileId.x];
+        var tile = hexMap[data.tileId];
+        if (tile == null) { // TEMPORARY HACK!!!
+            return new Promise(function(resolve, reject) {
+                resolve();
+            });
+        }
+
         return tile.claimed(data.minion.playerId);
     }
 
@@ -353,6 +438,53 @@ class PlayScreenState extends State {
         }
     }
 
+    function setup_map() {
+        var hexSize = 60;
+        var margin = 5;
+
+        var layout = new Layout(Layout.pointy, new core.hex.HexLibrary.Point(hexSize + margin, hexSize + margin), new core.hex.HexLibrary.Point(Luxe.screen.mid.x, Luxe.screen.mid.y));
+
+        hexMap = new Map();
+
+        var map_radius :Int = 3;
+        for (hex in create_hexagon_map(map_radius)) {
+            var pos = Layout.hexToPixel(layout, hex);
+            var tile = new HexTile({
+                pos: new Vector(pos.x, pos.y),
+                r: hexSize,
+                hex: hex
+            });
+            hexMap[hex.key] = tile;
+            tile.events.listen('clicked', function(_) {
+                tile.flash();
+                var ring_hexes = hex.reachable(function(h :Hex) :Bool { 
+                    var t = hexMap[h.key];
+                    return (t != null ? t.walkable : false);
+                }, 2); //Hex.rings(hex, 1, 2);
+                var count = 0;
+                for (h in ring_hexes) {
+                    var t = hexMap[h.key];
+                    if (t != null) {
+                        count++;
+                        t.flash(count * 0.02);
+                    }
+                }
+            });
+        }
+    }
+
+    function create_hexagon_map(radius :Int = 3) :Array<Hex> {
+        var hexes = [];
+        for (q in -radius + 1 ... radius) {
+            var r1 = Math.round(Math.max(-radius, -q - radius));
+            var r2 = Math.round(Math.min(radius, -q + radius));
+            for (r in r1 + 1 ... r2) {
+                hexes.push(new Hex(q, r, -q - r));
+            }
+        }
+        return hexes;
+    }
+
     override function init() {
         // trace("INIT PlayScreenState");
     }
@@ -394,34 +526,7 @@ class PlayScreenState extends State {
             depth: -100
         });
 
-        var boardSize = game.board_size();
-        var minSize = Math.min(Luxe.screen.w, Luxe.screen.h);
-        var tileCount = 5;
-        var tileMargin = 10;
-        var tileSize = (minSize - tileMargin * tileCount) / tileCount; // 120;
-        // var tileSize = 120;
-        var tileBorder = 8;
-        tiles = [];
-        for (y in 0 ... boardSize.y) {
-            tiles[y] = new Array();
-            for (x in 0 ... boardSize.x) {
-                var point :Point = { x: x, y: y };
-                var tile = new TileEntity({
-                    pos: point.tile_to_world(),
-                    size: new Vector(tileSize, tileSize),
-                    border: new Vector(tileBorder, tileBorder),
-                    scene: scene
-                });
-                tiles[y].push(tile);
-                tile.rotation_z = -25 + 50 * Math.random();
-                Actuate
-                    .tween(tile, 0.2 * Settings.TweenFactor, { rotation_z: 0 })
-                    .delay(((y * boardSize.x + x) / 20) * Settings.TweenFactor);
-                Actuate
-                    .tween(tile.scale, 0.2 * Settings.TweenFactor, { x: 1, y: 1 })
-                    .delay(((y * boardSize.x + x) / 20) * Settings.TweenFactor);
-            }
-        }
+        setup_map();
 
         var buttonWidth  = 150;
         var buttonHeight = 50;

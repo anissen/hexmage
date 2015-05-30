@@ -47,19 +47,21 @@ class RuleEngine {
         if (minion == null || !minion.can_move || minion.moves <= 0) return [];
 
         var pos = board.minion_pos(minion);
-        var x = pos.x;
-        var y = pos.y;
+        // var x = pos.x;
+        // var y = pos.y;
         var moves = [];
-        function add_move(newx, newy) {
-            if (newx < 0 || newx >= board.board_size().x) return;
-            if (newy < 0 || newy >= board.board_size().y) return;
-            if (board.tile({ x: newx, y: newy }).minion != null) return;
-            moves.push(MoveAction({ minionId: minion.id, pos: { x: newx, y: newy } }));
-        }
-        add_move(x, y - 1);
-        add_move(x, y + 1);
-        add_move(x - 1, y);
-        add_move(x + 1, y);
+        // TODO: Check neighbors
+        
+        // function add_move(newx, newy) {
+        //     if (newx < 0 || newx >= board.board_size().x) return;
+        //     if (newy < 0 || newy >= board.board_size().y) return;
+        //     if (board.tile({ x: newx, y: newy }).minion != null) return;
+        //     moves.push(MoveAction({ minionId: minion.id, pos: { x: newx, y: newy } }));
+        // }
+        // add_move(x, y - 1);
+        // add_move(x, y + 1);
+        // add_move(x - 1, y);
+        // add_move(x + 1, y);
         return moves;
     }
 
@@ -67,20 +69,19 @@ class RuleEngine {
         if (minion == null || !minion.can_attack || minion.attacks <= 0 || minion.attack <= 0) return [];
 
         var pos = board.minion_pos(minion);
-        var x = pos.x;
-        var y = pos.y;
         var attacks = [];
-        function add_attack(newx, newy) {
-            if (newx < 0 || newx >= board.board_size().x) return;
-            if (newy < 0 || newy >= board.board_size().y) return;
-            var other = board.tile({ x: newx, y: newy }).minion;
-            if (other == null || other.playerId == minion.playerId) return;
-            attacks.push(AttackAction({ minionId: minion.id, victimId: other.id }));
-        }
-        add_attack(x, y - 1);
-        add_attack(x, y + 1);
-        add_attack(x - 1, y);
-        add_attack(x + 1, y);
+        // function add_attack(newx, newy) {
+        //     var tile = board.tile({ x: newx, y: newy });
+        //     if (tile == null) return;
+        //     var other = tile.minion;
+        //     if (other == null || other.playerId == minion.playerId) return;
+        //     attacks.push(AttackAction({ minionId: minion.id, victimId: other.id }));
+        // }
+        // TODO: Check neighbors
+        // add_attack(x, y - 1);
+        // add_attack(x, y + 1);
+        // add_attack(x - 1, y);
+        // add_attack(x + 1, y);
         return attacks;
     }
 
@@ -89,10 +90,7 @@ class RuleEngine {
         if (board.mana_for_player(player.id) < card.cost) return [];
 
         function is_tile_claimed(x :Int, y :Int) {
-            var boardSize = board.board_size();
-            if (x < 0 || x >= boardSize.x) return false;
-            if (y < 0 || y >= boardSize.y) return false;
-            var tile = board.tile({ x: x, y: y });
+            var tile = board.tile('{ x: x, y: y }');
             if (tile == null) return false;
             return (tile.claimed == player.id);
         }
@@ -101,13 +99,14 @@ class RuleEngine {
             var valid_tiles = board.filter_tiles(function(tile) {
                 if (tile.claimed != null) return false;
                 if (tile.minion != null) return false;
-                if (is_tile_claimed(tile.x, tile.y - 1)) return true;
-                if (is_tile_claimed(tile.x, tile.y + 1)) return true;
-                if (is_tile_claimed(tile.x - 1, tile.y)) return true;
-                if (is_tile_claimed(tile.x + 1, tile.y)) return true;
+                // TODO: Check neighbors
+                // if (is_tile_claimed(tile.x, tile.y - 1)) return true;
+                // if (is_tile_claimed(tile.x, tile.y + 1)) return true;
+                // if (is_tile_claimed(tile.x - 1, tile.y)) return true;
+                // if (is_tile_claimed(tile.x + 1, tile.y)) return true;
                 return false;
             });
-            return [ for (tile in valid_tiles) Target.Tile(tile) ];
+            return [ for (tile in valid_tiles) Target.Tile(tile.id) ];
         }
 
         function spell_card_targets() {
@@ -121,7 +120,7 @@ class RuleEngine {
                     });
                     // if (empty_tiles.length == 0) return [];
                     // return [ PlayCardAction({ card: card, target: empty_tiles[0].pos }) ];
-                    [ for (tile in empty_tiles) Target.Tile(tile) ];
+                    [ for (tile in empty_tiles) Target.Tile(tile.id) ];
                 case Global:
                     [ Target.Global ];
             }

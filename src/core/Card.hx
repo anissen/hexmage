@@ -24,7 +24,7 @@ enum TargetType {
 
 enum Target {
     Character(characterId :Int);
-    Tile(tile :Point);
+    Tile(tileId :TileId);
     Global;
 }
 

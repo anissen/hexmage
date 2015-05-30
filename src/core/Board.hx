@@ -4,22 +4,27 @@ package core;
 import core.Minion;
 import core.enums.Actions;
 
+import core.hex.HexLibrary;
+import core.TileId;
+
 typedef Tile = { ?claimed :Int, ?mana :Int, ?minion :Minion };
-typedef Tiles = Array<Array<Tile>>;
+// typedef Tiles = Array<Array<Tile>>;
 typedef PositionedTile = {
     > Tile,
-    > Point,
+    id: TileId,
 }
 
 class Board {
-    var boardSize :Point;
-    var board :Tiles;
+    // var boardSize :Point;
+    // var board :Tiles;
+    var tiles :Map<TileId, Tile>;
     
-    public function new(boardWidth :Int, boardHeight :Int, ?create_tile :Int->Int->Tile) {
-        boardSize = { x: boardWidth, y: boardHeight };
-        board = [ for (y in 0 ... boardSize.y) 
-                    [ for (x in 0 ... boardSize.x) (create_tile != null) ? create_tile(x, y) : { mana: 1 } ]
-                ];
+    public function new(tiles :Map<TileId, Tile>) {
+        // boardSize = { x: boardWidth, y: boardHeight };
+        // board = [ for (y in 0 ... boardSize.y) 
+        //             [ for (x in 0 ... boardSize.x) (create_tile != null) ? create_tile(x, y) : { mana: 1 } ]
+        //         ];
+        this.tiles = tiles;
     }
 
     // public function handle_rules_for_minion(m :Minion /* + event type */) {
@@ -37,31 +42,28 @@ class Board {
     // }
 
     public function clone_board() :Board {
-        function create_tile(x, y) {
-            var tile = tile({ x: x, y: y });
-            return { claimed: tile.claimed, mana: (tile.mana != null ? tile.mana : 1 /* HACK */), minion: (tile.minion != null ? tile.minion.clone() : null) };
-        }
-        return new Board(boardSize.x, boardSize.y, create_tile);
+        // function create_tile(x, y) {
+        //     var tile = tile({ x: x, y: y });
+        //     return { claimed: tile.claimed, mana: (tile.mana != null ? tile.mana : 1 /* HACK */), minion: (tile.minion != null ? tile.minion.clone() : null) };
+        // }
+        // return new Board(boardSize.x, boardSize.y, create_tile);
+        return new Board(tiles);
     }
 
-    public function tile(pos :Point) :Tile {
-        return board[pos.y][pos.x];
+    public function tile(key :TileId) :Tile {
+        return tiles[key];
     }
 
     public function filter_tiles(func :PositionedTile -> Bool) :Array<PositionedTile> {
-        var tiles = [];
-        for (y in 0 ... board.length) {
-            var row = board[y];
-            for (x in 0 ... row.length) {
-                var positionedTile :PositionedTile = cast row[x];
-                positionedTile.x = x;
-                positionedTile.y = y;
-                if (func(positionedTile)) {
-                    tiles.push(positionedTile);
-                }
+        var result = [];
+        for (key in tiles.keys()) {
+            var positionedTile :PositionedTile = cast tiles[key];
+            positionedTile.id = key;
+            if (func(positionedTile)) {
+                result.push(positionedTile);
             }
         }
-        return tiles;
+        return result;
     }
 
     public function claimed_tiles_for_player(playerId :Int) :Array<PositionedTile> {
@@ -78,6 +80,7 @@ class Board {
         return mana;
     }
 
+    /*
     public function board_size() :Point {
         return boardSize;
     }
@@ -137,59 +140,49 @@ class Board {
         }
         trace(s);
     }
+    */
 
     public function minions() :Array<Minion> {
         var minions = [];
-        for (row in board) {
-            for (tile in row) {
-                if (tile.minion != null) minions.push(tile.minion);
-            }
+        for (tile in tiles) {
+            if (tile.minion != null) minions.push(tile.minion);
         }
         return minions;
     }
         
     public function minions_for_player(playerId :Int) :Array<Minion> {
         var minions = [];
-        for (row in board) {
-            for (tile in row) {
-                if (tile.minion != null && tile.minion.playerId == playerId) {
-                    minions.push(tile.minion);
-                }
+        for (tile in tiles) {
+            if (tile.minion != null && tile.minion.playerId == playerId) {
+                minions.push(tile.minion);
             }
         }
         return minions;
     }
         
     public function minion(id :Int) :Minion {
-        for (row in board) {
-            for (tile in row) {
-                if (tile.minion != null && tile.minion.id == id) {
-                    return tile.minion;
-                }
-            }
+        for (tile in tiles) {
+            if (tile.minion != null && tile.minion.id == id) return tile.minion;
         }
         return null;
     }
 
-    public function minion_pos(minion :Minion) :Point {
+    public function minion_pos(minion :Minion) :TileId {
         if (minion == null) throw 'Minion is null';
-        for (y in 0 ... board.length) {
-            var row = board[y];
-            for (x in 0 ... row.length) {
-                var tile = row[x];
-                if (tile.minion != null && tile.minion.id == minion.id) return { x: x, y: y };
-            }
+        for (key in tiles.keys()) {
+            var tile = tiles[key];
+            if (tile.minion != null && tile.minion.id == minion.id) return key;
         }
         throw 'Minion not found on board!';
     }
 
     // Colors: http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python
-    static function reset()    { return "\033[0m";  }
-    static function yellow()   { return "\033[93m"; }
-    static function green()    { return "\033[92m"; }
-    static function red()      { return "\033[91m"; }
-    static function bright()   { return "\033[1m";  }
-    static function dim()      { return "\033[2m";  }
-    static function darkgrey()      { return "\033[90m";  }
-    static function yellow_bg()      { return "\033[47m";  }
+    // static function reset()    { return "\033[0m";  }
+    // static function yellow()   { return "\033[93m"; }
+    // static function green()    { return "\033[92m"; }
+    // static function red()      { return "\033[91m"; }
+    // static function bright()   { return "\033[1m";  }
+    // static function dim()      { return "\033[2m";  }
+    // static function darkgrey()      { return "\033[90m";  }
+    // static function yellow_bg()      { return "\033[47m";  }
 }

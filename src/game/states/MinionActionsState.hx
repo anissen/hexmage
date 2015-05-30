@@ -14,8 +14,6 @@ import luxe.Color;
 import core.Game;
 import game.components.OnClick;
 
-using game.extensions.PointTools;
-
 class MinionActionsState extends State {
     static public var StateId = 'MinionActionsState';
 
@@ -28,8 +26,8 @@ class MinionActionsState extends State {
 
     function minion_can_move_to(data :MoveActionData, game :Game) {
         var minionPos = game.minion_pos(game.minion(data.minionId));
-        var from = minionPos.tile_to_world();
-        var to = data.pos.tile_to_world();
+        var from = game.tile_to_world(minionPos); // minionPos.tile_to_world();
+        var to = game.tile_to_world(data.tileId); //data.pos.tile_to_world();
         var moveDot = new Sprite({
             pos: from,
             color: new Color(1, 1, 1),
@@ -49,8 +47,8 @@ class MinionActionsState extends State {
     function minion_can_attack(data :AttackActionData, game :Game) {
         var minionPos = game.minion_pos(game.minion(data.minionId));
         var victimPos = game.minion_pos(game.minion(data.victimId));
-        var from = minionPos.tile_to_world();
-        var to = victimPos.tile_to_world();
+        var from = game.tile_to_world(minionPos); //minionPos.tile_to_world();
+        var to = game.tile_to_world(victimPos); //victimPos.tile_to_world();
         var attackDot = new Sprite({
             pos: from,
             color: new Color(1, 0, 0),

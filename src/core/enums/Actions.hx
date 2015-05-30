@@ -3,7 +3,7 @@ package core.enums;
 
 typedef MoveActionData = { 
     minionId :Int,
-    pos :Point
+    tileId :TileId
 }
 
 typedef AttackActionData = {

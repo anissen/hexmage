@@ -12,8 +12,6 @@ import luxe.Color;
 import core.Game;
 import game.components.OnClick;
 
-using game.extensions.PointTools;
-
 class PlayCardState extends State {
     static public var StateId = 'PlayCardState';
 
@@ -30,7 +28,7 @@ class PlayCardState extends State {
             case Character(characterId): 
                 var pos = game.minion_pos(game.minion(characterId));
                 new Sprite({
-                    pos: pos.tile_to_world(),
+                    pos: game.tile_to_world(pos), // pos.tile_to_world(),
                     color: new Color(0.2, 0.2, 1),
                     geometry: Luxe.draw.circle({ r: 40 }),
                     scale: new Vector(0.0, 0.0),
@@ -39,7 +37,7 @@ class PlayCardState extends State {
                 });
             case Tile(tile):
                 new Sprite({
-                    pos: tile.tile_to_world().subtract(new Vector(50, 50)),
+                    pos: game.tile_to_world(tile), //tile.tile_to_world().subtract(new Vector(50, 50)),
                     color: new Color(0.4, 0.2, 1),
                     geometry: Luxe.draw.box({ w: 100, h: 100 }),
                     scale: new Vector(0.0, 0.0),

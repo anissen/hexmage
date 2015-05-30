@@ -1,7 +1,9 @@
 
 package core.enums;
 
-typedef MinionMovedData = { minion :Minion, from :Point, to :Point };
+import core.TileId; // For TileId -- TODO: REMOVE
+
+typedef MinionMovedData = { minion :Minion, from :TileId, to :TileId };
 typedef MinionAttackedData = { minion :Minion, victim :Minion };
 typedef MinionDiedData = { minion :Minion };
 typedef MinionDamagedData = { minion :Minion, damage :Int };
@@ -12,9 +14,9 @@ typedef TurnEndedData = { player :Player };
 typedef PlayersTurnData = { player :Player };
 typedef CardDrawnData = { card :Card, player :Player };
 typedef CardPlayedData = { card :Card, player :Player };
-typedef ManaGainedData = { gained :Int, total :Int, tileId :Point, player :Player };
-typedef ManaSpentData = { spent :Int, left :Int, tileId :Point, player :Player };
-typedef TileClaimedData = { tileId :Point, minion :Minion };
+typedef ManaGainedData = { gained :Int, total :Int, tileId :TileId, player :Player };
+typedef ManaSpentData = { spent :Int, left :Int, tileId :TileId, player :Player };
+typedef TileClaimedData = { tileId :TileId, minion :Minion };
 
 enum Event {
     GameStarted;

@@ -203,10 +203,10 @@ class GameSetup {
             ai: true
         });
 
-        var tiles = { x: 3, y: 4 };
-        var board = new Board(tiles.x, tiles.y);
-        board.tile({ x: 1, y: 0 }).minion = minionLibrary.create('Orc Chieftain', ai_player);
-        board.tile({ x: 1, y: 3 }).minion = minionLibrary.create('Princess', human_player);
+        var map = new Map<TileId, Tile>(); //create_hexagon_map();
+        var board = new Board(map);
+        // board.tile({ x: 1, y: -2 }).minion = minionLibrary.create('Orc Chieftain', ai_player);
+        // board.tile({ x: -1, y: 2 }).minion = minionLibrary.create('Princess', human_player);
         var gameState = {
             board: board,
             players: [human_player, ai_player],
@@ -215,4 +215,16 @@ class GameSetup {
         };
         return new Game(gameState);
     }
+
+    // function create_hexagon_map(radius :Int = 3) :Array<Hex> {
+    //     var hexes = [];
+    //     for (q in -radius + 1 ... radius) {
+    //         var r1 = Math.round(Math.max(-radius, -q - radius));
+    //         var r2 = Math.round(Math.min(radius, -q + radius));
+    //         for (r in r1 + 1 ... r2) {
+    //             hexes.push(new Hex(q, r, -q - r));
+    //         }
+    //     }
+    //     return hexes;
+    // }
 }
