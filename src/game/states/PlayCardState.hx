@@ -39,7 +39,7 @@ class PlayCardState extends State {
                 new Sprite({
                     pos: game.tile_to_world(tile), //tile.tile_to_world().subtract(new Vector(50, 50)),
                     color: new Color(0.4, 0.2, 1),
-                    geometry: Luxe.draw.box({ w: 100, h: 100 }),
+                    geometry: Luxe.draw.ngon({ sides: 6, r: 50, angle: 30, solid: true }),
                     scale: new Vector(0.0, 0.0),
                     scene: scene,
                     depth: 100
