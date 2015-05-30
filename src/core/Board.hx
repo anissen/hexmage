@@ -7,7 +7,7 @@ import core.enums.Actions;
 import core.HexLibrary;
 import core.TileId;
 
-typedef Tile = { ?claimed :Int, ?mana :Int, ?minion :Minion };
+typedef Tile = { hex :Hex, ?claimed :Int, ?mana :Int, ?minion :Minion };
 // typedef Tiles = Array<Array<Tile>>;
 typedef PositionedTile = {
     > Tile,

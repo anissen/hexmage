@@ -8,6 +8,7 @@ import core.enums.Actions;
 import core.enums.Events;
 import core.enums.Commands;
 import core.Card;
+import core.HexLibrary; // TODO: This should not be here!
 
 typedef GameState = {
     var board :Board;
@@ -389,7 +390,16 @@ class Game {
 
     public function tile_to_world(tileId :TileId) :luxe.Vector {
         // var tile = state.board.tile(tileId);
-        return new luxe.Vector(0, 0);
+
+        // GIANT HACK!!!
+        var hexSize = 60;
+        var margin = 5;
+
+        var layout = new Layout(Layout.pointy, new Point(hexSize + margin, hexSize + margin), new Point(Luxe.screen.mid.x, Luxe.screen.mid.y));
+        var hex = state.board.tile(tileId).hex;
+        var point = Layout.hexToPixel(layout, hex);
+        return new luxe.Vector(point.x, point.y);
+        // return new luxe.Vector(0, 0);
     }
 
     // public function tile(pos :Point) :Board.Tile {

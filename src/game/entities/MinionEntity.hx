@@ -33,6 +33,7 @@ class MinionEntity extends Visual {
             pos: options.pos,
             color: new ColorHSV(100 - options.minion.playerId * 100, 0.7, 0.8),
             geometry: Luxe.draw.circle({ r: 50 }),
+            depth: 10,
             scene: options.scene
         });
         minion = options.minion;
@@ -44,6 +45,7 @@ class MinionEntity extends Visual {
                     texture: texture,
                     scene: options.scene,
                     scale: new Vector(0.14, 0.14),
+                    depth: 11,
                     parent: this
                 });
             });
@@ -56,6 +58,7 @@ class MinionEntity extends Visual {
             align_vertical: TextAlign.center,
             point_size: 20,
             scene: options.scene,
+            depth: 11,
             parent: this
         });
     }

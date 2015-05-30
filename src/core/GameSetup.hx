@@ -16,6 +16,8 @@ import core.CardLibrary;
 import core.MinionLibrary;
 import cards.*;
 
+import core.HexLibrary;
+
 class GameSetup {
     /*
     new Game({
@@ -203,10 +205,15 @@ class GameSetup {
             ai: true
         });
 
-        var map = new Map<TileId, Tile>(); //create_hexagon_map();
+        var map = new Map<TileId, Tile>();
+        for (hex in create_hexagon_map()) {
+            map[hex.key] = { hex: hex };
+        }
         var board = new Board(map);
-        // board.tile({ x: 1, y: -2 }).minion = minionLibrary.create('Orc Chieftain', ai_player);
-        // board.tile({ x: -1, y: 2 }).minion = minionLibrary.create('Princess', human_player);
+        var orcTile = new Hex(1, -2, 0);
+        var princessTile = new Hex(-1, 2, 0);
+        board.tile(orcTile.key).minion = minionLibrary.create('Orc Chieftain', ai_player);
+        board.tile(princessTile.key).minion = minionLibrary.create('Princess', human_player);
         var gameState = {
             board: board,
             players: [human_player, ai_player],
@@ -216,15 +223,15 @@ class GameSetup {
         return new Game(gameState);
     }
 
-    // function create_hexagon_map(radius :Int = 3) :Array<Hex> {
-    //     var hexes = [];
-    //     for (q in -radius + 1 ... radius) {
-    //         var r1 = Math.round(Math.max(-radius, -q - radius));
-    //         var r2 = Math.round(Math.min(radius, -q + radius));
-    //         for (r in r1 + 1 ... r2) {
-    //             hexes.push(new Hex(q, r, -q - r));
-    //         }
-    //     }
-    //     return hexes;
-    // }
+    static function create_hexagon_map(radius :Int = 3) :Array<Hex> {
+        var hexes = [];
+        for (q in -radius + 1 ... radius) {
+            var r1 = Math.round(Math.max(-radius, -q - radius));
+            var r2 = Math.round(Math.min(radius, -q + radius));
+            for (r in r1 + 1 ... r2) {
+                hexes.push(new Hex(q, r, -q - r));
+            }
+        }
+        return hexes;
+    }
 }
