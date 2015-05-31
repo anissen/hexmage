@@ -19,22 +19,6 @@ import cards.*;
 import core.HexLibrary;
 
 class GameSetup {
-    /*
-    new Game({
-        //board: MapLibrary.create('Test Board'),
-        players: [
-            {
-                name: 'Human Player',
-                deck: DeckLibrary.create('Test Deck')
-            },
-            {
-                name: 'AI Player',
-                deck: DeckLibrary.create('Test Deck')
-            } 
-        ]
-    });
-    */
-
     static public function initialize() {
         MinionLibrary.Add(new Minion({
             name: 'Orc Chieftain',
@@ -75,10 +59,10 @@ class GameSetup {
 
         MinionLibrary.Add(new Minion({
             name: 'Bunny',
-            attack: 0,
+            attack: 1,
             life: 1,
-            baseMoves: 2,
-            moves: 1
+            moves: 1,
+            attacks: 1
         }));
 
         MinionLibrary.Add(new Minion({
