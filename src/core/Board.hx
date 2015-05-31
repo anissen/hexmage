@@ -80,7 +80,7 @@ class Board {
     public function mana_for_player(playerId :Int) :Int {
         var mana = 0;
         for (tile in claimed_tiles_for_player(playerId)) {
-            mana += (tile.mana != null ? tile.mana : 0);
+            mana += tile.mana;
         }
         return mana;
     }
