@@ -134,11 +134,11 @@ class PlayScreenState extends State {
         minionActionState = new MinionActionsState();
         Main.states.add(minionActionState);
 
-        ownHand = new HandState('own-hand', Luxe.screen.h - 20, false);
+        ownHand = new HandState('own-hand', Luxe.screen.h + 5, false);
         Main.states.add(ownHand);
         Main.states.enable(ownHand.stateId);
 
-        enemyHand = new HandState('enemy-hand', -40, true);
+        enemyHand = new HandState('enemy-hand', -60, true);
         Main.states.add(enemyHand);
         Main.states.enable(enemyHand.stateId);
 
@@ -528,21 +528,21 @@ class PlayScreenState extends State {
 
         setup_map();
 
-        // var buttonWidth  = 150;
-        // var buttonHeight = 50;
-        // new Button({
-        //     centered: false,
-        //     pos: Vector.Subtract(Luxe.screen.size, new Vector(buttonWidth + 20, buttonHeight + 60)),
-        //     size: new Vector(buttonWidth, buttonHeight),
-        //     color: new Color(0, 0, 0),
-        //     text: 'End Turn',
-        //     text_color: new Color(1, 1, 1),
-        //     scene: scene,
-        //     callback: function() {
-        //         trace('End Turn pressed!');
-        //         game.end_turn();
-        //     }
-        // });
+        var buttonWidth  = 150;
+        var buttonHeight = 50;
+        new Button({
+            centered: false,
+            pos: Vector.Subtract(Luxe.screen.size, new Vector(buttonWidth + 20, buttonHeight + 60)),
+            size: new Vector(buttonWidth, buttonHeight),
+            color: new Color(0, 0, 0),
+            text: 'End Turn',
+            text_color: new Color(1, 1, 1),
+            scene: scene,
+            callback: function() {
+                trace('End Turn pressed!');
+                game.end_turn();
+            }
+        });
 
         text = new Text({
             text: '',
