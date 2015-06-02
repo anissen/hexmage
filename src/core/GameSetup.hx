@@ -105,11 +105,6 @@ class GameSetup {
             cost: 2,
             type: SpellCard(ouchFunction),
             targetType: TargetType.Minion
-            // type: SpellCard(function(event :Event) :Array<Command> {
-            //     return switch event {
-            //         case Cast
-            //     }
-            // })
         }));
 
         // function healFunction(target :Target) :Array<Command> {
@@ -118,13 +113,6 @@ class GameSetup {
         //         case _: throw 'Ouch cannot target $target';
         //     }
         // }
-
-        // CardLibrary.add(new core.Card({ 
-        //     name: 'Heal Own',
-        //     cost: 2,
-        //     type: SpellCard(ouchFunction),
-        //     targetType: TargetType.Minion
-        // }));
 
         function drawTwoCardsFunction(target :Target) :Array<Command> {
             switch target {

@@ -11,19 +11,6 @@ import core.HexLibrary;
 using core.HexLibrary.HexTools;
 
 class RuleEngine {
-    // static public function available_actions_without_minions(state :GameState, player :Player) :Array<Action> 
-    // {
-    //     var board = state.board;
-    //     var actions = [];
-    //     function add_actions(a) {
-    //         actions = actions.concat(a);
-    //     }
-    //     for (card in player.hand) {
-    //         add_actions(card_plays_for_player(board, player, card));
-    //     }
-    //     return actions;
-    // }
-
     static public function available_actions(state :GameState, player :Player) :Array<Action> {
         var board = state.board;
         var actions = [];
@@ -52,8 +39,6 @@ class RuleEngine {
 
         var pos = board.minion_pos(minion);
         var hex = board.tile(pos).hex;
-        // var x = pos.x;
-        // var y = pos.y;
         var moves = [];
         for (neighbor in hex.neighbors()) {
             var tileId = neighbor.key;
@@ -61,18 +46,7 @@ class RuleEngine {
             if (board.tile(tileId).minion != null) continue;
             moves.push(MoveAction({ minionId: minion.id, tileId: tileId }));
         }
-        // TODO: Check neighbors
         
-        // function add_move(newx, newy) {
-        //     if (newx < 0 || newx >= board.board_size().x) return;
-        //     if (newy < 0 || newy >= board.board_size().y) return;
-        //     if (board.tile({ x: newx, y: newy }).minion != null) return;
-        //     moves.push(MoveAction({ minionId: minion.id, pos: { x: newx, y: newy } }));
-        // }
-        // add_move(x, y - 1);
-        // add_move(x, y + 1);
-        // add_move(x - 1, y);
-        // add_move(x + 1, y);
         return moves;
     }
 
@@ -82,18 +56,6 @@ class RuleEngine {
         var pos = board.minion_pos(minion);
         var hex = board.tile(pos).hex;
         var attacks = [];
-        // function add_attack(newx, newy) {
-        //     var tile = board.tile({ x: newx, y: newy });
-        //     if (tile == null) return;
-        //     var other = tile.minion;
-        //     if (other == null || other.playerId == minion.playerId) return;
-        //     attacks.push(AttackAction({ minionId: minion.id, victimId: other.id }));
-        // }
-        // TODO: Check neighbors
-        // add_attack(x, y - 1);
-        // add_attack(x, y + 1);
-        // add_attack(x - 1, y);
-        // add_attack(x + 1, y);
         for (neighbor in hex.neighbors()) {
             var tileId = neighbor.key;
             if (board.tile(tileId) == null) continue;
@@ -128,12 +90,9 @@ class RuleEngine {
                 case Minion: 
                     [ for (minion in board.minions()) Target.Character(minion.id) ];
                 case Tile:
-                    // dummy actions: find free tiles
                     var empty_tiles = board.filter_tiles(function(tile) {
                         return (tile.minion == null);
                     });
-                    // if (empty_tiles.length == 0) return [];
-                    // return [ PlayCardAction({ card: card, target: empty_tiles[0].pos }) ];
                     [ for (tile in empty_tiles) Target.Tile(tile.id) ];
                 case Global:
                     [ Target.Global ];

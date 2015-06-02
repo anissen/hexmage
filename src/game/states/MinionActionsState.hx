@@ -26,8 +26,8 @@ class MinionActionsState extends State {
 
     function minion_can_move_to(data :MoveActionData, game :Game) {
         var minionPos = game.minion_pos(game.minion(data.minionId));
-        var from = game.tile_to_world(minionPos); // minionPos.tile_to_world();
-        var to = game.tile_to_world(data.tileId); //data.pos.tile_to_world();
+        var from = game.tile_to_world(minionPos);
+        var to = game.tile_to_world(data.tileId);
         var moveDot = new Sprite({
             pos: from,
             color: new Color(1, 1, 1),
@@ -36,7 +36,6 @@ class MinionActionsState extends State {
             scene: scene
         });
         moveDot.add(new OnClick(function() {
-            // callback(data);
             Main.states.disable(this.name);
             game.do_action(MoveAction(data));
         }));
@@ -47,8 +46,8 @@ class MinionActionsState extends State {
     function minion_can_attack(data :AttackActionData, game :Game) {
         var minionPos = game.minion_pos(game.minion(data.minionId));
         var victimPos = game.minion_pos(game.minion(data.victimId));
-        var from = game.tile_to_world(minionPos); //minionPos.tile_to_world();
-        var to = game.tile_to_world(victimPos); //victimPos.tile_to_world();
+        var from = game.tile_to_world(minionPos);
+        var to = game.tile_to_world(victimPos);
         var attackDot = new Sprite({
             pos: from,
             color: new Color(1, 0, 0),
@@ -57,7 +56,6 @@ class MinionActionsState extends State {
             scene: scene
         });
         attackDot.add(new OnClick(function() {
-            // callback(data);
             Main.states.disable(this.name);
             game.do_action(AttackAction(data));
         }));

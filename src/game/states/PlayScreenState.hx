@@ -1,11 +1,7 @@
 
 package game.states;
 
-import core.Card;
-import core.GameSetup;
-import core.Minimax;
-import game.entities.CardEntity;
-import game.entities.TileEntity;
+import snow.api.Promise;
 import luxe.Color;
 import luxe.Input.KeyEvent;
 import luxe.Input.Key;
@@ -19,93 +15,20 @@ import luxe.tween.Actuate;
 import luxe.Vector;
 import luxe.Visual;
 import luxe.Component;
-
+import core.Card;
+import core.GameSetup;
+import core.Minimax;
 import core.enums.Events;
-
+import core.HexLibrary;
 import game.entities.Button;
+import game.entities.TileEntity;
+import game.entities.CardEntity;
 import game.entities.MinionEntity;
 import game.components.Indicators.ActionIndicator;
 import game.components.Indicators.AttackIndicator;
 import game.components.Indicators.MoveIndicator;
-import snow.api.Promise;
-
-import core.HexLibrary;
 
 using core.HexLibrary.HexTools;
-
-typedef HexTileOptions = {
-    > luxe.options.VisualOptions,
-    r :Float,
-    hex :Hex
-}
-
-class HexTile extends luxe.Visual {
-    public var hex :Hex;
-    public var walkable :Bool;
-    var text :Text;
-
-    public function new(options :HexTileOptions) {
-        super({
-            pos: options.pos,
-            color: new ColorHSV(0.55, 0.10, 0.55),
-            geometry: Luxe.draw.ngon({ sides: 6, r: options.r, angle: 30, solid: true }),
-            depth: -50
-        });
-
-        this.hex = options.hex;
-        this.walkable = true;
-
-        new Visual({
-            pos: options.pos,
-            color: new ColorHSV(0.85, 0.1, 0.85),
-            geometry: Luxe.draw.ngon({ sides: 6, r: options.r, angle: 30 }),
-            depth: -50
-        });
-
-        text = new Text({
-            text: '', // options.hex.key
-            // pos: new Vector(options.size.x / 2, options.size.y - 10), //Vector.Divide(options.size, 2),
-            color: new Color(0, 0, 1, 1),
-            align: TextAlign.center,
-            align_vertical: TextAlign.center,
-            point_size: 20,
-            scene: options.scene,
-            parent: this,
-            depth: -50
-        });
-    }
-
-    // override function onmousedown(e :MouseEvent) {
-    //     if (Luxe.utils.geometry.point_in_geometry(e.pos, this.geometry)) {
-    //         if (e.button == MouseButton.left) {
-    //             this.events.fire('clicked');
-    //         } else {
-    //             this.walkable = !this.walkable;
-    //             this.color = walkable ? new Color(0.55, 0.10, 0.55) : new Color(0.25, 0.10, 0.25);
-    //         }
-    //     }
-    // }
-
-    public function claimed(playerId :Int) :Promise {
-        this.color.tween(0.3, { h: 100 - playerId * 100, s: 0.6, v: 1 }); // HACK
-        // center.color.tween(0.3, { h: 100 - playerId * 100, s: 0.6, v: 0.8 }); // HACK
-
-        return new Promise(function(resolve, reject) {
-            resolve();
-        });
-    }
-
-    // public function flash(delay :Float = 0.0) {
-    //     this.color
-    //         .tween(0.8, { g: 0.9 })
-    //         .reverse()
-    //         .delay(delay);
-    // }
-
-    public function set_mana_text(mana :Int) {
-        text.text = '$mana mana';
-    }
-}
 
 class PlayScreenState extends State {
     static public var StateId = 'PlayScreenState';
@@ -113,7 +36,6 @@ class PlayScreenState extends State {
     var scene :Scene;
     var background :Visual;
     var game :core.Game;
-    // var tiles :Array<Array<TileEntity>>;
     var hexMap :Map<String, HexTile>;
     var minionMap :Map<Int, MinionEntity>;
     var eventQueue :List<Event>;
@@ -160,7 +82,6 @@ class PlayScreenState extends State {
     }
 
     function handle_event(event :Event) {
-        // trace('Handling event $event');
         idle = false;
         var handler = switch (event) {
             case GameStarted: handle_game_started();
@@ -259,7 +180,7 @@ class PlayScreenState extends State {
             var pos = game.minion_pos(minion);
             var minionEntity = new MinionEntity({
                 minion: minion,
-                pos: game.tile_to_world(pos), //pos.tile_to_world(),
+                pos: game.tile_to_world(pos),
                 scene: scene
             });
             minionMap[minion.id] = minionEntity;
@@ -282,15 +203,12 @@ class PlayScreenState extends State {
             update_move_indicator(minion);
         }
 
-        // TODO: Clear mana for claimed tiles?
-
         return new Promise(function(resolve, reject) {
             resolve();
         });
     }
 
     function handle_mana_gained(data :ManaGainedData) :Promise {
-        // var tile = tiles[data.tileId.y][data.tileId.x];
         var tile = hexMap[data.tileId];
         tile.set_mana_text(data.total);
 
@@ -306,7 +224,6 @@ class PlayScreenState extends State {
     }
 
     function handle_mana_spent(data :ManaSpentData) :Promise {
-        // var tile = tiles[data.tileId.y][data.tileId.x];
         var tile = hexMap[data.tileId];
         tile.set_mana_text(data.left);
 
@@ -322,13 +239,12 @@ class PlayScreenState extends State {
     }
 
     function handle_tile_claimed(data :TileClaimedData) :Promise {
-        // var tile = tiles[data.tileId.y][data.tileId.x];
         var tile = hexMap[data.tileId];
-        if (tile == null) { // TEMPORARY HACK!!!
-            return new Promise(function(resolve, reject) {
-                resolve();
-            });
-        }
+        // if (tile == null) { // TEMPORARY HACK!!!
+        //     return new Promise(function(resolve, reject) {
+        //         resolve();
+        //     });
+        // }
 
         return tile.claimed(data.minion.playerId);
     }
@@ -396,13 +312,13 @@ class PlayScreenState extends State {
         if (minion == null) return;
 
         var minionEntity = minionMap[minion.id];
-        if (minionEntity == null) {
-            trace('[update_move_indicator] minionEntity is null -- should this be able to happen?');
-            trace('Getting minion entity from minion with id: ${minion.id}');
-            trace('minionMap:');
-            trace(minionMap);
-            return;
-        }
+        // if (minionEntity == null) {
+        //     trace('[update_move_indicator] minionEntity is null -- should this be able to happen?');
+        //     trace('Getting minion entity from minion with id: ${minion.id}');
+        //     trace('minionMap:');
+        //     trace(minionMap);
+        //     return;
+        // }
         var canAttack = false;
         var canMove = false;
         for (action in game.actions_for_minion(minion)) {
@@ -485,17 +401,11 @@ class PlayScreenState extends State {
         return hexes;
     }
 
-    override function init() {
-        // trace("INIT PlayScreenState");
-    }
-
     override function onenter<T>(_value :T) {
-        // trace("ENTER PlayScreenState");
         setup();
     }
 
     override function onleave<T>(_value :T) {
-        // trace("LEAVE PlayScreenState");
         cleanup();
     }
 
@@ -560,7 +470,6 @@ class PlayScreenState extends State {
 
     function minion_clicked(data :ClickedEventData) {
         if (data.minion.playerId != game.current_player.id) return;
-        // trace('${data.minion.name} was clicked!');
         if (!Main.states.enabled(MinionActionsState.StateId)) {
             Main.states.enable(MinionActionsState.StateId, { game: game, minionId: data.minion.id });
         } else {

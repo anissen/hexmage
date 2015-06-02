@@ -28,9 +28,7 @@ class Game {
 
     var cardLibrary :CardLibrary;
     var minionLibrary :MinionLibrary;
-    // @:isVar public var id(default, null) :Int;
 
-    //var commandQueue :Commands;
     public var current_player (get, null) :Player;
 
     var listeners :List<EventListenerFunction>;
@@ -46,13 +44,11 @@ class Game {
         
         if (_state.turn == null) state.turn = 0;
         listeners = new List<EventListenerFunction>();
-        //commandQueue = new Commands();
         Id++;
     }
 
     public function start() {
         state.turn = 0;
-        // for (player in players()) emit(PlayerEntered({ player: player }));
         for (minion in minions()) {
             emit(MinionEntered({ minion: minion.clone() }));
             var pos = minion_pos(minion);
@@ -88,8 +84,6 @@ class Game {
     }
 
     function draw_card(player :Player) {
-        //trace('draw_card');
-        // var player = current_player;
         var card = player.deck.draw();
         if (card == null) {
             // player is out of cards!
@@ -98,15 +92,6 @@ class Game {
         player.hand.push(card);
 
         emit(CardDrawn({ card: card, player: player }));
-
-        /*
-        // EMIT CardDrawn:
-        for (minion in state.board.minions()) {
-            // commandQueue
-            //commandQueue = commandQueue.concat(minion.handle_event(CardDrawn));
-            handle_commands(minion.handle_event(CardDrawn));
-        }
-        */
     }
 
     function handle_commands(commands :Commands) :Void {
@@ -146,28 +131,6 @@ class Game {
         return RuleEngine.available_actions(state, current_player);
     }
 
-    // public function actions_without_minions() :Array<Action> {
-    //     return RuleEngine.available_actions_without_minions(state, current_player);
-    // }
-
-    // public function nested_actions(actionDepthRemaining :Int) :Array<ActionTree> {
-    //     if (actionDepthRemaining <= 0)
-    //         return [{ current: NoAction }];
-
-    //     var actions :Array<ActionTree> = [];
-    //     for (action in this.actions()) {
-    //         var newGame = this.clone();
-    //         newGame.do_action(action);
-
-    //         // trace(action);
-
-    //         var result = newGame.nested_actions(actionDepthRemaining - 1);
-    //         actions.push({ current: action, next: result });
-    //     }
-
-    //     return actions;
-    // }
-
     public function clone() :Game {
         return new Game({
             board: state.board.clone_board(),
@@ -175,13 +138,8 @@ class Game {
             turn: state.turn,
             cardIdCounter: cardLibrary.nextCardId,
             minionIdCounter: minionLibrary.nextMinionId
-            //rules: state.rules // TODO: Should clone rules list
         });
     }
-
-    // public function state() :GameState {
-    //     return state;
-    // }
 
     function clone_players() :Array<Player> {
         return [ for (p in state.players) p.clone() ];
@@ -221,7 +179,6 @@ class Game {
         emit(TurnStarted({ player: current_player }));
 
         reset_minion_stats();
-        // if (current_player.baseMana < 10) current_player.baseMana++; // TEMP
         reset_mana();
         draw_card(current_player);
 
@@ -230,7 +187,6 @@ class Game {
 
     public function do_action(action :Action) :Void {
         switch (action) {
-            // case NoAction:
             case MoveAction(m): move(m);
             case AttackAction(a): attack(a);
             case PlayCardAction(c): playCard(c);
@@ -301,15 +257,12 @@ class Game {
             emit(MinionDied({ minion: victim.clone() })); // temp!
             handle_commands(victim.handle_event(MinionEvent.Died));
             var pos = minion_pos(victim);
-            //if (victim.on_death != null)
-            //    handle_commands(victim.on_death());
             state.board.tile(pos).minion = null;
         }
         if (minion.life <= 0) {
             emit(MinionDied({ minion: minion.clone() })); // temp!
             handle_commands(minion.handle_event(MinionEvent.Died));
             var pos = minion_pos(minion);
-            //handle_commands(minion.handle_event(MinionDied, { minionId: minion.id }));
             state.board.tile(pos).minion = null;
         }
     }
@@ -354,8 +307,6 @@ class Game {
             case Tile(tile): 
                 var minion = minionLibrary.create(minionName, current_player);
                 state.board.tile(tile).minion = minion;
-                // handle_commands(minion.handle_event(SelfEntered));
-
                 emit(MinionEntered({ minion: minion.clone() }));
             case _: throw 'Cannot play minion with this target: "$target"';
         }
@@ -373,10 +324,6 @@ class Game {
         return state.board.minions_for_player(player.id);
     }
 
-    // public function board_size() :Point {
-    //     return state.board.board_size();
-    // }
-
     public function minion_pos(m :Minion) :TileId {
         return state.board.minion_pos(m);
     }
@@ -390,8 +337,6 @@ class Game {
     }
 
     public function tile_to_world(tileId :TileId) :luxe.Vector {
-        // var tile = state.board.tile(tileId);
-
         // GIANT HACK!!!
         var hexSize = 70;
         var margin = 8;
@@ -400,14 +345,5 @@ class Game {
         var hex = state.board.tile(tileId).hex;
         var point = Layout.hexToPixel(layout, hex);
         return new luxe.Vector(point.x, point.y);
-        // return new luxe.Vector(0, 0);
     }
-
-    // public function tile(pos :Point) :Board.Tile {
-    //     return state.board.tile(pos);
-    // }
-
-    // public function print() {
-    //     state.board.print_big();
-    // }
 }
