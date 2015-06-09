@@ -28,6 +28,12 @@ import game.components.Indicators.ActionIndicator;
 import game.components.Indicators.AttackIndicator;
 import game.components.Indicators.MoveIndicator;
 
+import org.gesluxe.Gesluxe;
+import org.gesluxe.events.GestureEvent;
+// import org.gesluxe.gestures.ZoomGesture;
+// import org.gesluxe.gestures.PanGesture;
+import org.gesluxe.gestures.TransformGesture;
+
 using core.HexLibrary.HexTools;
 
 class PlayScreenState extends State {
@@ -45,6 +51,10 @@ class PlayScreenState extends State {
     var minionActionState :MinionActionsState;
     var ownHand :HandState;
     var enemyHand :HandState;
+
+    // var panGesture :PanGesture;
+    // var zoomGesture :ZoomGesture;
+    var transformGesture :TransformGesture;
 
     public function new() {
         super({ name: StateId });
@@ -64,6 +74,21 @@ class PlayScreenState extends State {
         Main.states.add(enemyHand);
         Main.states.enable(enemyHand.stateId);
 
+        Gesluxe.init();
+
+        // panGesture = new PanGesture();
+        // panGesture.maxNumTouchesRequired = 2;
+        // panGesture.events.listen(GestureEvent.GESTURE_BEGAN, onPanGesture);
+        // panGesture.events.listen(GestureEvent.GESTURE_CHANGED, onPanGesture);
+
+        // zoomGesture = new ZoomGesture();
+        // zoomGesture.events.listen(GestureEvent.GESTURE_BEGAN, onZoomGesture);
+        // zoomGesture.events.listen(GestureEvent.GESTURE_CHANGED, onZoomGesture);
+
+        transformGesture = new TransformGesture();
+        transformGesture.events.listen(GestureEvent.GESTURE_BEGAN, onTransformGesture);
+        transformGesture.events.listen(GestureEvent.GESTURE_CHANGED, onTransformGesture);
+
         Luxe.events.listen('card_clicked', function(data :{ entity :CardEntity, card :Card }) {
             if (!Main.states.enabled(PlayCardState.StateId)) {
                 Main.states.enable(PlayCardState.StateId, { game: game, card: data.card });
@@ -71,6 +96,27 @@ class PlayScreenState extends State {
                 Main.states.disable(PlayCardState.StateId);
             }
         });
+    }
+
+    // function onPanGesture(event: GestureEventData) {
+    //     Luxe.camera.pos.x += panGesture.offsetX;
+    //     Luxe.camera.pos.y += panGesture.offsetY;
+    // }
+
+    // function onZoomGesture(event: GestureEventData) {
+    //     Luxe.camera.scale.set_xy(zoomGesture.scaleX, zoomGesture.scaleY);
+    // }
+
+    function onTransformGesture(event :GestureEventData) {
+        // Panning
+        Luxe.camera.pos.x += transformGesture.offsetX;
+        Luxe.camera.pos.y += transformGesture.offsetY;
+        
+        if (transformGesture.scale != 1 /* || transformGesture.rotation != 0 */) {
+            // Scale and rotation.
+            // visual.radians = transformGesture.rotation;
+            Luxe.camera.scale.set_xy(transformGesture.scale, transformGesture.scale);
+        }
     }
 
     function handle_next_event() {
