@@ -13,6 +13,7 @@ import luxe.tween.Actuate;
 import luxe.Vector;
 import luxe.Color;
 import snow.api.Promise;
+import phoenix.Batcher;
 
 import core.Game;
 import game.entities.CardEntity;
@@ -29,20 +30,23 @@ class HandState extends State {
 
     var card_depth = 5;
     var cards_y :Float;
+    var batcher :Batcher;
     var flipped :Bool;
 
-    public function new(id :String, y :Float, flip :Bool /* HACK */) {
+    public function new(id :String, batcher: Batcher, y :Float, flip :Bool /* HACK */) {
         super({ name: id });
         stateId = id;
         scene = new Scene('HandScene');
         cards = [];
 
+        this.batcher = batcher;
         cards_y = y;
         flipped = flip;
     }
 
     public function add_card(card :Card, game :Game /* HACK */) :Promise {
-        var cardEntity = new CardEntity({ 
+        var cardEntity = new CardEntity({
+            batcher: batcher,
             pos: new Vector(Luxe.screen.w * Math.random(), cards_y),
             card: card,
             scene: scene,

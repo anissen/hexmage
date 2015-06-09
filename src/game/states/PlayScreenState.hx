@@ -27,6 +27,7 @@ import game.entities.MinionEntity;
 import game.components.Indicators.ActionIndicator;
 import game.components.Indicators.AttackIndicator;
 import game.components.Indicators.MoveIndicator;
+import phoenix.Batcher;
 
 import org.gesluxe.Gesluxe;
 import org.gesluxe.events.GestureEvent;
@@ -52,6 +53,8 @@ class PlayScreenState extends State {
     var ownHand :HandState;
     var enemyHand :HandState;
 
+    var hudBatcher :Batcher;
+
     // var panGesture :PanGesture;
     // var zoomGesture :ZoomGesture;
     var transformGesture :TransformGesture;
@@ -66,11 +69,13 @@ class PlayScreenState extends State {
         minionActionState = new MinionActionsState();
         Main.states.add(minionActionState);
 
-        ownHand = new HandState('own-hand', Luxe.screen.h + 5, false);
+        hudBatcher = Luxe.renderer.create_batcher({ name: 'hud_batcher', layer: 4 });
+
+        ownHand = new HandState('own-hand', hudBatcher, Luxe.screen.h + 5, false);
         Main.states.add(ownHand);
         Main.states.enable(ownHand.stateId);
 
-        enemyHand = new HandState('enemy-hand', -60, true);
+        enemyHand = new HandState('enemy-hand', hudBatcher, -60, true);
         Main.states.add(enemyHand);
         Main.states.enable(enemyHand.stateId);
 

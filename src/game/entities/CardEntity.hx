@@ -7,6 +7,7 @@ import luxe.Vector;
 import luxe.Sprite;
 import luxe.Scene;
 import luxe.Color;
+import phoenix.Batcher;
 
 import game.components.OnClick;
 
@@ -15,7 +16,8 @@ typedef CardOptions = {
     pos :Vector,
     scene :Scene,
     secret :Bool,
-    depth :Int
+    depth :Int,
+    batcher :Batcher
 }
 
 class CardEntity extends Sprite {
@@ -34,6 +36,7 @@ class CardEntity extends Sprite {
         };
         var colorHue = baseHue + Math.random() * 50;
         super({
+            batcher: options.batcher,
             pos: options.pos,
             size: new Vector(cardWidth, cardHeight),
             color: new ColorHSV(colorHue, 0.2, 1),
@@ -44,6 +47,7 @@ class CardEntity extends Sprite {
 
         cardFaceColor = new ColorHSV(colorHue, 0.8, 0.9);
         new Sprite({
+            batcher: options.batcher,
             pos: new Vector(cardWidth / 2, cardHeight / 2),
             size: new Vector(cardWidth - cardMargin, cardHeight - cardMargin),
             color: cardFaceColor,
@@ -53,6 +57,7 @@ class CardEntity extends Sprite {
         });
 
         text = new Text({
+            batcher: options.batcher,
             text: '',
             pos: new Vector(cardWidth / 2, cardMargin + 15),
             color: new Color(1, 1, 1, 1),
