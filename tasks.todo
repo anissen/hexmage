@@ -30,6 +30,17 @@ Simple claimable game (0.6):
 Simple hexagonal game (0.7):
     ✔ Make tiles hexagonal @done (31-05-15 11:22)
 
+Simple improved game (0.8):
+    ☐ Attack/Life indicators
+    ☐ Icons
+    ☐ Zoom functionality
+    ☐ Card descriptions
+    ☐ Split cards and board into different batches
+    ☐ Pirate deck vs. necrodancer deck
+
+Simple cross-platform game (0.9):
+    ☐ Game is functional on Mac, web, Android and iPad
+
 --- ✄ -----------------------
 
 Tasks:
