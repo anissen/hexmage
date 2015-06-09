@@ -1,22 +1,22 @@
 
 uniform sampler2D tex0;
-varying vec2 tcoord;
-varying vec4 color;
+varying highp vec2 tcoord;
+varying highp vec4 color;
 
-uniform vec2 resolution;
-uniform float time;
+uniform highp vec2 resolution;
+uniform highp float time;
 
-const float bloom = 0.25;  // TODO make uniform input (bloom = good / points)
-const float vignetteAmount = 25.0;
+const highp float bloom = 0.25;  // TODO make uniform input (bloom = good / points)
+const highp float vignetteAmount = 25.0;
 
 void main()
 {
-    vec2 q = gl_FragCoord.xy / resolution.xy;
-    vec2 uv = 0.5 + (q - 0.5);
+    highp vec2 q = gl_FragCoord.xy / resolution.xy;
+    highp vec2 uv = 0.5 + (q - 0.5);
     // vec2 uv = 0.5 + (q - 0.5) * (0.9 + 0.1 * sin(0.2 * uTime));
-    vec3 col;
-    vec4 sum = vec4(0);
-    vec4 curcol = texture2D(tex0, tcoord);
+    highp vec3 col;
+    highp vec4 sum = vec4(0);
+    highp vec4 curcol = texture2D(tex0, tcoord);
 
     // neighbourhood interpolation for bloom
     for(int i = -3; i <= 3; i += 1) {
