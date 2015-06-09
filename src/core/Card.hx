@@ -33,7 +33,8 @@ typedef CardOptions = {
     name :String,
     ?cost :Int,
     type :CardType,
-    ?targetType :TargetType
+    ?targetType :TargetType,
+    ?description :String
 }
 
 /*
@@ -52,6 +53,7 @@ class Card {
     public var cost :Int;
     public var type :CardType;
     public var targetType :TargetType;
+    public var description :String;
 
     public function new(options :CardOptions) {
         id   = options.id;
@@ -59,6 +61,7 @@ class Card {
         cost = (options.cost != null ? options.cost : 0);
         type = options.type;
         targetType = (options.targetType != null ? options.targetType : TargetType.Tile);
+        description = (options.description != null ? options.description : '');
     }
 
     public function clone() {
@@ -67,7 +70,8 @@ class Card {
             name: name,
             cost: cost,
             type: type,
-            targetType : targetType
+            targetType : targetType,
+            description: description
         });
     }
 }

@@ -23,7 +23,8 @@ typedef CardOptions = {
 class CardEntity extends Sprite {
     public var card :core.Card;
     var cardFaceColor :ColorHSV;
-    var text :Text;
+    var title :Text;
+    var description :Text;
     var cardWidth :Int = 140;
     var cardHeight :Int = 200;
     var cardMargin :Int = 8;
@@ -56,14 +57,31 @@ class CardEntity extends Sprite {
             parent: this
         });
 
-        text = new Text({
+        title = new Text({
             batcher: options.batcher,
             text: '',
-            pos: new Vector(cardWidth / 2, cardMargin + 15),
+            pos: new Vector(0, 0),
+            bounds: new luxe.Rectangle(cardMargin, cardMargin, cardWidth - (cardMargin * 2), 40),
+            bounds_wrap: true,
             color: new Color(1, 1, 1, 1),
             align: TextAlign.center,
-            align_vertical: TextAlign.center,
+            align_vertical: TextAlign.top,
             point_size: 18,
+            scene: options.scene,
+            parent: this,
+            depth: options.depth
+        });
+
+        description = new Text({
+            batcher: options.batcher,
+            text: '',
+            pos: new Vector(0, 0),
+            bounds: new luxe.Rectangle(cardMargin, cardMargin + title.bounds.h + cardMargin, cardWidth - (cardMargin * 2), 60),
+            bounds_wrap: true,
+            color: new Color(1, 1, 1, 1),
+            align: TextAlign.center,
+            align_vertical: TextAlign.top,
+            point_size: 12,
             scene: options.scene,
             parent: this,
             depth: options.depth
@@ -89,7 +107,8 @@ class CardEntity extends Sprite {
     }
 
     function set_secret(val :Bool) {
-        text.text = (val ? '???' : '${card.name} (${card.cost})');
+        title.text = (val ? '???' : '${card.name} (${card.cost})');
+        description.text = (val ? '???' : '${card.description}');
         return val;
     }
 }

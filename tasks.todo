@@ -32,9 +32,10 @@ Simple hexagonal game (0.7):
 
 Simple improved game (0.8):
     ☐ Attack/Life indicators
+    ☐ Card cost indicator
     ☐ Icons
     ☐ Zoom functionality
-    ☐ Card descriptions
+    ✔ Card descriptions @done (09-06-15 19:51)
     ✔ Split cards and board into different batches @done (09-06-15 19:30)
     ☐ Pirate deck vs. necrodancer deck
 

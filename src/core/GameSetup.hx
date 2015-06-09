@@ -104,7 +104,8 @@ class GameSetup {
             name: 'Ouch',
             cost: 2,
             type: SpellCard(ouchFunction),
-            targetType: TargetType.Minion
+            targetType: TargetType.Minion,
+            description: 'Deal 2 damage to a minion'
         }));
 
         // function healFunction(target :Target) :Array<Command> {
