@@ -120,6 +120,7 @@ class HandState extends State {
     }
 
     override function onenabled<T>(_value :T) {
+        if (flipped) return;
         Luxe.events.listen('card_clicked', function(data :{ entity :CardEntity, card :Card }) {
             if (data.entity != card_clicked) {
                 card_clicked = data.entity;
@@ -130,6 +131,7 @@ class HandState extends State {
     }
 
     override function onmousemove(event :MouseEvent) {
+        if (flipped) return;
         if (card_clicked != null) return;
 
         for (cardEntity in cards) {

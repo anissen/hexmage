@@ -32,7 +32,7 @@ Simple hexagonal game (0.7):
 
 Simple improved game (0.8):
     ☐ Attack/Life indicators
-    ☐ Card cost indicator
+    ✔ Card cost indicator @done (09-06-15 21:01)
     ☐ Icons
     ☐ Zoom functionality
     ✔ Card descriptions @done (09-06-15 19:51)

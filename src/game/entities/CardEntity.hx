@@ -7,6 +7,7 @@ import luxe.Vector;
 import luxe.Sprite;
 import luxe.Scene;
 import luxe.Color;
+import luxe.Visual;
 import phoenix.Batcher;
 
 import game.components.OnClick;
@@ -23,6 +24,8 @@ typedef CardOptions = {
 class CardEntity extends Sprite {
     public var card :core.Card;
     var cardFaceColor :ColorHSV;
+    var costVisual :Visual;
+    var costText :Text;
     var title :Text;
     var description :Text;
     var cardWidth :Int = 140;
@@ -47,7 +50,7 @@ class CardEntity extends Sprite {
         card = options.card;
 
         cardFaceColor = new ColorHSV(colorHue, 0.8, 0.9);
-        new Sprite({
+        var cardFace = new Sprite({
             batcher: options.batcher,
             pos: new Vector(cardWidth / 2, cardHeight / 2),
             size: new Vector(cardWidth - cardMargin, cardHeight - cardMargin),
@@ -55,6 +58,28 @@ class CardEntity extends Sprite {
             scene: options.scene,
             depth: options.depth,
             parent: this
+        });
+
+        costVisual = new Visual({
+            batcher: options.batcher,
+            pos: new Vector(4, 7),
+            geometry: Luxe.draw.ngon({ sides: 6, r: 15, solid: true, angle: 30, depth: options.depth, batcher: options.batcher }),
+            color: new ColorHSV(colorHue, 0.2, 1),
+            scene: options.scene,
+            depth: options.depth,
+            parent: this
+        });
+
+        costText = new Text({
+            batcher: options.batcher,
+            text: '',
+            color: cardFaceColor,
+            align: TextAlign.center,
+            align_vertical: TextAlign.center,
+            point_size: 18,
+            scene: options.scene,
+            parent: costVisual,
+            depth: options.depth
         });
 
         title = new Text({
@@ -107,8 +132,9 @@ class CardEntity extends Sprite {
     }
 
     function set_secret(val :Bool) {
-        title.text = (val ? '???' : '${card.name} (${card.cost})');
-        description.text = (val ? '???' : '${card.description}');
+        costText.text = (val ? '?' : '${card.cost}');
+        title.text = (val ? '???' : '${card.name}');
+        description.text = (val ? '' : '${card.description}');
         return val;
     }
 }
