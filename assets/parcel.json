@@ -7,6 +7,7 @@
         { "id": "assets/images/monkey.png" }
     ],
     "shaders" : [
-        { "id": "full", "frag_id": "assets/shaders/full.glsl", "vert_id": "default" }
+        { "id": "full", "frag_id": "assets/shaders/full.glsl", "vert_id": "default" },
+        { "id": "tilt_shift", "frag_id": "assets/shaders/tilt_shift.glsl", "vert_id": "default" }
     ]
 }
