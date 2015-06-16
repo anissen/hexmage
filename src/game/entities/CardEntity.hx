@@ -63,7 +63,7 @@ class CardEntity extends Sprite {
         costVisual = new Visual({
             batcher: options.batcher,
             pos: new Vector(4, 7),
-            geometry: Luxe.draw.ngon({ sides: 6, r: 15, solid: true, angle: 30, depth: options.depth, batcher: options.batcher }),
+            geometry: Luxe.draw.ngon({ sides: 6, r: 20, solid: true, angle: 30, depth: options.depth, batcher: options.batcher }),
             color: new ColorHSV(colorHue, 0.2, 1),
             scene: options.scene,
             depth: options.depth,
@@ -76,7 +76,7 @@ class CardEntity extends Sprite {
             color: cardFaceColor,
             align: TextAlign.center,
             align_vertical: TextAlign.center,
-            point_size: 18,
+            point_size: 24,
             scene: options.scene,
             parent: costVisual,
             depth: options.depth
@@ -86,7 +86,7 @@ class CardEntity extends Sprite {
             batcher: options.batcher,
             text: '',
             pos: new Vector(0, 0),
-            bounds: new luxe.Rectangle(cardMargin, cardMargin, cardWidth - (cardMargin * 2), 40),
+            bounds: new luxe.Rectangle(cardMargin, cardMargin + 5 /* + 5 to make room for cost visual */, cardWidth - (cardMargin * 2), 40),
             bounds_wrap: true,
             color: new Color(1, 1, 1, 1),
             align: TextAlign.center,
