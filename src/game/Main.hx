@@ -57,7 +57,7 @@ class Main extends luxe.Game {
         // trace('assets_loaded');
         Actuate.defaultEase = luxe.tween.easing.Quad.easeInOut;
 
-        setup_render_to_texture();
+        // setup_render_to_texture();
 
         states = new States({ name: 'state_machine' });
         states.add(new TitleScreenState());
