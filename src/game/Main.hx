@@ -23,7 +23,7 @@ class Main extends luxe.Game {
     static public var states :States;
 
     var final_output: RenderTexture;
-    var final_batch: Batcher;
+    static public var final_batch: Batcher;
     var final_view: Sprite;
     var final_shader: Shader;
 
@@ -54,7 +54,7 @@ class Main extends luxe.Game {
     }
 
     function assets_loaded(_) {
-        trace('assets_loaded');
+        // trace('assets_loaded');
         Actuate.defaultEase = luxe.tween.easing.Quad.easeInOut;
 
         setup_render_to_texture();
@@ -89,7 +89,7 @@ class Main extends luxe.Game {
             pos: new Vector(0,0),
             size: Luxe.screen.size,
             texture: final_output,
-            shader: Luxe.renderer.shaders.textured.shader,
+            shader: final_shader, //Luxe.renderer.shaders.textured.shader,
             batcher: final_batch
         });
     }
