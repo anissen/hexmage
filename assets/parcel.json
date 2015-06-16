@@ -1,5 +1,12 @@
 {
+    "textures": [
+        { "id": "assets/images/crown.png" },
+        { "id": "assets/images/life_icon.png" },
+        { "id": "assets/images/attack_icon.png" },
+        { "id": "assets/images/minion_base.png" },
+        { "id": "assets/images/monkey.png" }
+    ],
     "shaders" : [
-        { "ps_id": "assets/shaders/full.glsl" }
+        { "id": "full", "frag_id": "assets/shaders/full.glsl", "vert_id": "default" }
     ]
 }
