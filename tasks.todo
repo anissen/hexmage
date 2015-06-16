@@ -31,13 +31,13 @@ Simple hexagonal game (0.7):
     ✔ Make tiles hexagonal @done (31-05-15 11:22)
 
 Simple improved game (0.8):
-    ☐ Attack/Life indicators
+    ✔ Attack/Life indicators @done (14-06-15 21:13)
     ✔ Card cost indicator @done (09-06-15 21:01)
     ☐ Icons
     ☐ Zoom functionality
     ✔ Card descriptions @done (09-06-15 19:51)
     ✔ Split cards and board into different batches @done (09-06-15 19:30)
-    ☐ Pirate deck vs. necrodancer deck
+    ☐ Pirate deck vs. necrodancer deck vs. rat king deck
 
 Simple cross-platform game (0.9):
     ☐ Game is functional on Mac, web, Android and iPad
