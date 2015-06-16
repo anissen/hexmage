@@ -23,8 +23,11 @@ class OnClick extends Component {
     }
 
     override function onmousedown(e :MouseEvent) {
-        if (e.button == MouseButton.left && Luxe.utils.geometry.point_in_geometry(e.pos, visual.geometry)) {
-            callback();
-        }
+        if (e.button != MouseButton.left) return;
+        
+        var pos = Luxe.camera.screen_point_to_world(e.pos);
+        if (!Luxe.utils.geometry.point_in_geometry(pos, visual.geometry)) return;
+            
+        callback();
     }
 }
