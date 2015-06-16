@@ -22,10 +22,10 @@ import game.states.*;
 class Main extends luxe.Game {
     static public var states :States;
 
-    // var final_output: RenderTexture;
-    // var final_batch: Batcher;
-    // var final_view: Sprite;
-    // var final_shader: Shader;
+    var final_output: RenderTexture;
+    var final_batch: Batcher;
+    var final_view: Sprite;
+    var final_shader: Shader;
 
     override function config(config :luxe.AppConfig) {
         // if you have errors about the window being created, lower this to 2, or 0. it can also be 8
@@ -34,25 +34,30 @@ class Main extends luxe.Game {
     }
 
     override function ready() {
-        // Luxe.loadJSON("assets/parcel.json", function(jsonParcel) {
-        //     var parcel = new Parcel();
-        //     parcel.from_json(jsonParcel.json);
+        Luxe.resources.load_json('assets/parcel.json').then(function(jsonParcel) {
+            var parcel = new Parcel({
+                oncomplete: assets_loaded,
+                onfailed: function(err) {
+                    trace('Parcel loading failed; $err');
+                }
+            });
+            parcel.from_json(jsonParcel.asset.json);
 
-        //     new ParcelProgress({
-        //         parcel: parcel,
-        //         background: Luxe.renderer.clear_color,
-        //         oncomplete: assets_loaded
-        //     });
-            
-        //     parcel.load();
-        // });
-        assets_loaded(null);
+            new ParcelProgress({
+                parcel: parcel,
+                background: Luxe.renderer.clear_color,
+                oncomplete: function(_) {}
+            });
+
+            parcel.load();
+        });
     }
 
     function assets_loaded(_) {
+        trace('assets_loaded');
         Actuate.defaultEase = luxe.tween.easing.Quad.easeInOut;
 
-        // setup_render_to_texture();
+        setup_render_to_texture();
 
         states = new States({ name: 'state_machine' });
         states.add(new TitleScreenState());
@@ -65,20 +70,19 @@ class Main extends luxe.Game {
     override function onkeyup(e :KeyEvent) {
         if (e.keycode == Key.enter && e.mod.alt) {
             app.app.window.fullscreen = !app.app.window.fullscreen;
-        } /* else if (e.keycode == Key.key_s) {
+        } else if (e.keycode == Key.key_s) {
             if (final_view.shader == final_shader) {
                 final_view.shader = Luxe.renderer.shaders.textured.shader;
             } else {
                 final_view.shader = final_shader;
             }
-        } */
+        }
     }
-
-    /*
+    
     function setup_render_to_texture() {
-        final_output = new RenderTexture(Luxe.resources, Luxe.screen.size);
+        final_output = new RenderTexture({ id: 'render-to-texture', width: Luxe.screen.w, height: Luxe.screen.h });
         final_batch = Luxe.renderer.create_batcher({ no_add: true });
-        final_shader = Luxe.loadShader('assets/shaders/full.glsl');
+        final_shader = Luxe.resources.shader('full');
         final_shader.set_vector2('resolution', Luxe.screen.size );
         final_view = new Sprite({
             centered: false,
@@ -107,5 +111,4 @@ class Main extends luxe.Game {
         final_batch.draw();
         Luxe.renderer.blend_mode();
     }
-    */
 }
