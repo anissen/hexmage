@@ -55,8 +55,6 @@ class PlayScreenState extends State {
 
     var hudBatcher :Batcher;
 
-    // var panGesture :PanGesture;
-    // var zoomGesture :ZoomGesture;
     var transformGesture :TransformGesture;
 
     public function new() {
@@ -69,6 +67,7 @@ class PlayScreenState extends State {
         minionActionState = new MinionActionsState();
         Main.states.add(minionActionState);
 
+        // hudBatcher = Main.final_batch;
         hudBatcher = Luxe.renderer.create_batcher({ name: 'hud_batcher', layer: 4 });
 
         ownHand = new HandState('own-hand', hudBatcher, Luxe.screen.h + 5, false);
@@ -80,15 +79,6 @@ class PlayScreenState extends State {
         Main.states.enable(enemyHand.stateId);
 
         Gesluxe.init();
-
-        // panGesture = new PanGesture();
-        // panGesture.maxNumTouchesRequired = 2;
-        // panGesture.events.listen(GestureEvent.GESTURE_BEGAN, onPanGesture);
-        // panGesture.events.listen(GestureEvent.GESTURE_CHANGED, onPanGesture);
-
-        // zoomGesture = new ZoomGesture();
-        // zoomGesture.events.listen(GestureEvent.GESTURE_BEGAN, onZoomGesture);
-        // zoomGesture.events.listen(GestureEvent.GESTURE_CHANGED, onZoomGesture);
 
         transformGesture = new TransformGesture();
         transformGesture.events.listen(GestureEvent.GESTURE_BEGAN, onTransformGesture);
@@ -103,23 +93,13 @@ class PlayScreenState extends State {
         });
     }
 
-    // function onPanGesture(event: GestureEventData) {
-    //     Luxe.camera.pos.x += panGesture.offsetX;
-    //     Luxe.camera.pos.y += panGesture.offsetY;
-    // }
-
-    // function onZoomGesture(event: GestureEventData) {
-    //     Luxe.camera.scale.set_xy(zoomGesture.scaleX, zoomGesture.scaleY);
-    // }
-
     function onTransformGesture(event :GestureEventData) {
         // Panning
-        Luxe.camera.pos.x += transformGesture.offsetX;
-        Luxe.camera.pos.y += transformGesture.offsetY;
+        Luxe.camera.pos.x -= transformGesture.offsetX;
+        Luxe.camera.pos.y -= transformGesture.offsetY;
         
-        if (transformGesture.scale != 1 /* || transformGesture.rotation != 0 */) {
+        if (transformGesture.scale != 1) {
             // Scale and rotation.
-            // visual.radians = transformGesture.rotation;
             Luxe.camera.scale.set_xy(transformGesture.scale, transformGesture.scale);
         }
     }

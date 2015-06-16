@@ -78,7 +78,8 @@ class MinionEntity extends Visual {
             point_size: 20,
             scene: options.scene,
             parent: this,
-            depth: 1.3
+            depth: 1.3,
+            visible: false // test
         });
 
         attack = new Sprite({
