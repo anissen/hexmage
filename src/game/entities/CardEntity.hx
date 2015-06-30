@@ -70,6 +70,23 @@ class CardEntity extends Sprite {
             parent: this
         });
 
+        var is_minion_card = switch (options.card.type) {
+            case MinionCard(_): true;
+            case _: false;
+        };
+        if (is_minion_card) {
+            new Sprite({
+                batcher: options.batcher,
+                pos: new Vector(cardWidth / 2 - cardMargin / 2, 80),
+                texture: Luxe.resources.texture('assets/images/monkey.png'),
+                size: new Vector(100, 100),
+                color: cardFaceColor,
+                scene: options.scene,
+                depth: options.depth,
+                parent: cardFace
+            });
+        }
+
         costText = new Text({
             batcher: options.batcher,
             text: '',
@@ -85,6 +102,7 @@ class CardEntity extends Sprite {
         title = new Text({
             batcher: options.batcher,
             text: '',
+            shader: Main.text_shader,
             pos: new Vector(0, 0),
             bounds: new luxe.Rectangle(cardMargin, cardMargin + 5 /* + 5 to make room for cost visual */, cardWidth - (cardMargin * 2), 40),
             bounds_wrap: true,
@@ -97,9 +115,21 @@ class CardEntity extends Sprite {
             depth: options.depth
         });
 
+        // TODO: Make a OutlinedText class
+
+        // title.color = new Color().rgb(0x131313);
+        title.outline_color = new Color(0,0,0,1); //.rgb(0xfefefe);
+        title.outline = 0.75;
+        title.smoothness = 0.8;
+        title.thickness = 1.0;
+        // title.glow_amount = 0.4;
+        // title.glow_color = new Color(1,0,0,1); //.rgb(0xffde00);
+        // title.glow_threshold = 0.8;
+
         description = new Text({
             batcher: options.batcher,
             text: '',
+            shader: Main.text_shader,
             pos: new Vector(0, 0),
             bounds: new luxe.Rectangle(cardMargin, cardMargin + title.bounds.h + cardMargin, cardWidth - (cardMargin * 2), 60),
             bounds_wrap: true,
@@ -111,6 +141,11 @@ class CardEntity extends Sprite {
             parent: this,
             depth: options.depth
         });
+
+        description.outline_color = new Color(0,0,0,1); //.rgb(0xfefefe);
+        description.outline = 0.75;
+        description.smoothness = 0.8;
+        description.thickness = 1.0;
 
         secret = options.secret;
     }

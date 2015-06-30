@@ -22,10 +22,12 @@ import game.states.*;
 class Main extends luxe.Game {
     static public var states :States;
 
-    var final_output: RenderTexture;
-    static public var final_batch: Batcher;
-    var final_view: Sprite;
-    var final_shader: Shader;
+    // var final_output: RenderTexture;
+    // static public var final_batch: Batcher;
+    // var final_view: Sprite;
+    // var final_shader: Shader;
+
+    static public var text_shader: phoenix.Shader;
 
     override function config(config :luxe.AppConfig) {
         // if you have errors about the window being created, lower this to 2, or 0. it can also be 8
@@ -51,6 +53,14 @@ class Main extends luxe.Game {
 
             parcel.load();
         });
+
+        //because the text effects are set through shaders,
+        //if you share a shader across text items, and change "just one"
+        //they all get affected. For this reason, the default bitmap font
+        //shader will refuse effects set on it via text objects because
+        //it directly affects the shared shader for the debug console etc
+        //so, for unique items, you want a unique shader for each effect.
+        text_shader = Luxe.renderer.shaders.bitmapfont.shader.clone('text-shader');
     }
 
     function assets_loaded(_) {
@@ -70,15 +80,17 @@ class Main extends luxe.Game {
     override function onkeyup(e :KeyEvent) {
         if (e.keycode == Key.enter && e.mod.alt) {
             app.app.window.fullscreen = !app.app.window.fullscreen;
-        } else if (e.keycode == Key.key_s) {
+        } /* else if (e.keycode == Key.key_s) {
             if (final_view.shader == final_shader) {
                 final_view.shader = Luxe.renderer.shaders.textured.shader;
             } else {
                 final_view.shader = final_shader;
             }
         }
+        */
     }
     
+    /*
     function setup_render_to_texture() {
         final_output = new RenderTexture({ id: 'render-to-texture', width: Luxe.screen.w, height: Luxe.screen.h });
         final_batch = Luxe.renderer.create_batcher({ no_add: true });
@@ -111,4 +123,5 @@ class Main extends luxe.Game {
         final_batch.draw();
         Luxe.renderer.blend_mode();
     }
+    */
 }

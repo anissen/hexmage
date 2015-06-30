@@ -31,8 +31,6 @@ import phoenix.Batcher;
 
 import org.gesluxe.Gesluxe;
 import org.gesluxe.events.GestureEvent;
-// import org.gesluxe.gestures.ZoomGesture;
-// import org.gesluxe.gestures.PanGesture;
 import org.gesluxe.gestures.TransformGesture;
 
 using core.HexLibrary.HexTools;
@@ -41,7 +39,7 @@ class PlayScreenState extends State {
     static public var StateId = 'PlayScreenState';
 
     var scene :Scene;
-    var background :Visual;
+    // var background :Visual;
     var game :core.Game;
     var hexMap :Map<String, HexTile>;
     var minionMap :Map<Int, MinionEntity>;
@@ -103,6 +101,10 @@ class PlayScreenState extends State {
             Luxe.camera.scale.set_xy(transformGesture.scale, transformGesture.scale);
         }
     }
+
+    // override public function onmousewheel(event :MouseEvent) {
+        // https://gist.github.com/underscorediscovery/2cd52a89470421c51301
+    // }
 
     function handle_next_event() {
         if (eventQueue.isEmpty()) {
@@ -281,7 +283,10 @@ class PlayScreenState extends State {
     }
 
     function handle_players_turn(data :PlayersTurnData) :Promise {
-        if (data.player.name == 'AI Player') { // HACK HACK HACK
+        var playerBackgroundColor = (data.player.ai ? { r: 0.15, g: 0.12, b: 0.12 } : { r: 0.12, g: 0.15, b: 0.12 });
+        Luxe.renderer.clear_color.tween(0.5, playerBackgroundColor);
+
+        if (data.player.ai) {
             var minimax = new Minimax({
                 max_turn_depth: 3,
                 max_action_depth: 3,
@@ -459,13 +464,15 @@ class PlayScreenState extends State {
             if (idle) handle_next_event();
         });
 
-        background = new Visual({
-            pos: new Vector(0, 0),
-            size: Luxe.screen.size.clone(),
-            color: new ColorHSV(359, 0.0, 0.13),
-            scene: scene,
-            depth: -100
-        });
+        Luxe.renderer.clear_color.tween(1, { r: 0.13, g: 0.13, b: 0.13 });
+
+        // background = new Visual({
+        //     pos: new Vector(0, 0),
+        //     size: Luxe.screen.size.clone(),
+        //     color: new ColorHSV(359, 0.0, 0.13),
+        //     scene: scene,
+        //     depth: -100
+        // });
 
         setup_map();
 

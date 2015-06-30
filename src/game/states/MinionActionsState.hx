@@ -33,7 +33,8 @@ class MinionActionsState extends State {
             color: new Color(1, 1, 1),
             geometry: Luxe.draw.circle({ r: 25 }),
             scale: new Vector(0.0, 0.0),
-            scene: scene
+            scene: scene,
+            depth: 2
         });
         moveDot.add(new OnClick(function() {
             Main.states.disable(this.name);
@@ -53,7 +54,8 @@ class MinionActionsState extends State {
             color: new Color(1, 0, 0),
             geometry: Luxe.draw.circle({ r: 25 }),
             scale: new Vector(0.0, 0.0),
-            scene: scene
+            scene: scene,
+            depth: 2
         });
         attackDot.add(new OnClick(function() {
             Main.states.disable(this.name);

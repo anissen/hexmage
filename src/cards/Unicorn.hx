@@ -9,7 +9,8 @@ class Unicorn extends Card {
         super({ 
             name: 'Unicorn',
             cost: 3,
-            type: MinionCard('Unicorn')
+            type: MinionCard('Unicorn'),
+            description: 'Attack: 1\nLife: 2'
         });
     }
 }

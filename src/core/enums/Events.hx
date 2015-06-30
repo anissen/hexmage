@@ -42,6 +42,7 @@ enum Event {
 }
 
 enum MinionEvent {
+    Always;
     Died;
 }
 
