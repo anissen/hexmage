@@ -226,6 +226,17 @@ class PlayScreenState extends State {
                     Luxe.camera.shake(1);
 
                     update_move_indicator(minion);
+
+                    if (minion.playerId == 1) {
+                        var speechBubble = new game.entities.SpeechBubble({
+                            scene: this.scene,
+                            depth: 10
+                        });
+                        minionEntity.add(speechBubble);
+                        speechBubble.show('I am the Rat King!\nHear me roar!', 5);
+                        // *squeak squeak*
+                    }
+
                     resolve();
                 });
         });

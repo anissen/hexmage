@@ -4,7 +4,8 @@
         { "id": "assets/images/life_icon.png" },
         { "id": "assets/images/attack_icon.png" },
         { "id": "assets/images/minion_base.png" },
-        { "id": "assets/images/monkey.png" }
+        { "id": "assets/images/monkey.png" },
+        { "id": "assets/images/speech_bubble.png" }
     ],
     "shaders" : [
         { "id": "full", "frag_id": "assets/shaders/full.glsl", "vert_id": "default" },
