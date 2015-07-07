@@ -14,14 +14,18 @@ import luxe.tween.Actuate;
 
 typedef SpeechBubbleOptions = {
     scene :Scene,
-    depth :Int
+    depth :Int,
+    text :String,
+    ?duration :Float
 }
 
 class SpeechBubble extends Component {
     var sx : Int = 60;
     var sy : Int = 60;
-    var text :luxe.Text;
+    var speech_text :luxe.Text;
     var speech_bubble :NineSlice;
+    var text :String;
+    var duration :Null<Float>;
 
     public function new(_options :SpeechBubbleOptions) {
         super({ name: 'SpeechBubble' });
@@ -38,12 +42,6 @@ class SpeechBubble extends Component {
             depth: _options.depth
         });
         speech_bubble.visible = false;
-    }
-
-    override function init() {
-        entity.transform.listen_pos(function(v) {
-            speech_bubble.pos = get_corrected_pos(v);
-        });
 
         var unique_shader = Luxe.renderer.shaders.bitmapfont.shader.clone('blah-text');
         unique_shader.set_float('thickness', 1.0);
@@ -51,9 +49,9 @@ class SpeechBubble extends Component {
         unique_shader.set_float('outline', 0.75);
         unique_shader.set_vector4('outline_color', new Vector(1,0,0,1));
 
-        text = new Text({
+        speech_text = new Text({
             text: '',
-            pos: new Vector(15, 35),
+            pos: new Vector(18, 41),
             shader: unique_shader,
             color: new Color(0, 0, 0, 0),
             align: TextAlign.left,
@@ -62,17 +60,45 @@ class SpeechBubble extends Component {
             parent: speech_bubble,
             depth: 101
         });
+
+        text = _options.text;
+        duration = _options.duration;
+    }
+
+    override function init() {
         
-        speech_bubble.create(get_corrected_pos(entity.pos), 60, 60);
-        speech_bubble.visible = true;
     }
 
     override function onadded() {
+        speech_bubble.create(get_corrected_pos(entity.pos), 60, 60);
+
+        speech_text.text = text;
+        Actuate.tween(speech_bubble.color, 0.3, { a: 1 }).ease(luxe.tween.easing.Linear.easeNone);
+
+        Actuate.tween(speech_text.color, 0.5, { a: 1 }, true).ease(luxe.tween.easing.Linear.easeNone);
+        resize_container(speech_text.geom.text_width, speech_text.geom.text_height, 0.5);
+        speech_bubble.visible = true;
+        speech_text.visible = true;
+
+        entity.transform.listen_pos(function(v) {
+            speech_bubble.pos = get_corrected_pos(v);
+        });
         
+
+        if (duration != null) {
+            Luxe.timer.schedule(duration, this.remove.bind(this.name));
+        }
     }
 
     override function onremoved() {
-        hide();
+        speech_text.text = '';
+        Actuate.tween(speech_bubble.color, 0.4, { a: 0 }, true).ease(luxe.tween.easing.Linear.easeNone);
+        Actuate.tween(speech_text.color, 0.4, { a: 0 }, true).ease(luxe.tween.easing.Linear.easeNone);
+
+        resize_container(0, 0, 0.4).onComplete(function() {
+            speech_bubble.visible = false;
+            speech_text.visible = false;
+        });
     }
 
     function get_corrected_pos(v :Vector) :Vector {
@@ -87,17 +113,6 @@ class SpeechBubble extends Component {
         return Actuate.tween(this, duration, { sx: width, sy: height }, true).onUpdate(sizechange);
     }
 
-    function hide() {
-        text.text = '';
-        Actuate.tween(speech_bubble.color, 0.4, { a: 0 }, true).ease(luxe.tween.easing.Linear.easeNone);
-        Actuate.tween(text.color, 0.4, { a: 0 }, true).ease(luxe.tween.easing.Linear.easeNone);
-
-        resize_container(0, 0, 0.4).onComplete(function() {
-            speech_bubble.visible = false;
-            text.visible = false;
-        });
-    }
-
     function resize_container(width :Float, height :Float, duration :Float = 0.4, margin :Float = 5) {
         return resize(
                 speech_bubble.left + margin + width  + margin + speech_bubble.right, 
@@ -105,16 +120,10 @@ class SpeechBubble extends Component {
                 duration);
     }
 
-    // TODO: Make this a static function that adds/removes this component!
-    public function show(_text :String, _duration :Float = 5) {
-        text.text = _text;
-        Actuate.tween(speech_bubble.color, 0.3, { a: 1 }).ease(luxe.tween.easing.Linear.easeNone);
-
-        Actuate.tween(text.color, 0.5, { a: 1 }, true).ease(luxe.tween.easing.Linear.easeNone);
-        resize_container(text.geom.text_width, text.geom.text_height, 0.5);
-        speech_bubble.visible = true;
-        text.visible = true;
-
-        Luxe.timer.schedule(_duration, hide);
-    }
+    // static public function ShowSequence(options :SpeechBubbleShowSequenceOptions) {
+    //     var component = new SpeechBubble(options);
+    //     component.text = options.text;
+    //     Luxe.timer.schedule(options.duration, component.destroy);
+    //     return component;
+    // }
 }
