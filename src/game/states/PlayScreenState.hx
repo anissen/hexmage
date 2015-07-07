@@ -54,6 +54,9 @@ class PlayScreenState extends State {
     var hudBatcher :Batcher;
 
     var transformGesture :TransformGesture;
+    var current_camera_zoom :Float;
+    var minimum_zoom :Float;
+    var maximum_zoom :Float;
 
     public function new() {
         super({ name: StateId });
@@ -81,6 +84,7 @@ class PlayScreenState extends State {
         transformGesture = new TransformGesture();
         transformGesture.events.listen(GestureEvent.GESTURE_BEGAN, onTransformGesture);
         transformGesture.events.listen(GestureEvent.GESTURE_CHANGED, onTransformGesture);
+        transformGesture.events.listen(GestureEvent.GESTURE_ENDED, onTransformGesture);
 
         Luxe.events.listen('card_clicked', function(data :{ entity :CardEntity, card :Card }) {
             if (!Main.states.enabled(PlayCardState.StateId)) {
@@ -91,20 +95,27 @@ class PlayScreenState extends State {
         });
     }
 
+    // TODO: Make this into an Component, e.g. https://gist.github.com/underscorediscovery/2cd52a89470421c51301
     function onTransformGesture(event :GestureEventData) {
         // Panning
         Luxe.camera.pos.x -= transformGesture.offsetX;
         Luxe.camera.pos.y -= transformGesture.offsetY;
         
         if (transformGesture.scale != 1) {
-            // Scale and rotation.
-            Luxe.camera.scale.set_xy(transformGesture.scale, transformGesture.scale);
+            var new_zoom = current_camera_zoom * transformGesture.scale;
+            Luxe.camera.zoom = luxe.utils.Maths.clamp(new_zoom, minimum_zoom, maximum_zoom);
         }
     }
 
-    // override public function onmousewheel(event :MouseEvent) {
+    function onTransformGestureEnded(event :GestureEventData) {
+        current_camera_zoom = Luxe.camera.zoom;
+    }
+
+    override public function onmousewheel(event :MouseEvent) {
         // https://gist.github.com/underscorediscovery/2cd52a89470421c51301
-    // }
+        var zoom_speed = 0.3;
+        Luxe.camera.zoom += (event.y > 0 ? zoom_speed : -zoom_speed);
+    }
 
     function handle_next_event() {
         if (eventQueue.isEmpty()) {
@@ -230,11 +241,11 @@ class PlayScreenState extends State {
                     if (minion.playerId == 1) {
                         var speechBubble = new game.entities.SpeechBubble({
                             scene: this.scene,
-                            depth: 10
+                            depth: 10,
+                            text: 'I am the Rat King!\nHear me roar!',
+                            duration: 5
                         });
                         minionEntity.add(speechBubble);
-                        speechBubble.show('I am the Rat King!\nHear me roar!', 5);
-                        // *squeak squeak*
                     }
 
                     resolve();
@@ -474,6 +485,10 @@ class PlayScreenState extends State {
             eventQueue.add(event);
             if (idle) handle_next_event();
         });
+
+        current_camera_zoom = Luxe.camera.zoom;
+        minimum_zoom = 0.5;
+        maximum_zoom = 2.0;
 
         Luxe.renderer.clear_color.tween(1, { r: 0.13, g: 0.13, b: 0.13 });
 
