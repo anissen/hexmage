@@ -116,7 +116,7 @@ class PlayScreenState extends State {
         // https://gist.github.com/underscorediscovery/2cd52a89470421c51301
         var zoom_speed = 0.2;
         var new_zoom = Luxe.camera.zoom + (event.y > 0 ? zoom_speed : -zoom_speed);
-        Luxe.camera.zoom = Maths.clamp(new_zoom, minimum_zoom, maximum_zoom) });
+        Luxe.camera.zoom = Maths.clamp(new_zoom, minimum_zoom, maximum_zoom);
     }
 
     function handle_next_event() {
