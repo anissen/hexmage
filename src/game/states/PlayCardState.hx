@@ -33,7 +33,7 @@ class PlayCardState extends State {
                     geometry: Luxe.draw.circle({ r: 40 }),
                     scale: new Vector(0.0, 0.0),
                     scene: scene,
-                    depth: 0
+                    depth: 100
                 });
             case Tile(tile):
                 new Sprite({
