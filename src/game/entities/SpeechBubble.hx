@@ -11,11 +11,12 @@ import luxe.Color;
 import luxe.Vector;
 import luxe.NineSlice;
 import luxe.tween.Actuate;
+import snow.api.Promise;
 
 typedef SpeechBubbleOptions = {
     scene :Scene,
     depth :Int,
-    text :String,
+    texts :Array<String>,
     ?duration :Float
 }
 
@@ -24,8 +25,10 @@ class SpeechBubble extends Component {
     var sy : Int = 60;
     var speech_text :luxe.Text;
     var speech_bubble :NineSlice;
-    var text :String;
+    var texts :Array<String>;
     var duration :Null<Float>;
+    var promise :Promise;
+    var promise_resolve :Void->Void;
 
     public function new(_options :SpeechBubbleOptions) {
         super({ name: 'SpeechBubble' });
@@ -51,18 +54,21 @@ class SpeechBubble extends Component {
 
         speech_text = new Text({
             text: '',
-            pos: new Vector(18, 41),
+            pos: new Vector(17, 12),
             shader: unique_shader,
             color: new Color(0, 0, 0, 0),
             align: TextAlign.left,
-            align_vertical: TextAlign.center,
+            align_vertical: TextAlign.top,
             point_size: 24,
             parent: speech_bubble,
             depth: 101
         });
 
-        text = _options.text;
+        texts = _options.texts;
         duration = _options.duration;
+        promise = new Promise(function(resolve, reject) {
+            promise_resolve = resolve;
+        });
     }
 
     override function init() {
@@ -70,24 +76,44 @@ class SpeechBubble extends Component {
     }
 
     override function onadded() {
-        speech_bubble.create(get_corrected_pos(entity.pos), 60, 60);
-
-        speech_text.text = text;
-        Actuate.tween(speech_bubble.color, 0.3, { a: 1 }).ease(luxe.tween.easing.Linear.easeNone);
-
-        Actuate.tween(speech_text.color, 0.5, { a: 1 }, true).ease(luxe.tween.easing.Linear.easeNone);
-        resize_container(speech_text.geom.text_width, speech_text.geom.text_height, 0.5);
-        speech_bubble.visible = true;
-        speech_text.visible = true;
-
         entity.transform.listen_pos(function(v) {
             speech_bubble.pos = get_corrected_pos(v);
         });
+
+        speech_bubble.create(get_corrected_pos(entity.pos), 60, 60);
+
+        speech_bubble.color.a = 0;
+        Actuate.tween(speech_bubble.color, 0.3, { a: 1 }).ease(luxe.tween.easing.Linear.easeNone);
         
+        speech_bubble.visible = true;
+
+        for (i in 0 ... texts.length) {
+            Luxe.timer.schedule(i * (duration / texts.length), function() {
+                show_text(texts[i]);
+            });
+        }
 
         if (duration != null) {
             Luxe.timer.schedule(duration, this.remove.bind(this.name));
         }
+    }
+
+    function show_text(text :String) {
+         // Hack to get the dimensions of the new text without setting it yet
+        var old_text = speech_text.text;
+        speech_text.text = text;
+        resize_container(speech_text.geom.text_width, speech_text.geom.text_height, 0.5);
+        speech_text.text = old_text;
+
+        Actuate
+            .tween(speech_text.color, 0.3, { a: 0 })
+            .ease(luxe.tween.easing.Linear.easeNone)
+            .onComplete(function() {
+                speech_text.text = text;
+                Actuate
+                    .tween(speech_text.color, 0.5, { a: 1 })
+                    .ease(luxe.tween.easing.Linear.easeNone);
+            });
     }
 
     override function onremoved() {
@@ -98,6 +124,7 @@ class SpeechBubble extends Component {
         resize_container(0, 0, 0.4).onComplete(function() {
             speech_bubble.visible = false;
             speech_text.visible = false;
+            promise_resolve();
         });
     }
 
@@ -120,7 +147,11 @@ class SpeechBubble extends Component {
                 duration);
     }
 
-    // static public function ShowSequence(options :SpeechBubbleShowSequenceOptions) {
+    public function get_promise() :Promise {
+        return promise;
+    }
+
+    // static public function ShowSequence(options :SpeechBubbleShowSequenceOptions) : {
     //     var component = new SpeechBubble(options);
     //     component.text = options.text;
     //     Luxe.timer.schedule(options.duration, component.destroy);

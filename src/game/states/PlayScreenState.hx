@@ -206,16 +206,30 @@ class PlayScreenState extends State {
     }
 
     function handle_minion_died(data :MinionDiedData) :Promise {
-        return new Promise(function(resolve, reject) {
-            var minionEntity = id_to_minion_entity(data.minion.id);
-            Actuate
-                .tween(minionEntity.scale, 0.2 * Settings.TweenFactor, { x: 0, y: 0 })
-                .onComplete(function() {
-                    minionMap.remove(data.minion.id);
-                    minionEntity.destroy();
-                    resolve();
-                });
-        });
+        var minionEntity = id_to_minion_entity(data.minion.id);
+        function create_death_animation() {
+            return new Promise(function(resolve, reject) {
+                Actuate
+                    .tween(minionEntity.scale, 0.2 * Settings.TweenFactor, { x: 0, y: 0 })
+                    .onComplete(function() {
+                        minionMap.remove(data.minion.id);
+                        minionEntity.destroy();
+                        resolve();
+                    });
+            });
+        }
+        if (data.minion.name == 'Rat King') {
+            var speechBubble = new game.entities.SpeechBubble({
+                scene: this.scene,
+                depth: 10,
+                texts: ['Noooooo...'],
+                duration: 2
+            });
+            minionEntity.add(speechBubble);
+            return speechBubble.get_promise().then(create_death_animation);
+        } else {
+            return create_death_animation();
+        }
     }
 
     function handle_minion_entered(data :MinionEnteredData) :Promise {
@@ -238,17 +252,18 @@ class PlayScreenState extends State {
 
                     update_move_indicator(minion);
 
-                    if (minion.playerId == 1) {
+                    if (minion.name == 'Rat King') {
                         var speechBubble = new game.entities.SpeechBubble({
                             scene: this.scene,
                             depth: 10,
-                            text: 'I am the Rat King!\nHear me roar!',
-                            duration: 5
+                            texts: ['I am the Rat King!\nHear me roar!', '*squeak squeak*'],
+                            duration: 4
                         });
                         minionEntity.add(speechBubble);
+                        speechBubble.get_promise().then(resolve);
+                    } else {
+                        resolve();
                     }
-
-                    resolve();
                 });
         });
     }
