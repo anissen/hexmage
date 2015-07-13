@@ -10,11 +10,11 @@ enum Tag {
 
 class Entity {
     var name :String;
-    var tags :Map<Tag,Int>;
+    var tags :Map<Tag, Int>;
     
-    public function new(name :String) {
+    public function new(name :String, tags :Map<Tag, Int>) {
         this.name = name;
-        tags = new Map<Tag,Int>();
+        this.tags = tags; //new Map<Tag,Int>();
     }
     
     public function set_tag(tag :Tag, tag_value :Int) :Void {
@@ -25,11 +25,11 @@ class Entity {
         tags.remove(tag);
     }
     
-    public function getTag(tag :Tag) :Null<Int> {
+    public function get_tag(tag :Tag) :Null<Int> {
         return tags.get(tag);
     }
     
-    public function getBoolTag(tag :Tag) :Bool {
+    public function get_bool_tag(tag :Tag) :Bool {
         return (tags.get(tag) > 0);
     }
     
@@ -45,42 +45,46 @@ class Entity {
 
     static public function Has(tag :Tag) {
         return function(entity) {
-            return (entity.getTag(tag) != null);
+            return (entity.get_tag(tag) != null);
         };
     }
 }
 
 class Test {
     static function main() {
-        var unicorn = new Entity('Unicorn');
-        unicorn.set_tag(Health, 6);
-        unicorn.set_tag(Attack, 1);
-        unicorn.set_tag(Healing, 1);
-        unicorn.set_tag(CanAttack, 1);
+        var unicorn = new Entity('Unicorn', [
+            Health => 6,
+            Attack => 1,
+            Healing => 1,
+            CanAttack => 1
+        ]);
+        // unicorn.set_tag(Health, 6);
+        // unicorn.set_tag(Attack, 1);
+        // unicorn.set_tag(Healing, 1);
+        // unicorn.set_tag(CanAttack, 1);
         damage(unicorn, 2);
         unicorn.listTags();
-        trace('--> Can attack: ${unicorn.getBoolTag(CanAttack)}');
+        trace('--> Can attack: ${unicorn.get_bool_tag(CanAttack)}');
         
-        var troll = new Entity('Troll');
-        troll.set_tag(Health, 2);
-        troll.set_tag(Attack, 2);
+        var troll = new Entity('Troll', [
+            Health => 2,
+            Attack => 2
+        ]);
+        // troll.set_tag(Health, 2);
+        // troll.set_tag(Attack, 2);
         
         var entities = [unicorn, troll];
 
-        var has_health :Array<Entity> = entities.filter(Entity.Has(Health));        
         trace('Entities with health');
-        for (entity in has_health) {
-            trace('· ' + entity.getName());     
-        }
+        var has_health = entities.filter(Entity.Has(Health));        
+        for (entity in has_health) trace('· ' + entity.getName());
     
-        var has_healing = entities.filter(Entity.Has(Healing));
         trace('Entities with healing');
-        for (entity in has_healing) {
-            trace('· ' + entity.getName());     
-        }
+        var has_healing = entities.filter(Entity.Has(Healing));
+        for (entity in has_healing) trace('· ' + entity.getName());
     }
     
     static function damage(entity :Entity, amount :Int) {
-        entity.set_tag(Health, entity.getTag(Health) - amount);
+        entity.set_tag(Health, entity.get_tag(Health) - amount);
     }
 }
