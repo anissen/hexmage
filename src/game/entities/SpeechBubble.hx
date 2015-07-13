@@ -46,16 +46,16 @@ class SpeechBubble extends Component {
         });
         speech_bubble.visible = false;
 
-        var unique_shader = Luxe.renderer.shaders.bitmapfont.shader.clone('blah-text');
-        unique_shader.set_float('thickness', 1.0);
-        unique_shader.set_float('smoothness', 0.8);
-        unique_shader.set_float('outline', 0.75);
-        unique_shader.set_vector4('outline_color', new Vector(1,0,0,1));
+        // var unique_shader = Luxe.renderer.shaders.bitmapfont.shader.clone('blah-text');
+        // unique_shader.set_float('thickness', 1.0);
+        // unique_shader.set_float('smoothness', 0.8);
+        // unique_shader.set_float('outline', 0.75);
+        // unique_shader.set_vector4('outline_color', new Vector(1,0,0,1));
 
         speech_text = new Text({
             text: '',
             pos: new Vector(17, 12),
-            shader: unique_shader,
+            // shader: unique_shader,
             color: new Color(0, 0, 0, 0),
             align: TextAlign.left,
             align_vertical: TextAlign.top,

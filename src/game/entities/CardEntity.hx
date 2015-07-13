@@ -102,7 +102,7 @@ class CardEntity extends Sprite {
         title = new Text({
             batcher: options.batcher,
             text: '',
-            shader: Main.text_shader,
+            // shader: Main.text_shader,
             pos: new Vector(0, 0),
             bounds: new luxe.Rectangle(cardMargin, cardMargin + 5 /* + 5 to make room for cost visual */, cardWidth - (cardMargin * 2), 40),
             bounds_wrap: true,
@@ -129,7 +129,7 @@ class CardEntity extends Sprite {
         description = new Text({
             batcher: options.batcher,
             text: '',
-            shader: Main.text_shader,
+            // shader: Main.text_shader,
             pos: new Vector(0, 0),
             bounds: new luxe.Rectangle(cardMargin, cardMargin + title.bounds.h + cardMargin, cardWidth - (cardMargin * 2), 60),
             bounds_wrap: true,

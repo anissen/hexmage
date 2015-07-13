@@ -2,9 +2,13 @@
 // Read http://notes.underscorediscovery.com/ for context on shaders and this file
 // License : MIT
 
+#ifdef GL_ES
+precision mediump float;
+#endif
+
 uniform sampler2D tex0;
-varying highp vec2 tcoord;
-varying highp vec4 color;
+varying vec2 tcoord;
+varying vec4 color;
 
     /*
         Take note that blurring in a single pass (the two for loops below) is more expensive than separating
@@ -38,18 +42,18 @@ varying highp vec4 color;
 
     //I am hardcoding the constants like a jerk
     
-const highp float bluramount  = 1.0;
-const highp float center      = 1.1;
-const highp float stepSize    = 0.004;
-const highp float steps       = 3.0;
+const float bluramount  = 1.0;
+const float center      = 1.1;
+const float stepSize    = 0.004;
+const float steps       = 3.0;
 
-const highp float minOffs     = (float(steps-1.0)) / -2.0;
-const highp float maxOffs     = (float(steps-1.0)) / +2.0;
+const float minOffs     = (float(steps-1.0)) / -2.0;
+const float maxOffs     = (float(steps-1.0)) / +2.0;
 
 void main() {
 
-    highp float amount;
-    highp vec4 blurred;
+    float amount;
+    vec4 blurred;
         
         //Work out how much to blur based on the mid point 
     amount = pow((tcoord.y * center) * 2.0 - 1.0, 2.0) * bluramount;
@@ -58,11 +62,11 @@ void main() {
     blurred = vec4(0.0, 0.0, 0.0, 1.0);
         
         //From minimum offset to maximum offset
-    for (highp float offsX = minOffs; offsX <= maxOffs; ++offsX) {
-        for (highp float offsY = minOffs; offsY <= maxOffs; ++offsY) {
+    for (float offsX = minOffs; offsX <= maxOffs; ++offsX) {
+        for (float offsY = minOffs; offsY <= maxOffs; ++offsY) {
 
                 //copy the coord so we can mess with it
-            highp vec2 temp_tcoord = tcoord.xy;
+            vec2 temp_tcoord = tcoord.xy;
 
                 //work out which uv we want to sample now
             temp_tcoord.x += offsX * amount * stepSize;

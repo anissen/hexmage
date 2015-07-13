@@ -27,7 +27,7 @@ class Main extends luxe.Game {
     // var final_view: Sprite;
     // var final_shader: Shader;
 
-    static public var text_shader: phoenix.Shader;
+    // static public var text_shader: phoenix.Shader;
 
     override function config(config :luxe.AppConfig) {
         // if you have errors about the window being created, lower this to 2, or 0. it can also be 8
@@ -60,7 +60,7 @@ class Main extends luxe.Game {
         //shader will refuse effects set on it via text objects because
         //it directly affects the shared shader for the debug console etc
         //so, for unique items, you want a unique shader for each effect.
-        text_shader = Luxe.renderer.shaders.bitmapfont.shader.clone('text-shader');
+        // text_shader = Luxe.renderer.shaders.bitmapfont.shader.clone('text-shader');
     }
 
     function assets_loaded(_) {
