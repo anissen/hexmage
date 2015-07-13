@@ -17,11 +17,11 @@ class Entity {
         tags = new Map<Tag,Int>();
     }
     
-    public function setTag(tag :Tag, tagValue :Int) :Void {
-        tags.set(tag, tagValue);
+    public function set_tag(tag :Tag, tag_value :Int) :Void {
+        tags.set(tag, tag_value);
     }
     
-    public function unsetTag(tag :Tag) :Void {
+    public function unset_tag(tag :Tag) :Void {
         tags.remove(tag);
     }
     
@@ -42,37 +42,38 @@ class Entity {
     public function getName() {
         return name;
     }
+
+    static public function Has(tag :Tag) {
+        return function(entity) {
+            return (entity.getTag(tag) != null);
+        };
+    }
 }
 
 class Test {
     static function main() {
         var unicorn = new Entity('Unicorn');
-        unicorn.setTag(Health, 6);
-        unicorn.setTag(Attack, 1);
-        unicorn.setTag(Healing, 1);
-        unicorn.setTag(CanAttack, 1);
+        unicorn.set_tag(Health, 6);
+        unicorn.set_tag(Attack, 1);
+        unicorn.set_tag(Healing, 1);
+        unicorn.set_tag(CanAttack, 1);
         damage(unicorn, 2);
         unicorn.listTags();
         trace('--> Can attack: ${unicorn.getBoolTag(CanAttack)}');
         
-        
         var troll = new Entity('Troll');
-        troll.setTag(Health, 2);
-        troll.setTag(Attack, 2);
+        troll.set_tag(Health, 2);
+        troll.set_tag(Attack, 2);
         
         var entities = [unicorn, troll];
 
-        var has_health :Array<Entity> = entities.filter(function(entity) {
-            return (entity.getTag(Health) != null);
-        });        
+        var has_health :Array<Entity> = entities.filter(Entity.Has(Health));        
         trace('Entities with health');
         for (entity in has_health) {
             trace('· ' + entity.getName());     
         }
     
-        var has_healing :Array<Entity> = entities.filter(function(entity) {
-            return (entity.getTag(Healing) != null);
-        });
+        var has_healing = entities.filter(Entity.Has(Healing));
         trace('Entities with healing');
         for (entity in has_healing) {
             trace('· ' + entity.getName());     
@@ -80,6 +81,6 @@ class Test {
     }
     
     static function damage(entity :Entity, amount :Int) {
-        entity.setTag(Health, entity.getTag(Health) - amount);
+        entity.set_tag(Health, entity.getTag(Health) - amount);
     }
 }
