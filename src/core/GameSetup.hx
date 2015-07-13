@@ -51,10 +51,12 @@ class GameSetup {
         MinionLibrary.Add(new Minion({
             name: 'Fetid Rat',
             attack: 2,
-            life: 2
-            // on_event: [
-                // DidDamage => function(minion) { /* poison damaged minion */ }
-            // ]
+            life: 2,
+            on_event: [
+                // OWN_TURN_END.on(Buff(RANDOM_OTHER_FRIENDLY_MINION, "NEW1_037e"))
+                // https://github.com/jleclanche/fireplace/blob/eaa288244a4fd303b109abb257473f6cf81dbb2c/fireplace/cards/classic/neutral_rare.py
+                On(OwnTurnEnd) => function() { Buff(RANDOM_OTHER_FRIENDLY_MINION, { Health: -1 }); }
+            ]
         }));
 
         MinionLibrary.Add(new Minion({

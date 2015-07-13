@@ -40,6 +40,8 @@ class Minion {
 
     public var on_event :Map<MinionEvent, Void -> Commands>;
 
+    // public var effects :Map<Event, Array<Effect>>;
+
     public function new(options :MinionOptions) {
         id               = options.id;
         playerId         = options.playerId;

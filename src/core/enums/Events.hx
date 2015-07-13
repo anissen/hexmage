@@ -25,7 +25,6 @@ enum Event {
     GameOver;
     CardDrawn(data :CardDrawnData);
     CardPlayed(data :CardPlayedData);
-    // SelfEntered;
     MinionMoved(data :MinionMovedData);
     MinionDied(data :MinionDiedData);
     MinionAttacked(data :MinionAttackedData);
@@ -44,6 +43,7 @@ enum Event {
 enum MinionEvent {
     Always;
     Died;
+    //DidDamage(data :DidDamageData)
 }
 
 typedef Events = Array<Event>;
