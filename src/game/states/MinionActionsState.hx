@@ -39,7 +39,7 @@ class MinionActionsState extends State {
         moveDot.add(new OnClick(function() {
             Main.states.disable(this.name);
             game.do_action(MoveAction(data));
-        }));
+        }, false));
         luxe.tween.Actuate.tween(moveDot.pos, 0.3 * Settings.TweenFactor, { x: to.x, y: to.y });
         luxe.tween.Actuate.tween(moveDot.scale, 0.3 * Settings.TweenFactor, { x: 1, y: 1 });
     }
@@ -60,7 +60,7 @@ class MinionActionsState extends State {
         attackDot.add(new OnClick(function() {
             Main.states.disable(this.name);
             game.do_action(AttackAction(data));
-        }));
+        }, false));
         luxe.tween.Actuate.tween(attackDot.pos, 0.3 * Settings.TweenFactor, { x: to.x, y: to.y });
         luxe.tween.Actuate.tween(attackDot.scale, 0.3 * Settings.TweenFactor, { x: 1, y: 1 });
     }

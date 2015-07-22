@@ -60,7 +60,7 @@ class PlayCardState extends State {
             // trace(data);
             game.do_action(PlayCardAction(data));
             Main.states.disable(StateId);
-        }));
+        }, false));
         dots.push(playAtDot);
         luxe.tween.Actuate.tween(playAtDot.scale, 0.3 * Settings.TweenFactor, { x: 1, y: 1 });
     }

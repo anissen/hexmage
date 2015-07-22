@@ -10,10 +10,12 @@ import luxe.Input.MouseButton;
 class OnClick extends Component {
     var visual :Visual;
     var callback :Void->Void;
+    var fixed_on_screen :Bool;
 
-    public function new(callback :Void->Void) {
+    public function new(callback :Void->Void, fixed_on_screen :Bool = true) {
         super();
         this.callback = callback;
+        this.fixed_on_screen = fixed_on_screen;
         if (callback == null) throw 'Callback is null';
     }
 
@@ -25,7 +27,7 @@ class OnClick extends Component {
     override function onmousedown(e :MouseEvent) {
         if (e.button != MouseButton.left) return;
         
-        var pos = Luxe.camera.screen_point_to_world(e.pos);
+        var pos = (fixed_on_screen ? e.pos : Luxe.camera.screen_point_to_world(e.pos));
         if (!Luxe.utils.geometry.point_in_geometry(pos, visual.geometry)) return;
             
         callback();
