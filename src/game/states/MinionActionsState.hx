@@ -8,6 +8,8 @@ import core.enums.Actions.AttackActionData;
 import luxe.Scene;
 import luxe.States;
 import luxe.Sprite;
+import luxe.tween.Actuate;
+import luxe.utils.Maths;
 import luxe.Vector;
 import luxe.Color;
 
@@ -28,6 +30,23 @@ class MinionActionsState extends State {
         var minionPos = game.minion_pos(game.minion(data.minionId));
         var from = game.tile_to_world(minionPos);
         var to = game.tile_to_world(data.tileId);
+
+        var diff = Vector.Subtract(to, from);
+        var arrow = new Sprite({
+            pos: from,
+            color: new Color(1, 1, 0.5, 0.5),
+            texture: Luxe.resources.texture('assets/images/plain-arrow.png'),
+            size: new Vector(96, 96),
+            rotation_z: Maths.degrees(diff.angle2D) - 90,
+            scene: scene,
+            depth: -1
+        });
+
+        var finalArrowPos = Vector.Add(from, Vector.Multiply(diff, 0.7));
+        Actuate
+            .tween(arrow.pos, 0.5 * Settings.TweenFactor, { x: finalArrowPos.x, y: finalArrowPos.y })
+            .ease(luxe.tween.easing.Elastic.easeOut);
+
         var moveDot = new Sprite({
             pos: from,
             color: new Color(0, 0, 0, 0.1),
@@ -50,8 +69,12 @@ class MinionActionsState extends State {
                 game.do_action(MoveAction(data));
             }
         }));
-        luxe.tween.Actuate.tween(moveDot.pos, 0.3 * Settings.TweenFactor, { x: to.x, y: to.y });
-        luxe.tween.Actuate.tween(moveDot.scale, 0.3 * Settings.TweenFactor, { x: 1, y: 1 });
+        Actuate
+            .tween(moveDot.pos, 0.5 * Settings.TweenFactor, { x: to.x, y: to.y })
+            .ease(luxe.tween.easing.Elastic.easeOut);
+        Actuate
+            .tween(moveDot.scale, 0.5 * Settings.TweenFactor, { x: 1, y: 1 })
+            .ease(luxe.tween.easing.Elastic.easeOut);
     }
 
     function minion_can_attack(data :AttackActionData, game :Game) {
@@ -59,6 +82,23 @@ class MinionActionsState extends State {
         var victimPos = game.minion_pos(game.minion(data.victimId));
         var from = game.tile_to_world(minionPos);
         var to = game.tile_to_world(victimPos);
+
+        var diff = Vector.Subtract(to, from);
+        var arrow = new Sprite({
+            pos: from,
+            color: new Color(1, 0, 0, 0.5),
+            texture: Luxe.resources.texture('assets/images/plain-arrow.png'),
+            size: new Vector(96, 96),
+            rotation_z: Maths.degrees(diff.angle2D) - 90,
+            scene: scene,
+            depth: -1
+        });
+
+        var finalArrowPos = Vector.Add(from, Vector.Multiply(diff, 0.7));
+        Actuate
+            .tween(arrow.pos, 0.5 * Settings.TweenFactor, { x: finalArrowPos.x, y: finalArrowPos.y })
+            .ease(luxe.tween.easing.Bounce.easeOut);
+
         var attackDot = new Sprite({
             pos: from,
             color: new Color(0, 0, 0, 0.5),
@@ -69,7 +109,7 @@ class MinionActionsState extends State {
         });
         new Sprite({
             texture: Luxe.resources.texture('assets/images/punch-blast.png'),
-            size: new Vector(92, 92),
+            size: new Vector(96, 96),
             scene: scene,
             depth: 2.1,
             parent: attackDot
@@ -80,18 +120,22 @@ class MinionActionsState extends State {
                 game.do_action(AttackAction(data));
             }
         }));
-        luxe.tween.Actuate.tween(attackDot.pos, 0.3 * Settings.TweenFactor, { x: to.x, y: to.y });
-        luxe.tween.Actuate.tween(attackDot.scale, 0.3 * Settings.TweenFactor, { x: 1, y: 1 });
+        Actuate
+            .tween(attackDot.pos, 0.5 * Settings.TweenFactor, { x: to.x, y: to.y })
+            .ease(luxe.tween.easing.Bounce.easeOut);
+        Actuate
+            .tween(attackDot.scale, 0.5 * Settings.TweenFactor, { x: 1, y: 1 })
+            .ease(luxe.tween.easing.Bounce.easeOut);
     }
 
     override function onenabled<T>(_value :T) {
-        var bg = new Sprite({
-            color: new Color(0, 0, 0, 0.2),
-            size: Luxe.screen.size.clone(),
-            centered: false,
-            scene: scene,
-            depth: -20
-        });
+        // var bg = new Sprite({
+        //     color: new Color(0, 0, 0, 0.2),
+        //     size: Luxe.screen.size.clone(),
+        //     centered: false,
+        //     scene: scene,
+        //     depth: -20
+        // });
 
         var data :{ game :Game, minionId :Int } = cast _value;
         var minion = data.game.minion(data.minionId);
