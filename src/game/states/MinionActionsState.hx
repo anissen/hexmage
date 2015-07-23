@@ -26,7 +26,7 @@ class MinionActionsState extends State {
         scene = new Scene('MinionActionsScene');
     }
 
-    function minion_can_move_to(data :MoveActionData, game :Game) {
+    function minion_can_move_to(data :MoveActionData, game :Game, count :Int) {
         var minionPos = game.minion_pos(game.minion(data.minionId));
         var from = game.tile_to_world(minionPos);
         var to = game.tile_to_world(data.tileId);
@@ -34,9 +34,9 @@ class MinionActionsState extends State {
         var diff = Vector.Subtract(to, from);
         var arrow = new Sprite({
             pos: from,
-            color: new Color(1, 1, 0.5, 0.5),
+            color: new Color(1, 1, 0.5, 0.3),
             texture: Luxe.resources.texture('assets/images/plain-arrow.png'),
-            size: new Vector(96, 96),
+            size: new Vector(80, 80),
             rotation_z: Maths.degrees(diff.angle2D) - 90,
             scene: scene,
             depth: -1
@@ -44,7 +44,8 @@ class MinionActionsState extends State {
 
         var finalArrowPos = Vector.Add(from, Vector.Multiply(diff, 0.7));
         Actuate
-            .tween(arrow.pos, 0.5 * Settings.TweenFactor, { x: finalArrowPos.x, y: finalArrowPos.y })
+            .tween(arrow.pos, 0.6 * Settings.TweenFactor, { x: finalArrowPos.x, y: finalArrowPos.y })
+            .delay(count * 0.05)
             .ease(luxe.tween.easing.Elastic.easeOut);
 
         var moveDot = new Sprite({
@@ -70,14 +71,16 @@ class MinionActionsState extends State {
             }
         }));
         Actuate
-            .tween(moveDot.pos, 0.5 * Settings.TweenFactor, { x: to.x, y: to.y })
-            .ease(luxe.tween.easing.Elastic.easeOut);
+            .tween(moveDot.pos, 0.6 * Settings.TweenFactor, { x: to.x, y: to.y })
+            .delay(count * 0.05)
+            .ease(luxe.tween.easing.Cubic.easeOut);
         Actuate
-            .tween(moveDot.scale, 0.5 * Settings.TweenFactor, { x: 1, y: 1 })
-            .ease(luxe.tween.easing.Elastic.easeOut);
+            .tween(moveDot.scale, 0.6 * Settings.TweenFactor, { x: 1, y: 1 })
+            .delay(count * 0.05)
+            .ease(luxe.tween.easing.Cubic.easeOut);
     }
 
-    function minion_can_attack(data :AttackActionData, game :Game) {
+    function minion_can_attack(data :AttackActionData, game :Game, count :Int) {
         var minionPos = game.minion_pos(game.minion(data.minionId));
         var victimPos = game.minion_pos(game.minion(data.victimId));
         var from = game.tile_to_world(minionPos);
@@ -86,9 +89,9 @@ class MinionActionsState extends State {
         var diff = Vector.Subtract(to, from);
         var arrow = new Sprite({
             pos: from,
-            color: new Color(1, 0, 0, 0.5),
+            color: new Color(1, 0, 0, 0.3),
             texture: Luxe.resources.texture('assets/images/plain-arrow.png'),
-            size: new Vector(96, 96),
+            size: new Vector(80, 80),
             rotation_z: Maths.degrees(diff.angle2D) - 90,
             scene: scene,
             depth: -1
@@ -96,7 +99,8 @@ class MinionActionsState extends State {
 
         var finalArrowPos = Vector.Add(from, Vector.Multiply(diff, 0.7));
         Actuate
-            .tween(arrow.pos, 0.5 * Settings.TweenFactor, { x: finalArrowPos.x, y: finalArrowPos.y })
+            .tween(arrow.pos, 0.6 * Settings.TweenFactor, { x: finalArrowPos.x, y: finalArrowPos.y })
+            .delay(count * 0.05)
             .ease(luxe.tween.easing.Bounce.easeOut);
 
         var attackDot = new Sprite({
@@ -121,10 +125,12 @@ class MinionActionsState extends State {
             }
         }));
         Actuate
-            .tween(attackDot.pos, 0.5 * Settings.TweenFactor, { x: to.x, y: to.y })
+            .tween(attackDot.pos, 0.6 * Settings.TweenFactor, { x: to.x, y: to.y })
+            .delay(count * 0.05)
             .ease(luxe.tween.easing.Bounce.easeOut);
         Actuate
-            .tween(attackDot.scale, 0.5 * Settings.TweenFactor, { x: 1, y: 1 })
+            .tween(attackDot.scale, 0.6 * Settings.TweenFactor, { x: 1, y: 1 })
+            .delay(count * 0.05)
             .ease(luxe.tween.easing.Bounce.easeOut);
     }
 
@@ -140,10 +146,11 @@ class MinionActionsState extends State {
         var data :{ game :Game, minionId :Int } = cast _value;
         var minion = data.game.minion(data.minionId);
         var minion_actions = data.game.actions_for_minion(minion);
+        var count = 0;
         for (action in minion_actions) {
             switch action {
-                case MoveAction(m): minion_can_move_to(m, data.game);
-                case AttackAction(a): minion_can_attack(a, data.game);
+                case MoveAction(m): minion_can_move_to(m, data.game, count++);
+                case AttackAction(a): minion_can_attack(a, data.game, count++);
                 case _:
             }
         }

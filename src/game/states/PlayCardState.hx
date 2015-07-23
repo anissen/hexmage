@@ -25,7 +25,7 @@ class PlayCardState extends State {
         scene = new Scene('PlayCardScene');
     }
 
-    function can_play_at(data :PlayCardActionData, game :Game) {
+    function can_play_at(data :PlayCardActionData, game :Game, count :Int) {
         var playAtDot = switch (data.target) {
             case Character(characterId): 
                 var pos = game.minion_pos(game.minion(characterId));
@@ -46,7 +46,7 @@ class PlayCardState extends State {
                     var diff = Vector.Subtract(pos, manaTilePos);
                     var arrow = new Sprite({
                         pos: manaTilePos,
-                        color: new Color(0, 0.8, 0.2, 0.5),
+                        color: new Color(0, 0.8, 0.2, 0.3),
                         texture: Luxe.resources.texture('assets/images/plain-arrow.png'),
                         size: new Vector(64, 64),
                         rotation_z: Maths.degrees(diff.angle2D) - 90,
@@ -55,7 +55,10 @@ class PlayCardState extends State {
                     });
 
                     var finalArrowPos = Vector.Add(manaTilePos, Vector.Multiply(diff, 0.6));
-                    Actuate.tween(arrow.pos, 0.4 * Settings.TweenFactor, { x: finalArrowPos.x, y: finalArrowPos.y });
+                    Actuate
+                        .tween(arrow.pos, 0.4 * Settings.TweenFactor, { x: finalArrowPos.x, y: finalArrowPos.y })
+                        .delay(count * 0.02)
+                        .ease(luxe.tween.easing.Back.easeOut);
                 }
 
                 new Sprite({
@@ -116,7 +119,10 @@ class PlayCardState extends State {
             }
         }));
         dots.push(playAtDot);
-        luxe.tween.Actuate.tween(playAtDot.scale, 0.3 * Settings.TweenFactor, { x: 1, y: 1 });
+        Actuate
+            .tween(playAtDot.scale, 0.3 * Settings.TweenFactor, { x: 1, y: 1 })
+            .delay(count * 0.02)
+            .ease(luxe.tween.easing.Back.easeOut);
     }
 
     override function onenabled<T>(_value :T) {
@@ -131,9 +137,11 @@ class PlayCardState extends State {
         dots = [];
 
         var data :{ game :Game, card :core.Card } = cast _value;
+        var count = 0;
         for (action in data.game.actions()) {
             switch action {
-                case PlayCardAction(p): if (p.card.id == data.card.id) can_play_at(p, data.game);
+                case PlayCardAction(p): 
+                    if (p.card.id == data.card.id) can_play_at(p, data.game, count++);
                 case _:
             }
         }
