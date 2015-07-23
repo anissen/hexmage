@@ -60,7 +60,7 @@ class PlayCardState extends State {
                 new Sprite({
                     color: new Color(1, 0.1, 0.1),
                     texture: Luxe.resources.texture('assets/images/cross-mark.png'),
-                    size: new Vector(92, 92),
+                    size: new Vector(96, 96),
                     scene: scene,
                     depth: 101,
                     parent: playAtDot
