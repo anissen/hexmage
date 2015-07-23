@@ -98,14 +98,14 @@ class PlayScreenState extends State {
 
     // TODO: Make this into an Component, e.g. https://gist.github.com/underscorediscovery/2cd52a89470421c51301
     function onTransformGesture(event :GestureEventData) {
-        // Panning
-        Luxe.camera.pos.x -= transformGesture.offsetX;
-        Luxe.camera.pos.y -= transformGesture.offsetY;
-        
         if (transformGesture.scale != 1) {
             var new_zoom = current_camera_zoom * transformGesture.scale;
             Luxe.camera.zoom = luxe.utils.Maths.clamp(new_zoom, minimum_zoom, maximum_zoom);
         }
+
+        // Panning
+        Luxe.camera.pos.x -= transformGesture.offsetX / Luxe.camera.zoom;
+        Luxe.camera.pos.y -= transformGesture.offsetY / Luxe.camera.zoom;
     }
 
     function onTransformGestureEnded(event :GestureEventData) {
@@ -114,8 +114,9 @@ class PlayScreenState extends State {
 
     override public function onmousewheel(event :MouseEvent) {
         // https://gist.github.com/underscorediscovery/2cd52a89470421c51301
-        var zoom_speed = 0.2;
-        var new_zoom = Luxe.camera.zoom + (event.y > 0 ? zoom_speed : -zoom_speed);
+        if (event.y == 0) return;
+        var zoom_speed = 0.3;
+        var new_zoom = Luxe.camera.zoom + (event.y > 0 ? -zoom_speed : zoom_speed);
         Luxe.camera.zoom = Maths.clamp(new_zoom, minimum_zoom, maximum_zoom);
     }
 
@@ -508,14 +509,6 @@ class PlayScreenState extends State {
         maximum_zoom = 2.0;
 
         Luxe.renderer.clear_color.tween(1, { r: 0.13, g: 0.13, b: 0.13 });
-
-        // background = new Visual({
-        //     pos: new Vector(0, 0),
-        //     size: Luxe.screen.size.clone(),
-        //     color: new ColorHSV(359, 0.0, 0.13),
-        //     scene: scene,
-        //     depth: -100
-        // });
 
         setup_map();
 
