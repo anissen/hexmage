@@ -9,7 +9,8 @@ typedef PlayerOptions = {
     name :String,
     ?deck :Deck,
     ?hand :Cards,
-    ai :Bool
+    ai :Bool,
+    color :Int
     // ?baseMana :Int,
     // ?mana :Int
 };
@@ -24,16 +25,18 @@ class Player {
     public var deck :Deck;
     public var hand :Cards;
     public var ai :Bool;
+    public var color :Int;
     // public var baseMana :Int; // TEMP
     // public var mana :Int; // TEMP
 
     public function new(options :PlayerOptions) {
         id = (options.id != null ? options.id : Id++);
 
-        name = options.name;
-        deck = (options.deck != null ? options.deck : new Deck());
-        hand = (options.hand != null ? options.hand : []);
-        ai   = options.ai;
+        name  = options.name;
+        deck  = (options.deck != null ? options.deck : new Deck());
+        hand  = (options.hand != null ? options.hand : []);
+        ai    = options.ai;
+        color = options.color;
         // baseMana = (options.baseMana != null ? options.baseMana : 0);
         // mana = (options.mana != null ? options.mana : 0);
     }
@@ -44,7 +47,8 @@ class Player {
             name: name,
             deck: deck.clone(),
             hand: clone_hand(),
-            ai: ai
+            ai: ai,
+            color: color
             // baseMana: baseMana,
             // mana: mana
         });

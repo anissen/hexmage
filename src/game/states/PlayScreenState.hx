@@ -291,7 +291,7 @@ class PlayScreenState extends State {
 
     function handle_mana_gained(data :ManaGainedData) :Promise {
         var tile = hexMap[data.tileId];
-        tile.set_mana_text(data.total);
+        tile.set_mana(data.total, data.player.id);
 
         if (!data.player.ai) {
             ownHand.highlight_cards(game);
@@ -306,21 +306,13 @@ class PlayScreenState extends State {
 
     function handle_mana_spent(data :ManaSpentData) :Promise {
         var tile = hexMap[data.tileId];
-        tile.set_mana_text(data.left);
+        tile.set_mana(data.left, data.player.id);
 
         if (!data.player.ai) {
             ownHand.highlight_cards(game);
         } else {
             enemyHand.highlight_cards(game);
         }
-
-        Notification.Toast({
-            pos: tile.pos.clone(),
-            text: '${data.spent} mana spent',
-            color: new Color(0, 1, 0),
-            randomRotation: 10,
-            scene: scene
-        });
 
         return new Promise(function(resolve, reject) {
             resolve();
@@ -329,12 +321,6 @@ class PlayScreenState extends State {
 
     function handle_tile_claimed(data :TileClaimedData) :Promise {
         var tile = hexMap[data.tileId];
-        // if (tile == null) { // TEMPORARY HACK!!!
-        //     return new Promise(function(resolve, reject) {
-        //         resolve();
-        //     });
-        // }
-
         return tile.claimed(data.minion.playerId);
     }
 
@@ -558,7 +544,7 @@ class PlayScreenState extends State {
             color: new Color(1, 1, 1, 0),
             align: TextAlign.center,
             align_vertical: TextAlign.center,
-            point_size: 32,
+            point_size: 38,
             scene: scene,
             depth: 100
         });

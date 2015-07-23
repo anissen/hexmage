@@ -19,7 +19,6 @@ typedef HexTileOptions = {
 class HexTile extends luxe.Visual {
     public var hex :Hex;
     public var walkable :Bool;
-    var text :Text;
 
     public function new(options :HexTileOptions) {
         super({
@@ -38,17 +37,6 @@ class HexTile extends luxe.Visual {
             geometry: Luxe.draw.ngon({ sides: 6, r: options.r, angle: 30 }),
             depth: -50
         });
-
-        text = new Text({
-            text: '',
-            color: new Color(0, 0, 1, 1),
-            align: TextAlign.center,
-            align_vertical: TextAlign.center,
-            point_size: 20,
-            scene: options.scene,
-            parent: this,
-            depth: -50
-        });
     }
 
     public function claimed(playerId :Int) :Promise {
@@ -59,14 +47,11 @@ class HexTile extends luxe.Visual {
         });
     }
 
-    // public function flash(delay :Float = 0.0) {
-    //     this.color
-    //         .tween(0.8, { g: 0.9 })
-    //         .reverse()
-    //         .delay(delay);
-    // }
-
-    public function set_mana_text(mana :Int) {
-        text.text = '$mana mana';
+    public function set_mana(mana :Int, playerId :Int) {
+        if (mana > 0) {
+            this.color.tween(0.3, { h: 100 - playerId * 100, s: 0.6, v: 1 });
+        } else {
+            this.color.tween(0.3, { h: 100 - playerId * 100, s: 0.6, v: 0.5 });
+        }
     }
 }
