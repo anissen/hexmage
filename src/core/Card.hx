@@ -24,7 +24,7 @@ enum TargetType {
 
 enum Target {
     Character(characterId :Int);
-    Tile(tileId :TileId);
+    Tile(tileId :TileId, ?manaTileId :TileId);
     Global;
 }
 

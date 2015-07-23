@@ -72,17 +72,19 @@ class RuleEngine {
         if (board.mana_for_player(player.id) < card.cost) return [];
 
         function minion_card_targets() {
-            var valid_tiles = board.filter_tiles(function(tile) {
-                if (tile.claimed != null) return false;
-                if (tile.minion != null) return false;
+            var tiles_targets = []; 
+            board.each_tile(function(tile) {
+                if (tile.claimed != null) return;
+                if (tile.minion != null) return;
                 for (neighbor in tile.hex.neighbors()) {
-                    var tileId = neighbor.key;
-                    if (board.tile(tileId) == null) continue;
-                    if (board.tile(tileId).claimed == player.id) return true;
+                    var neighborId = neighbor.key;
+                    if (board.tile(neighborId) == null) continue;
+                    if (board.tile(neighborId).claimed == player.id) {
+                        tiles_targets.push(Target.Tile(tile.id, neighborId));
+                    }
                 }
-                return false;
             });
-            return [ for (tile in valid_tiles) Target.Tile(tile.id) ];
+            return tiles_targets;
         }
 
         function spell_card_targets() {

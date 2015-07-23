@@ -44,6 +44,14 @@ class Board {
         return result;
     }
 
+    public function each_tile(func :PositionedTile -> Void) :Void {
+        for (key in tiles.keys()) {
+            var positionedTile :PositionedTile = cast tiles[key];
+            positionedTile.id = key;
+            func(positionedTile);
+        }
+    }
+
     public function claimed_tiles_for_player(playerId :Int) :Array<PositionedTile> {
         return filter_tiles(function(tile) {
             return (tile.claimed == playerId);

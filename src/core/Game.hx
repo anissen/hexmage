@@ -304,7 +304,7 @@ class Game {
 
     function playMinion(minionName :String, target :Target) {
         switch target {
-            case Tile(tile): 
+            case Tile(tile, _): 
                 var minion = minionLibrary.create(minionName, current_player);
                 state.board.tile(tile).minion = minion;
                 emit(MinionEntered({ minion: minion.clone() }));

@@ -6,6 +6,8 @@ import core.enums.Actions.PlayCardActionData;
 import luxe.Scene;
 import luxe.States;
 import luxe.Sprite;
+import luxe.tween.Actuate;
+import luxe.utils.Maths;
 import luxe.Vector;
 import luxe.Color;
 
@@ -35,9 +37,29 @@ class PlayCardState extends State {
                     scene: scene,
                     depth: 100
                 });
-            case Tile(tile):
+            case Tile(tile, manaTile):
+                var pos = game.tile_to_world(tile);
+
+                // Create mana arrow
+                if (manaTile != null) {
+                    var manaTilePos = game.tile_to_world(manaTile);
+                    var diff = Vector.Subtract(pos, manaTilePos);
+                    var arrow = new Sprite({
+                        pos: manaTilePos,
+                        color: new Color(0, 0.8, 0.2, 0.5),
+                        texture: Luxe.resources.texture('assets/images/plain-arrow.png'),
+                        size: new Vector(64, 64),
+                        rotation_z: Maths.degrees(diff.angle2D) - 90,
+                        scene: scene,
+                        depth: -1
+                    });
+
+                    var finalArrowPos = Vector.Add(manaTilePos, Vector.Multiply(diff, 0.6));
+                    Actuate.tween(arrow.pos, 0.4 * Settings.TweenFactor, { x: finalArrowPos.x, y: finalArrowPos.y });
+                }
+
                 new Sprite({
-                    pos: game.tile_to_world(tile), //tile.tile_to_world().subtract(new Vector(50, 50)),
+                    pos: pos,
                     color: new Color(1, 1, 1),
                     geometry: Luxe.draw.circle({ r: 40 }), //Luxe.draw.ngon({ sides: 6, r: 50, angle: 30, solid: true }),
                     scale: new Vector(0.0, 0.0),
