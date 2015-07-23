@@ -30,11 +30,19 @@ class MinionActionsState extends State {
         var to = game.tile_to_world(data.tileId);
         var moveDot = new Sprite({
             pos: from,
-            color: new Color(1, 1, 1),
-            geometry: Luxe.draw.circle({ r: 25 }),
+            color: new Color(0, 0, 0, 0.1),
+            geometry: Luxe.draw.circle({ r: 35 }),
             scale: new Vector(0.0, 0.0),
             scene: scene,
             depth: 2
+        });
+        new Sprite({
+            color: new Color(1, 1, 0.5),
+            texture: Luxe.resources.texture('assets/images/footprint.png'),
+            size: new Vector(64, 64),
+            scene: scene,
+            depth: 2.1,
+            parent: moveDot
         });
         moveDot.add(new OnClick({
             callback: function() {
@@ -53,11 +61,18 @@ class MinionActionsState extends State {
         var to = game.tile_to_world(victimPos);
         var attackDot = new Sprite({
             pos: from,
-            color: new Color(1, 0, 0),
-            geometry: Luxe.draw.circle({ r: 25 }),
+            color: new Color(0, 0, 0, 0.5),
+            geometry: Luxe.draw.circle({ r: 35 }),
             scale: new Vector(0.0, 0.0),
             scene: scene,
             depth: 2
+        });
+        new Sprite({
+            texture: Luxe.resources.texture('assets/images/punch-blast.png'),
+            size: new Vector(92, 92),
+            scene: scene,
+            depth: 2.1,
+            parent: attackDot
         });
         attackDot.add(new OnClick({
             callback: function() {

@@ -28,8 +28,8 @@ class PlayCardState extends State {
             case Character(characterId): 
                 var pos = game.minion_pos(game.minion(characterId));
                 new Sprite({
-                    pos: game.tile_to_world(pos), // pos.tile_to_world(),
-                    color: new Color(0.2, 0.2, 1),
+                    pos: game.tile_to_world(pos),
+                    color: new Color(1, 1, 1),
                     geometry: Luxe.draw.circle({ r: 40 }),
                     scale: new Vector(0.0, 0.0),
                     scene: scene,
@@ -38,8 +38,8 @@ class PlayCardState extends State {
             case Tile(tile):
                 new Sprite({
                     pos: game.tile_to_world(tile), //tile.tile_to_world().subtract(new Vector(50, 50)),
-                    color: new Color(0.4, 0.2, 1),
-                    geometry: Luxe.draw.ngon({ sides: 6, r: 50, angle: 30, solid: true }),
+                    color: new Color(1, 1, 1),
+                    geometry: Luxe.draw.circle({ r: 40 }), //Luxe.draw.ngon({ sides: 6, r: 50, angle: 30, solid: true }),
                     scale: new Vector(0.0, 0.0),
                     scene: scene,
                     depth: 100
@@ -47,11 +47,41 @@ class PlayCardState extends State {
             case Global:
                 new Sprite({
                     pos: Luxe.screen.mid.clone(),
-                    color: new Color(0.2, 0.4, 1),
-                    geometry: Luxe.draw.ngon({ sides: 6, r: 250, solid: true }),
+                    color: new Color(0.4, 0.2, 1),
+                    geometry: Luxe.draw.ngon({ sides: 6, r: 300, solid: true }),
                     scale: new Vector(0.0, 0.0),
                     scene: scene,
                     depth: 100
+                });
+        }
+        playAtDot.color.a = 0.3;
+        switch (data.target) {
+            case Character(_): 
+                new Sprite({
+                    color: new Color(1, 0.1, 0.1),
+                    texture: Luxe.resources.texture('assets/images/cross-mark.png'),
+                    size: new Vector(92, 92),
+                    scene: scene,
+                    depth: 101,
+                    parent: playAtDot
+                });
+            case Tile(_):
+                new Sprite({
+                    color: new Color(0, 0.6, 0.6),
+                    texture: Luxe.resources.texture('assets/images/impact-point.png'),
+                    size: new Vector(64, 64),
+                    scene: scene,
+                    depth: 101,
+                    parent: playAtDot
+                });
+            case Global:
+                new Sprite({
+                    color: new Color(1, 1, 1),
+                    texture: Luxe.resources.texture('assets/images/magic-swirl.png'),
+                    size: new Vector(512, 512),
+                    scene: scene,
+                    depth: 101,
+                    parent: playAtDot
                 });
         }
         playAtDot.add(new OnClick({
