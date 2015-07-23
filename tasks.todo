@@ -35,6 +35,10 @@ Simple improved game (0.8):
     ✔ Card cost indicator @done (09-06-15 21:01)
     ✔ Card descriptions @done (09-06-15 19:51)
     ✔ Split cards and board into different batches @done (09-06-15 19:30)
+    ✔ Zoom functionality @done (23-07-15 13:30)
+    ✔ Better movement indicators @done (23-07-15 15:16)
+    ✔ Better attack indicators @done (23-07-15 15:16)
+    ✔ Better cast indicators @done (23-07-15 15:16)
     ☐ Make a proper enemy deck (The Rat King)
     ☐ Icons
         http://game-icons.net/tags/claw.html
@@ -48,11 +52,7 @@ Simple cross-platform game (0.9):
 
 Backlog:
     ☐ Outline on text
-    ☐ Zoom functionality
     ☐ Card cast centers on selected tile
-    ☐ Better movement indicators
-    ☐ Better attack indicators
-    ☐ Better cast indicators
     ☐ Minion info
     ☐ Pirate deck
     ☐ Necrodancer deck
