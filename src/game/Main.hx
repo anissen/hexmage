@@ -32,10 +32,12 @@ class Main extends luxe.Game {
     override function config(config :luxe.AppConfig) {
         // if you have errors about the window being created, lower this to 2, or 0. it can also be 8
         config.render.antialiasing = 4;
+        config.window.fullscreen = true;
+
         return config;
     }
 
-    override function ready() {
+    override function ready() {        
         Luxe.resources.load_json('assets/parcel.json').then(function(jsonParcel) {
             var parcel = new Parcel({
                 oncomplete: assets_loaded,
