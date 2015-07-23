@@ -5,7 +5,12 @@
         { "id": "assets/images/attack_icon.png" },
         { "id": "assets/images/minion_base.png" },
         { "id": "assets/images/monkey.png" },
-        { "id": "assets/images/speech_bubble.png" }
+        { "id": "assets/images/speech_bubble.png" },
+        { "id": "assets/images/punch-blast.png" },
+        { "id": "assets/images/impact-point.png" },
+        { "id": "assets/images/magic-swirl.png" },
+        { "id": "assets/images/cross-mark.png" },
+        { "id": "assets/images/footprint.png" }
     ],
     "shaders" : [
         { "id": "full", "frag_id": "assets/shaders/full.glsl", "vert_id": "default" },
