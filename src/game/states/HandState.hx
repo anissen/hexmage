@@ -17,7 +17,6 @@ import phoenix.Batcher;
 
 import core.Game;
 import game.entities.CardEntity;
-import game.components.OnClick;
 
 class HandState extends State {
     // static public var StateId = 'HandState';

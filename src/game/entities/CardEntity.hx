@@ -155,7 +155,10 @@ class CardEntity extends Sprite {
     }
 
     override function init() {
-        add(new OnClick(on_click));
+        add(new OnClick({
+            callback: on_click,
+            fixed_to_screen: true
+        }));
     }
 
     function on_click() {

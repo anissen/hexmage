@@ -29,6 +29,9 @@ class Button extends Sprite {
             align_vertical: TextAlign.center,
             parent: this
         });
-        text.add(new OnClick(options.callback));
+        text.add(new OnClick({
+            callback: options.callback,
+            fixed_to_screen: false
+        }));
     }
 }

@@ -54,13 +54,15 @@ class PlayCardState extends State {
                     depth: 100
                 });
         }
-        playAtDot.add(new OnClick(function() {
-            // callback(data);
-            // trace('PlayCardState: Playing card');
-            // trace(data);
-            game.do_action(PlayCardAction(data));
-            Main.states.disable(StateId);
-        }, false));
+        playAtDot.add(new OnClick({
+            callback: function() {
+                // callback(data);
+                // trace('PlayCardState: Playing card');
+                // trace(data);
+                game.do_action(PlayCardAction(data));
+                Main.states.disable(StateId);
+            }
+        }));
         dots.push(playAtDot);
         luxe.tween.Actuate.tween(playAtDot.scale, 0.3 * Settings.TweenFactor, { x: 1, y: 1 });
     }

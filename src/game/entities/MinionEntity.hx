@@ -128,7 +128,7 @@ class MinionEntity extends Visual {
     }
 
     override function init() {
-        add(new OnClick(on_click, false));
+        add(new OnClick({ callback: on_click }));
     }
 
     public function damage(amount :Int) :Promise {
