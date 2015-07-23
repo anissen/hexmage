@@ -10,7 +10,8 @@
         { "id": "assets/images/impact-point.png" },
         { "id": "assets/images/magic-swirl.png" },
         { "id": "assets/images/cross-mark.png" },
-        { "id": "assets/images/footprint.png" }
+        { "id": "assets/images/footprint.png" },
+        { "id": "assets/images/plain-arrow.png" }
     ],
     "shaders" : [
         { "id": "full", "frag_id": "assets/shaders/full.glsl", "vert_id": "default" },
