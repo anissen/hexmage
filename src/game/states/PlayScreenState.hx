@@ -47,6 +47,9 @@ class PlayScreenState extends State {
     var eventQueue :List<Event>;
     var idle :Bool;
     var text :Text;
+    var statusText :Text;
+
+    var debugBackground :Sprite;
 
     var minionActionState :MinionActionsState;
     var ownHand :HandState;
@@ -129,13 +132,15 @@ class PlayScreenState extends State {
     }
 
     function handle_event(event :Event) {
+        statusText.text = statusText.text + '\n · ' + DateTools.format(Date.now(), '%H:%M:%S') + ' ' + event.getName();
+
         idle = false;
         var handler = switch (event) {
             case GameStarted: handle_game_started();
             case GameOver: handle_game_over();
             case TurnStarted(data): handle_turn_started(data);
             case PlayersTurn(data): handle_players_turn(data);
-            case TurnEnded(data): handle_turn_ended(data);
+            case TurnEnded(data): statusText.text =  statusText.text + '\n -----------'; handle_turn_ended(data);
             case MinionMoved(data): handle_minion_moved(data);
             case MinionAttacked(data): handle_minion_attacked(data);
             case MinionDied(data): handle_minion_died(data);
@@ -540,6 +545,32 @@ class PlayScreenState extends State {
             depth: 100
         });
 
+        var debugBoxWidth = 300;
+        debugBackground = new Sprite({
+            centered: false,
+            pos: new Vector(Luxe.screen.width - debugBoxWidth, 0),
+            size: new Vector(debugBoxWidth, Luxe.screen.height - 150),
+            color: new Color(0, 0, 0.2),
+            scene: scene,
+            depth: 100,
+            batcher: hudBatcher
+        });
+
+        statusText = new Text({
+            text: '',
+            pos: new Vector(Luxe.screen.width - debugBoxWidth, Luxe.screen.height - 150),
+            size: new Vector(debugBoxWidth, Luxe.screen.height),
+            color: new Color(1, 1, 1, 1),
+            align: TextAlign.left,
+            align_vertical: TextAlign.bottom,
+            point_size: 20,
+            scene: scene,
+            depth: 100,
+            batcher: hudBatcher
+        });
+
+        toggle_debug();
+
         game.start();
     }
 
@@ -556,8 +587,14 @@ class PlayScreenState extends State {
         scene.empty();
     }
 
+    function toggle_debug() {
+        debugBackground.visible = !debugBackground.visible;
+        statusText.visible = !statusText.visible;
+    }
+
     override function onkeyup(e :KeyEvent) {
         switch (e.keycode) {
+            case Key.key_d: toggle_debug();
             case Key.enter: if (!e.mod.alt) game.end_turn();
             case Key.key_r: reset();
             case Key.escape: Luxe.shutdown(); //Main.states.set(TitleScreenState.StateId);
