@@ -26,6 +26,7 @@ import game.entities.TileEntity;
 import game.entities.CardEntity;
 import game.entities.MinionEntity;
 import game.entities.Notification;
+import game.entities.FPS;
 import game.components.Indicators.ActionIndicator;
 import game.components.Indicators.AttackIndicator;
 import game.components.Indicators.MoveIndicator;
@@ -51,6 +52,7 @@ class PlayScreenState extends State {
     var statusText :Text;
 
     var debugBackground :Sprite;
+    var debugFPS :FPS;
 
     var minionActionState :MinionActionsState;
     var ownHand :HandState;
@@ -585,6 +587,8 @@ class PlayScreenState extends State {
             batcher: hudBatcher
         });
 
+        debugFPS = new FPS();
+
         toggle_debug();
 
         game.start();
@@ -606,6 +610,7 @@ class PlayScreenState extends State {
     function toggle_debug() {
         debugBackground.visible = !debugBackground.visible;
         statusText.visible = !statusText.visible;
+        debugFPS.visible = !debugFPS.visible;
     }
 
     override function onkeyup(e :KeyEvent) {
