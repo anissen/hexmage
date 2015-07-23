@@ -25,6 +25,7 @@ import game.entities.Button;
 import game.entities.TileEntity;
 import game.entities.CardEntity;
 import game.entities.MinionEntity;
+import game.entities.Notification;
 import game.components.Indicators.ActionIndicator;
 import game.components.Indicators.AttackIndicator;
 import game.components.Indicators.MoveIndicator;
@@ -311,6 +312,14 @@ class PlayScreenState extends State {
             enemyHand.highlight_cards(game);
         }
 
+        Notification.Toast({
+            pos: tile.pos.clone(),
+            text: '${data.spent} mana spent',
+            color: new Color(0, 1, 0),
+            randomRotation: 10,
+            scene: scene
+        });
+
         return new Promise(function(resolve, reject) {
             resolve();
         });
@@ -352,6 +361,13 @@ class PlayScreenState extends State {
 
     function handle_minion_damaged(data :MinionDamagedData) :Promise {
         var minionEntity = id_to_minion_entity(data.minion.id);
+        Notification.Toast({
+            pos: minionEntity.pos.clone(),
+            text: '${data.damage} damage',
+            color: new Color(1, 0, 0),
+            randomRotation: 10,
+            scene: scene
+        });
         return minionEntity.damage(data.damage);
     }
 
