@@ -27,11 +27,12 @@ class Button extends Sprite {
             color: options.text_color,
             align: TextAlign.center,
             align_vertical: TextAlign.center,
+            batcher: options.batcher,
             parent: this
         });
         text.add(new OnClick({
             callback: options.callback,
-            fixed_to_screen: false
+            fixed_to_screen: true
         }));
     }
 }

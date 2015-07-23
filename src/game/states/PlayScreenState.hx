@@ -523,6 +523,7 @@ class PlayScreenState extends State {
         var buttonHeight = 50;
         new Button({
             centered: false,
+            batcher: hudBatcher,
             pos: Vector.Subtract(Luxe.screen.size, new Vector(buttonWidth + 20, buttonHeight + 60)),
             size: new Vector(buttonWidth, buttonHeight),
             color: new Color(0, 0, 0),
