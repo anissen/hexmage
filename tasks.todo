@@ -49,7 +49,7 @@ Simple card game (0.9):
         http://game-icons.net/lorc/originals/imp-laugh.html
         http://game-icons.net/tags/mammal.html
 
-Simple cross-platform game (0.9):
+Simple cross-platform game (0.10):
     ☐ Game is functional on Mac, web, Android and iPad
 
 Backlog:
@@ -58,6 +58,7 @@ Backlog:
     ☐ Minion info
     ☐ Pirate deck
     ☐ Necrodancer deck
+    ☐ Handle window resize
 
 --- ✄ -----------------------
 

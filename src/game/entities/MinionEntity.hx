@@ -133,7 +133,7 @@ class MinionEntity extends Visual {
 
     public function damage(amount :Int) :Promise {
         Luxe.camera.shake(amount);
-        text.text = '${minion.name}'; //'${minion.name}\n${minion.attack}/${minion.life}';
+        text.text = '${minion.name}';
         attackText.text = '${minion.attack}';
         lifeText.text = '${minion.life}';
         return new Promise(function(resolve, reject) {
