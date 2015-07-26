@@ -138,7 +138,7 @@ class MinionEntity extends Visual {
         lifeText.text = '${minion.life}';
         return new Promise(function(resolve, reject) {
             Actuate
-                .tween(this.color, 0.6 * Settings.TweenFactor, { s: 0 })
+                .tween(this.color, 0.6 * Settings.TweenFactor, { r: 1, g: 1, b: 1 })
                 .reverse()
                 .onComplete(resolve);
         });
