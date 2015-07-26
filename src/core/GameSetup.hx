@@ -190,7 +190,8 @@ class GameSetup {
                     cardLibrary.create('It\'s Raining Cards!')
                 ]
             }),
-            ai: false
+            ai: false,
+            color: 0x00FF00
         });
 
         var ai_player = new Player({
@@ -211,7 +212,8 @@ class GameSetup {
                     cardLibrary.create('Radioactive Rat')
                 ]
             }),
-            ai: true
+            ai: true,
+            color: 0xFF0000
         });
 
         var map = new Map<TileId, Tile>();
