@@ -55,11 +55,51 @@ enum Tag {
     PlayerId;
 }
 
+typedef TagMapType = Map<Tag, Int>;
+    
+//@:forward
+abstract TagMap(TagMapType) from TagMapType to TagMapType {
+    public inline function new(tags :TagMapType) {
+        this = tags;
+    }
+    
+    @:arrayAccess
+    public inline function get(tag :Tag) {
+        return this.get(tag);
+    }
+    
+    @:arrayAccess
+    public inline function set(tag :Tag, value :Int) :Int {
+        this.set(tag, value);
+        return value;
+    }
+    
+    public function has(tag :Tag) {
+        return this.exists(tag);
+    }
+    
+    public function enabled(tag :Tag) {
+        return this[tag] > 0;
+    }
+    
+    public function enable(tag :Tag) {
+        this[tag] = 1;
+    }
+    
+    public function disable(tag :Tag) {
+        this[tag] = 0;
+    }
+    
+    public function print() {
+        for (tag in this.keys()) trace('$tag: ${this[tag]}');
+    }
+}
+
 class Entity {
     public var name (get, null) :String;
-    public var tags :Map<Tag, Int>;
+    public var tags :TagMap;
     
-    public function new(name :String, tags :Map<Tag, Int>) {
+    public function new(name :String, tags :TagMap) {
         this.name = name;
         this.tags = tags;
     }
@@ -67,25 +107,9 @@ class Entity {
     function get_name() {
         return name;
     }
-    
-    public function has(tag :Tag) {
-        return tags.exists(tag);
-    }
-    
-    public function enabled(tag :Tag) {
-        return tags[tag] > 0;
-    }
-    
-    public function enable(tag :Tag) {
-        tags[tag] = 1;
-    }
-    
-    public function disable(tag :Tag) {
-        tags[tag] = 0;
-    }
 }
         
-class QueryTools {
+class Query {
     static public function has(entities :Array<Entity>, tag :Tag) :Array<Entity> {
         return entities.filter(Has(tag));
     }
@@ -104,7 +128,7 @@ class QueryTools {
     
     static public function Has(tag :Tag) :Entity->Bool {
         return function(entity) {
-            return entity.has(tag);
+            return entity.tags.has(tag);
         };
     }
 }
@@ -129,12 +153,11 @@ class Test {
             PlayerId => 1
         ]);
         
-        for (tag in unicorn.tags.keys()) trace('$tag: ${unicorn.tags[tag]}');
+        unicorn.tags.print();
         
         clear();
 
         damage(unicorn, 2);
-        //unicorn.tags.print();
         
         trace('--> Can attack: ${unicorn.tags[CanAttack]}');
         
@@ -158,7 +181,7 @@ class Test {
     
         trace('Entities that can attack and have > 2 health');
         var result = entities.filter(function(entity) {
-            return entity.enabled(CanAttack) && entity.tags[Health] > 2;
+            return entity.tags.enabled(CanAttack) && entity.tags[Health] > 2;
         });
         for (entity in result) trace('· ' + entity.name);
         
@@ -167,6 +190,38 @@ class Test {
         var neighbors = Query.neighbors(entities, 2, 2);
         var friendly = Query.friendly(neighbors, 1);
         for (entity in friendly) trace('· ' + entity.name);
+        
+        test_heal_effect();
+    }
+    
+    static function test_heal_effect() {
+        clear();
+        trace('test_heal_effect:');
+        
+        var unicorn = new Entity('Unicorn', [
+            Healing => 1,
+            PosX => 2,
+            PosY => 3,
+            PlayerId => 1
+        ]);
+        
+        var bunny = new Entity('Bunny', [
+            Health => 1,
+            PosX => 2,
+            PosY => 4,
+            PlayerId => 1
+        ]);
+        
+        trace('Bunny health: ${bunny.tags[Health]}');
+        trace('Unicorn healing nearby friends:');
+        var entities = [unicorn, bunny];
+        var neighbors = Query.neighbors(entities, unicorn.tags[PosX], unicorn.tags[PosY]);
+        var friendly = Query.friendly(neighbors, unicorn.tags[PlayerId]);
+        for (entity in friendly) {
+            trace('· Healing ' + entity.name);
+            entity.tags[Health] += 1;
+        }
+        trace('Bunny health: ${bunny.tags[Health]}');
     }
     
     static function damage(entity :Entity, amount :Int) {
@@ -176,7 +231,7 @@ class Test {
     
     static function disarm(entity :Entity) {
         trace('${entity.name} is disarmed');
-        entity.disable(CanAttack);
+        entity.tags.disable(CanAttack);
     }
     
     static function clear() {
