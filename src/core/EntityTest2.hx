@@ -12,36 +12,39 @@ class NEW1_037:
 
 enum Action {
     EndTurn;
-    Effect(tag :Tag, value :Int);
+    Effect(entity :Entity, tag :Tag, value :Int);
 }
+typedef Actions = Array<Action>;
 
 enum Event {
     TurnEnded;
 }
 
 class Game {
-    var event_listeners :Map<Event, Void->Action>;
+    var event_listeners :Map<Event, Void->Actions>;
     
     public function new() {
         event_listeners = new Map();
     }
     
     public function do_action(action :Action) {
-        switch (action) {
+        trace('game::do_action: $action');
+        var actions = switch (action) {
             case EndTurn: emit_event(TurnEnded);
-            case _:
-        }
+            case _: [];
+        };
+        for (action in actions) do_action(action);
     }
     
-    public function on_event(event :Event, func :Void->Action) {
+    public function on_event(event :Event, func :Void->Actions) {
         event_listeners[event] = func;
     }
     
-    public function emit_event(event :Event) {
-        if (event_listeners.exists(event)) {
-            var func = event_listeners[event];
-            func();
-        }
+    public function emit_event(event :Event) :Actions {
+        if (!event_listeners.exists(event)) return [];
+        
+        var func = event_listeners[event];
+        return func();
     }
 }
 
@@ -57,7 +60,6 @@ enum Tag {
 
 typedef TagMapType = Map<Tag, Int>;
     
-//@:forward
 abstract TagMap(TagMapType) from TagMapType to TagMapType {
     public inline function new(tags :TagMapType) {
         this = tags;
@@ -90,8 +92,9 @@ abstract TagMap(TagMapType) from TagMapType to TagMapType {
         this[tag] = 0;
     }
     
-    public function print() {
-        for (tag in this.keys()) trace('$tag: ${this[tag]}');
+    @:to
+    public function toString() {
+        return [ for (tag in this.keys()) '$tag: ${this[tag]}' ].join('|'); 
     }
 }
 
@@ -138,7 +141,7 @@ class Test {
         var game = new Game();
         var minionFunc = function() {
             trace('minionFunc triggered!');
-            return EndTurn;
+            return [];
         };
         game.on_event(TurnEnded, minionFunc);
         game.do_action(EndTurn);
@@ -153,7 +156,7 @@ class Test {
             PlayerId => 1
         ]);
         
-        unicorn.tags.print();
+        trace(unicorn.tags);
         
         clear();
 
@@ -212,16 +215,18 @@ class Test {
         ]);
         
         trace('Bunny health: ${bunny.tags[Health]}');
-        trace('Unicorn healing nearby friends:');
-        var entities = [unicorn, bunny];
-        var nearby_friends = entities
-            .neighbors(unicorn.tags[PosX], unicorn.tags[PosY])
-            .friendly(unicorn.tags[PlayerId]);
-        for (entity in nearby_friends) {
-            trace('· Healing ' + entity.name);
-            entity.tags[Health] += 1;
-        }
-        trace('Bunny health: ${bunny.tags[Health]}');
+        
+        var game = new Game();
+        var unicornFunc = function() {
+            trace('Unicorn healing nearby friends:');
+            var entities = [unicorn, bunny];
+            var nearby_friends = entities
+                .neighbors(unicorn.tags[PosX], unicorn.tags[PosY])
+                .friendly(unicorn.tags[PlayerId]);
+            return [ for (entity in nearby_friends) Effect(entity, Health, entity.tags[Health] + 1) ];
+        };
+        game.on_event(TurnEnded, unicornFunc);
+        game.do_action(EndTurn);
     }
     
     static function damage(entity :Entity, amount :Int) {
