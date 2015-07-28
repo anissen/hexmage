@@ -1,5 +1,5 @@
 using Lambda;
-//using QueryTools;
+using Test.QueryTools;
 
 /*
 class NEW1_037:
@@ -109,7 +109,7 @@ class Entity {
     }
 }
         
-class Query {
+class QueryTools {
     static public function has(entities :Array<Entity>, tag :Tag) :Array<Entity> {
         return entities.filter(Has(tag));
     }
@@ -174,7 +174,7 @@ class Test {
         clear();
         
         trace('Entities with health');
-        var has_health = Query.has(entities, Health);
+        var has_health = entities.has(Health);
         for (entity in has_health) trace('· ' + entity.name);
         
         clear();
@@ -187,9 +187,8 @@ class Test {
         
         trace('Nearby friendly entities');
         // Should be entities.neighbors(2, 2).friendly(1)
-        var neighbors = Query.neighbors(entities, 2, 2);
-        var friendly = Query.friendly(neighbors, 1);
-        for (entity in friendly) trace('· ' + entity.name);
+        var friendly_neighbors = entities.neighbors(2, 2).friendly(1);
+        for (entity in friendly_neighbors) trace('· ' + entity.name);
         
         test_heal_effect();
     }
@@ -215,9 +214,10 @@ class Test {
         trace('Bunny health: ${bunny.tags[Health]}');
         trace('Unicorn healing nearby friends:');
         var entities = [unicorn, bunny];
-        var neighbors = Query.neighbors(entities, unicorn.tags[PosX], unicorn.tags[PosY]);
-        var friendly = Query.friendly(neighbors, unicorn.tags[PlayerId]);
-        for (entity in friendly) {
+        var nearby_friends = entities
+            .neighbors(unicorn.tags[PosX], unicorn.tags[PosY])
+            .friendly(unicorn.tags[PlayerId]);
+        for (entity in nearby_friends) {
             trace('· Healing ' + entity.name);
             entity.tags[Health] += 1;
         }
