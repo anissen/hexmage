@@ -18,33 +18,42 @@ typedef Actions = Array<Action>;
 
 enum Event {
     TurnEnded;
+    EffectTriggered(entity :Entity, tag :Tag, value :Int);
 }
 
 class Game {
-    var event_listeners :Map<Event, Void->Actions>;
+    var event_listeners :Array<Event->Actions>;
     
     public function new() {
-        event_listeners = new Map();
+        event_listeners = [];
     }
     
     public function do_action(action :Action) {
         trace('game::do_action: $action');
         var actions = switch (action) {
             case EndTurn: emit_event(TurnEnded);
+            case Effect(entity, tag, value): entity.tags[tag] = value; emit_event(EffectTriggered(entity, tag, value));
             case _: [];
         };
         for (action in actions) do_action(action);
     }
+            
+    public function handle_events(func :Event->Actions) {
+        event_listeners.push(func);
+    }  
     
-    public function on_event(event :Event, func :Void->Actions) {
-        event_listeners[event] = func;
-    }
+    //public function on_event(event :Event, func :Void->Actions) {
+    //    event_listeners[event] = func;
+    //}
     
     public function emit_event(event :Event) :Actions {
-        if (!event_listeners.exists(event)) return [];
+        //if (!event_listeners.exists(event)) return [];
         
-        var func = event_listeners[event];
-        return func();
+        //var func = event_listeners[event];
+        //return func();
+        var actions = [];
+        for (listener in event_listeners) actions = actions.concat(listener(event));
+        return actions;
     }
 }
 
@@ -138,14 +147,6 @@ class QueryTools {
 
 class Test {
     static function main() {
-        var game = new Game();
-        var minionFunc = function() {
-            trace('minionFunc triggered!');
-            return [];
-        };
-        game.on_event(TurnEnded, minionFunc);
-        game.do_action(EndTurn);
-        
         var unicorn = new Entity('Unicorn', [
             Health => 6,
             Attack => 1,
@@ -225,8 +226,15 @@ class Test {
                 .friendly(unicorn.tags[PlayerId]);
             return [ for (entity in nearby_friends) Effect(entity, Health, entity.tags[Health] + 1) ];
         };
-        game.on_event(TurnEnded, unicornFunc);
+        game.handle_events(function(event) {
+           return switch (event) {
+               case TurnEnded: unicornFunc();
+               case EffectTriggered(entity, tag, value): trace('EffectTriggered func!'); [];
+               case _: [];
+           } 
+        });
         game.do_action(EndTurn);
+        trace('Bunny health: ${bunny.tags[Health]}');
     }
     
     static function damage(entity :Entity, amount :Int) {
