@@ -1,5 +1,5 @@
 using Lambda;
-using Test.QueryTools;
+using EntityTest2.QueryTools;
 
 /*
 class NEW1_037:
@@ -7,8 +7,6 @@ class NEW1_037:
         OWN_TURN_END.on(Buff(RANDOM_OTHER_FRIENDLY_MINION, "NEW1_037e"))
     ]
 */
-
-//typedef Buff = {  }
 
 enum Action {
     EndTurn;
@@ -21,7 +19,7 @@ enum Event {
     EffectTriggered(entity :Entity, tag :Tag, value :Int);
 }
 
-class Game {
+class Engine {
     var event_listeners :Array<Event->Actions>;
     
     public function new() {
@@ -29,7 +27,7 @@ class Game {
     }
     
     public function do_action(action :Action) {
-        trace('game::do_action: $action');
+        trace('engine::do_action: $action');
         var actions = switch (action) {
             case EndTurn: emit_event(TurnEnded);
             case Effect(entity, tag, value): entity.tags[tag] = value; emit_event(EffectTriggered(entity, tag, value));
@@ -42,15 +40,7 @@ class Game {
         event_listeners.push(func);
     }  
     
-    //public function on_event(event :Event, func :Void->Actions) {
-    //    event_listeners[event] = func;
-    //}
-    
     public function emit_event(event :Event) :Actions {
-        //if (!event_listeners.exists(event)) return [];
-        
-        //var func = event_listeners[event];
-        //return func();
         var actions = [];
         for (listener in event_listeners) actions = actions.concat(listener(event));
         return actions;
@@ -134,6 +124,7 @@ class QueryTools {
     
     static public function neighbors(entities :Array<Entity>, x :Int, y :Int) :Array<Entity> {
         return entities.filter(function (entity) {
+            if (!entity.tags.has(PosX) || !entity.tags.has(PosY)) return false;
             return (Math.abs(entity.tags[PosX] - x) +  Math.abs(entity.tags[PosY] - y)) == 1;
         });
     }
@@ -145,7 +136,7 @@ class QueryTools {
     }
 }
 
-class Test {
+class EntityTest2 {
     static function main() {
         var unicorn = new Entity('Unicorn', [
             Health => 6,
@@ -217,7 +208,7 @@ class Test {
         
         trace('Bunny health: ${bunny.tags[Health]}');
         
-        var game = new Game();
+        var engine = new Engine();
         var unicornFunc = function() {
             trace('Unicorn healing nearby friends:');
             var entities = [unicorn, bunny];
@@ -226,14 +217,14 @@ class Test {
                 .friendly(unicorn.tags[PlayerId]);
             return [ for (entity in nearby_friends) Effect(entity, Health, entity.tags[Health] + 1) ];
         };
-        game.handle_events(function(event) {
+        engine.handle_events(function(event) {
            return switch (event) {
                case TurnEnded: unicornFunc();
                case EffectTriggered(entity, tag, value): trace('EffectTriggered func!'); [];
                case _: [];
-           } 
+           }
         });
-        game.do_action(EndTurn);
+        engine.do_action(EndTurn);
         trace('Bunny health: ${bunny.tags[Health]}');
     }
     
