@@ -147,4 +147,10 @@ class MinionEntity extends Visual {
     function on_click() {
         events.fire('clicked', { entity: this, minion: minion });
     }
+
+    public function refresh() {
+        text.text = '${minion.name}';
+        attackText.text = '${minion.attack}';
+        lifeText.text = '${minion.life}';
+    }
 }

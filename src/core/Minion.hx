@@ -3,6 +3,7 @@
 package core;
 
 import core.Tag;
+import core.Tags.HasTags;
 import core.enums.Events;
 import core.enums.Commands;
 
@@ -10,10 +11,10 @@ typedef MinionOptions = {
     ?id :Int,
     name :String,
     tags :Tags,
-    ?on_event :Map<MinionEvent, Void -> Commands>
+    ?on_event :Map<MinionEvent, Minion -> Commands>
 };
 
-class Minion {
+class Minion implements HasTags {
     public var id :Int;
 
     public var name :String;
@@ -39,7 +40,7 @@ class Minion {
         CanAttack => 1
     ];
 
-    public var on_event :Map<MinionEvent, Void -> Commands>;
+    public var on_event :Map<MinionEvent, Minion -> Commands>;
 
     public function new(options :MinionOptions) {
         id       = options.id; // What if id is null??
@@ -48,13 +49,13 @@ class Minion {
         for (tag in options.tags.keys()) {
             tags[tag] = options.tags[tag];
         }
-        on_event = (options.on_event != null ? options.on_event : new Map<MinionEvent, Void -> Commands>());
+        on_event = (options.on_event != null ? options.on_event : new Map<MinionEvent, Minion -> Commands>());
     }
 
     public function handle_event(event :MinionEvent) :Commands {
         var event_func = on_event.get(event);
         if (event_func == null) return [];
-        return event_func();
+        return event_func(this);
     }
 
     public function clone() :Minion {
@@ -129,5 +130,4 @@ class Minion {
     function get_can_attack() {
         return tags.enabled(CanAttack);
     }
-
 }

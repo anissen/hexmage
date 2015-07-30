@@ -43,7 +43,7 @@ class PlayScreenState extends State {
 
     var scene :Scene;
     // var background :Visual;
-    var game :core.Game;
+    static public var game :core.Game; // HACK to expose the game var!! (used in GameSetup)
     var hexMap :Map<String, HexTile>;
     var minionMap :Map<Int, MinionEntity>;
     var eventQueue :List<Event>;
@@ -155,6 +155,7 @@ class PlayScreenState extends State {
             case TileReclaimed(data): handle_tile_claimed(data);
             case ManaGained(data): handle_mana_gained(data);
             case ManaSpent(data): handle_mana_spent(data);
+            case EffectTriggered(data): handle_effect_triggered(data);
             case _: {
                 trace('$event is unhandled');
                 new Promise(function(resolve, reject) {
@@ -317,6 +318,20 @@ class PlayScreenState extends State {
         return new Promise(function(resolve, reject) {
             resolve();
         });
+    }
+
+    function handle_effect_triggered(data :EffectTriggeredData) :Promise {
+        var minionEntity = id_to_minion_entity(data.minionId);
+        var toast = Notification.Toast({
+            pos: minionEntity.pos.clone(),
+            text: 'Effect:\n${data.tags}',
+            color: new Color(0, 1, 1),
+            randomRotation: 10,
+            duration: 2,
+            scene: scene
+        });
+        minionEntity.refresh();
+        return toast.get_promise();
     }
 
     function handle_tile_claimed(data :TileClaimedData) :Promise {

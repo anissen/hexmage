@@ -1,28 +1,33 @@
-package ;
 
-import Tag;
+package core;
+
+import core.Tag;
+import core.Tags.HasTags;
 
 using Lambda;
 
+// typedef EntityTypes = Array<T: HasTags>;
+//typedef EntityType = HasTags;
+
 class Query {
-    static public function has(entities :Array<Entity>, tag :Tag) :Array<Entity> {
+    static public function has<T:HasTags>(entities :Array<T>, tag :Tag) :Array<T> {
         return entities.filter(Has(tag));
     }
     
-    static public function friendly(entities :Array<Entity>, playerId :Int) :Array<Entity> {
+    static public function friendly<T:HasTags>(entities :Array<T>, playerId :Int) :Array<T> {
         return entities.filter(function (entity) {
             return entity.tags[PlayerId] == playerId;
         });
     }
     
-    static public function neighbors(entities :Array<Entity>, x :Int, y :Int) :Array<Entity> {
+    static public function nearby<T:HasTags>(entities :Array<T>, x :Int, y :Int) :Array<T> {
         return entities.filter(function (entity) {
             if (!entity.tags.has(PosX) || !entity.tags.has(PosY)) return false;
             return (Math.abs(entity.tags[PosX] - x) +  Math.abs(entity.tags[PosY] - y)) == 1;
         });
     }
     
-    static public function Has(tag :Tag) :Entity->Bool {
+    static public function Has<T:HasTags>(tag :Tag) :T->Bool {
         return function(entity) {
             return entity.tags.has(tag);
         };

@@ -20,6 +20,9 @@ import core.Tag;
 
 import core.HexLibrary;
 
+import core.Query;
+using core.Query;
+
 class GameSetup {
     static public function initialize() {
         MinionLibrary.Add(new Minion({
@@ -91,7 +94,7 @@ class GameSetup {
                 Life => 2
             ],
             on_event: [
-                Died => function() { return [ DrawCard ]; }
+                Dies => function(_) { return [ DrawCard ]; }
             ]
         }));
 
@@ -110,12 +113,31 @@ class GameSetup {
             tags: [
                 Attack => 1,
                 Life => 2
+            ],
+            on_event: [
+                // At the end of your turn give another random friendly minion +1 Health
+                Enter => function(self) {
+                    var the_game = game.states.PlayScreenState.game;
+                    // var tile = the_game.minion_pos(self);
+                    var affected = the_game.minions()
+                        .friendly(self.playerId);
+                        // .nearby(pos.x, pos.y); // self.tags[PosX], tags[PosY]
+                    return [ for (minion in affected) Effect(minion.id, [ Attack => minion.attack + 1 ]) ];
+                },
+                OwnTurnEnd => function(self) { 
+                    var the_game = game.states.PlayScreenState.game;
+                    // var pos = the_game.minion_pos(self);
+                    var affected = the_game.minions()
+                        .friendly(self.playerId);
+                        // .nearby(pos.x, pos.y); // self.tags[PosX], tags[PosY]
+                    return [ for (minion in affected) Effect(minion.id, [ Life => minion.life + 1 ]) ];
+                }
             ]
         }));
 
         CardLibrary.add(new core.Card({ 
             name: 'Unicorn',
-            cost: 3,
+            cost: 1,
             type: MinionCard('Unicorn'),
             description: 'Attack: 1\nLife: 2'
         }));

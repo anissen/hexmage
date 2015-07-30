@@ -51,6 +51,7 @@ class Game {
         state.turn = 0;
         for (minion in minions()) {
             emit(MinionEntered({ minion: minion.clone() }));
+            handle_commands(minion.handle_event(MinionEvent.Enter));
             var pos = minion_pos(minion);
             claim_tile(pos, minion, minion.playerId);
         }
@@ -103,12 +104,18 @@ class Game {
                     emit(MinionDamaged({ minion: minion.clone(), damage: amount }));
                     if (minion.life <= 0) {
                         emit(MinionDied({ minion: minion.clone() }));
-                        handle_commands(minion.handle_event(MinionEvent.Died));
+                        handle_commands(minion.handle_event(MinionEvent.Dies));
                         var pos = minion_pos(minion);
                         state.board.tile(pos).minion = null;
                     }
                 case DrawCard:
                     draw_card(current_player);
+                case Effect(minionId, tags):
+                    var minion = minion(minionId);
+                    for (tag in tags.keys()) {
+                        minion.tags[tag] = tags[tag];
+                    }
+                    emit(EffectTriggered({ minionId: minionId, tags: tags }));
             }
         }
     }
@@ -206,6 +213,9 @@ class Game {
     }
 
     public function end_turn() :Void {
+        for (minion in minions_for_player(current_player)) {
+            minion.handle_event(OwnTurnEnd);
+        }
         emit(TurnEnded({ player: current_player }));
         state.turn++;
 
@@ -255,13 +265,13 @@ class Game {
         
         if (victim.life <= 0) {
             emit(MinionDied({ minion: victim.clone() })); // temp!
-            handle_commands(victim.handle_event(MinionEvent.Died));
+            handle_commands(victim.handle_event(MinionEvent.Dies));
             var pos = minion_pos(victim);
             state.board.tile(pos).minion = null;
         }
         if (minion.life <= 0) {
             emit(MinionDied({ minion: minion.clone() })); // temp!
-            handle_commands(minion.handle_event(MinionEvent.Died));
+            handle_commands(minion.handle_event(MinionEvent.Dies));
             var pos = minion_pos(minion);
             state.board.tile(pos).minion = null;
         }
@@ -308,6 +318,7 @@ class Game {
                 var minion = minionLibrary.create(minionName, current_player);
                 state.board.tile(tile).minion = minion;
                 emit(MinionEntered({ minion: minion.clone() }));
+                handle_commands(minion.handle_event(MinionEvent.Enter));
             case _: throw 'Cannot play minion with this target: "$target"';
         }
     }

@@ -5,6 +5,10 @@ import core.Tag;
 
 typedef TagsType = Map<Tag, Int>;
 
+interface HasTags {
+    var tags :Tags;
+}
+
 abstract Tags(TagsType) from TagsType to TagsType {
     public inline function new(tags :TagsType) {
         this = tags;
