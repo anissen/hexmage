@@ -7,6 +7,7 @@ import luxe.tween.Actuate;
 import luxe.Vector;
 import luxe.Scene;
 import luxe.options.TextOptions;
+import snow.api.Promise;
 
 typedef NotificationOptions = {
     > TextOptions,
@@ -26,6 +27,8 @@ typedef ToastOptions = {
 class Notification extends Text {
     var duration :Float;
     var textShadow :Text;
+    var promise :Promise;
+    var promise_func :Void->Void;
 
     public function new(options :NotificationOptions) {
         super(options);
@@ -35,6 +38,9 @@ class Notification extends Text {
         textShadow.color = new Color(0, 0, 0);
         textShadow.depth -= 1;
         duration = options.duration;
+        promise = new Promise(function(resolve, reject) {
+            promise_func = resolve;
+        });
     }
 
     override function init() {
@@ -43,14 +49,23 @@ class Notification extends Text {
         Actuate.tween(textShadow.pos, duration, { y: pos.y - 100 });
         Actuate
             .tween(pos, duration, { y: pos.y - 100 })
-            .onComplete(destroy);
+            .onComplete(times_up);
     }
 
-    static public function Toast(options :ToastOptions) {
+    function times_up() {
+        promise_func();
+        destroy();
+    }
+
+    public function get_promise() :Promise {
+        return promise;
+    }
+
+    static public function Toast(options :ToastOptions) :Notification {
         var pos = (options.pos != null ? options.pos : Luxe.screen.mid.clone());
         var offset = (options.randomOffset != null ? options.randomOffset : 10);
         var rotation = (options.randomRotation != null ? options.randomRotation : 0);
-        new Notification({
+        return new Notification({
             pos: new Vector(pos.x - (offset / 2) + offset * Math.random(), pos.y - (offset / 2) + offset * Math.random()),
             text: options.text,
             color: (options.color != null ? options.color : new Color(1, 1, 1)),
