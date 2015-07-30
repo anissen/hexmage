@@ -2,61 +2,52 @@
 
 package core;
 
+import core.Tag;
 import core.enums.Events;
 import core.enums.Commands;
 
 typedef MinionOptions = {
     ?id :Int,
-    ?playerId :Int,
     name :String,
-    ?attack :Int,
-    ?life :Int,
-    ?baseMoves: Int,
-    ?moves :Int,
-    ?baseAttacks: Int,
-    ?attacks :Int,
-    ?hero :Bool,
-    ?can_be_damaged :Bool,
-    ?can_move :Bool,
-    ?can_attack :Bool,
+    tags :Tags,
     ?on_event :Map<MinionEvent, Void -> Commands>
 };
 
 class Minion {
     public var id :Int;
 
-    public var playerId :Int;
     public var name :String;
-    public var attack :Int;
-    public var life :Int;
-    public var baseMoves: Int;
-    public var moves :Int;
-    public var baseAttacks: Int;
-    public var attacks :Int;
-    public var hero :Bool;
-    public var can_be_damaged :Bool;
-    public var can_move :Bool;
-    public var can_attack :Bool;
+    public var tags :Tags;
+    public var playerId (get, set) :Int;
+    public var attack (get, null) :Int;
+    public var life (get, set) :Int;
+    public var baseMoves (get, null) :Int;
+    public var moves (get, set) :Int;
+    public var baseAttacks (get, null) :Int;
+    public var attacks (get, set) :Int;
+    public var hero (get, null) :Bool;
+    public var can_be_damaged (get, null) :Bool;
+    public var can_move (get, null) :Bool;
+    public var can_attack (get, null) :Bool;
+
+    var default_tags = [
+        BaseMoves => 1,
+        BaseAttacks => 1,
+        Moves => 0,
+        Attacks => 0,
+        CanMove => 1,
+        CanAttack => 1
+    ];
 
     public var on_event :Map<MinionEvent, Void -> Commands>;
 
-    // public var effects :Map<Event, Array<Effect>>;
-
     public function new(options :MinionOptions) {
-        id               = options.id;
-        playerId         = options.playerId;
-        name             = options.name;
-        attack           = (options.attack != null ? options.attack : 1);
-        life             = (options.life != null ? options.life : 1);
-        baseMoves        = (options.baseMoves != null ? options.baseMoves : 1);
-        moves            = (options.moves != null ? options.moves : 0);
-        baseAttacks      = (options.baseAttacks != null ? options.baseAttacks : 1);
-        attacks          = (options.attacks != null ? options.attacks : 0);
-        hero             = (options.hero != null ? options.hero : false);
-        can_be_damaged   = (options.can_be_damaged != null ? options.can_be_damaged : true);
-        can_move         = (options.can_move != null ? options.can_move : true);
-        can_attack       = (options.can_attack != null ? options.can_attack : true);
-
+        id       = options.id; // What if id is null??
+        name     = options.name;
+        tags     = default_tags;
+        for (tag in options.tags.keys()) {
+            tags[tag] = options.tags[tag];
+        }
         on_event = (options.on_event != null ? options.on_event : new Map<MinionEvent, Void -> Commands>());
     }
 
@@ -69,19 +60,74 @@ class Minion {
     public function clone() :Minion {
         return new Minion({
             id: this.id,
-            playerId: this.playerId,
             name: this.name,
-            attack: this.attack,
-            life: this.life,
-            baseMoves: this.baseMoves,
-            moves: this.moves,
-            baseAttacks: this.baseAttacks,
-            attacks: this.attacks,
-            hero: this.hero,
-            can_be_damaged: this.can_be_damaged,
-            can_move: this.can_move,
-            can_attack: this.can_attack,
-            on_event: this.on_event
+            tags: this.tags, //.clone(),
+            on_event: this.on_event // TODO: Not cloned!
         });
     }
+
+    function get_playerId() {
+        return tags[PlayerId];
+    }
+
+    function set_playerId(v) {
+        tags[PlayerId] = v;
+        return v;
+    }
+
+    function get_attack() {
+        return tags[Attack];
+    }
+
+    function get_life() {
+        return tags[Life];
+    }
+
+    function set_life(v) {
+        tags[Life] = v;
+        return v;
+    }
+
+    function get_baseMoves() {
+        return tags[BaseMoves];
+    }
+
+    function get_moves() {
+        return tags[Moves];
+    }
+
+    function set_moves(v) {
+        tags[Moves] = v;
+        return v;
+    }
+
+    function get_baseAttacks() {
+        return tags[BaseAttacks];
+    }
+
+    function get_attacks() {
+        return tags[Attacks];
+    }
+
+    function set_attacks(v) {
+        tags[Attacks] = v;
+        return v;
+    }
+
+    function get_hero() {
+        return tags.enabled(Hero);
+    }
+
+    function get_can_be_damaged() {
+        return tags.enabled(CanBeDamaged);
+    }
+
+    function get_can_move() {
+        return tags.enabled(CanMove);
+    }
+
+    function get_can_attack() {
+        return tags.enabled(CanAttack);
+    }
+
 }

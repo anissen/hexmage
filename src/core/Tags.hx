@@ -1,6 +1,7 @@
-package ;
 
-import Tag;
+package core;
+
+import core.Tag;
 
 typedef TagsType = Map<Tag, Int>;
 
@@ -20,28 +21,32 @@ abstract Tags(TagsType) from TagsType to TagsType {
         return value;
     }
     
-    public function has(tag :Tag) {
+    public inline function has(tag :Tag) {
         return this.exists(tag);
     }
     
-    public function enabled(tag :Tag) {
+    public inline function enabled(tag :Tag) {
         return this[tag] > 0;
     }
     
-    public function enable(tag :Tag) {
+    public inline function enable(tag :Tag) {
         this[tag] = 1;
     }
     
-    public function disable(tag :Tag) {
+    public inline function disable(tag :Tag) {
         this[tag] = 0;
     }
 
-    public function keys() {
+    public inline function keys() {
         return this.keys();
+    }
+
+    public inline function clone() {
+        return [ for (key in this.keys()) key => this[key] ];
     }
     
     @:to
-    public function toString() {
+    public inline function toString() {
         return [ for (tag in this.keys()) '$tag: ${this[tag]}' ].join('|'); 
     }
 }

@@ -16,15 +16,19 @@ import core.CardLibrary;
 import core.MinionLibrary;
 import cards.*;
 
+import core.Tag;
+
 import core.HexLibrary;
 
 class GameSetup {
     static public function initialize() {
         MinionLibrary.Add(new Minion({
             name: 'Rat King',
-            attack: 3,
-            life: 10,
-            hero: true
+            tags: [
+                Attack => 3,
+                Life => 10,
+                Hero => 1
+            ]
             // on_event: [
                 // Entered => function() { /* taunt */ }
                 // Always => function() { /* boost attack of nearby minions */ }
@@ -35,23 +39,28 @@ class GameSetup {
 
         MinionLibrary.Add(new Minion({
             name: 'Princess',
-            attack: 1,
-            life: 10,
-            hero: true
+            tags: [
+                Attack => 1,
+                Life => 10,
+                Hero => 1
+            ]
         }));
 
         // ---------
-
         MinionLibrary.Add(new Minion({
             name: 'Rat',
-            attack: 1,
-            life: 2
+            tags: [
+                Attack => 1,
+                Life => 2
+            ]
         }));
 
         MinionLibrary.Add(new Minion({
             name: 'Fetid Rat',
-            attack: 2,
-            life: 2,
+            tags: [
+                Attack => 2,
+                Life => 2
+            ]
             // on_event: [
                 // OWN_TURN_END.on(Buff(RANDOM_OTHER_FRIENDLY_MINION, "NEW1_037e"))
                 // https://github.com/jleclanche/fireplace/blob/eaa288244a4fd303b109abb257473f6cf81dbb2c/fireplace/cards/classic/neutral_rare.py
@@ -61,20 +70,26 @@ class GameSetup {
 
         MinionLibrary.Add(new Minion({
             name: 'Tyrannosaurus Rat',
-            attack: 5,
-            life: 3
+            tags: [
+                Attack => 5,
+                Life => 3
+            ]
         }));
 
         MinionLibrary.Add(new Minion({
             name: 'Radioactive Rat',
-            attack: 2,
-            life: 4
+            tags: [
+                Attack => 2,
+                Life => 4
+            ]
         }));
 
         MinionLibrary.Add(new Minion({
             name: 'Teddybear',
-            attack: 2,
-            life: 2,
+            tags: [
+                Attack => 2,
+                Life => 2
+            ],
             on_event: [
                 Died => function() { return [ DrawCard ]; }
             ]
@@ -82,19 +97,28 @@ class GameSetup {
 
         MinionLibrary.Add(new Minion({
             name: 'Bunny',
-            attack: 1,
-            life: 1,
-            moves: 1,
-            attacks: 1
+            tags: [
+                Attack => 1,
+                Life => 1,
+                Moves => 1,
+                Attacks => 1
+            ]
         }));
 
         MinionLibrary.Add(new Minion({
             name: 'Unicorn',
-            attack: 1,
-            life: 2
+            tags: [
+                Attack => 1,
+                Life => 2
+            ]
         }));
 
-        CardLibrary.add(new Unicorn());
+        CardLibrary.add(new core.Card({ 
+            name: 'Unicorn',
+            cost: 3,
+            type: MinionCard('Unicorn'),
+            description: 'Attack: 1\nLife: 2'
+        }));
         CardLibrary.add(new core.Card({ 
             name: 'Rapid Bunny',
             cost: 1,
@@ -128,13 +152,13 @@ class GameSetup {
             type: MinionCard('Radioactive Rat')
         }));
 
-
         function ouchFunction(target :Target) :Array<Command> {
             switch target {
                 case Character(id): return [Damage(id, 2)];
                 case _: throw 'Ouch cannot target $target';
             }
         }
+        
 
         CardLibrary.add(new core.Card({ 
             name: 'Ouch',

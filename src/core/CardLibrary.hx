@@ -8,9 +8,9 @@ class CardLibrary {
 
     static public function add(card :Card) {
         if (card.name.length == 0)
-            throw 'Cannot add card with empty name';
+            error('Cannot add card with empty name');
         if (cards.exists(card.name))
-            throw 'Card with name "${card.name}"" already exists!';
+            error('Card with name "${card.name}"" already exists!');
         cards.set(card.name, card);
     }
 
@@ -23,10 +23,15 @@ class CardLibrary {
     public function create(name :String) {
         var cardPrototype = cards.get(name);
         if (cardPrototype == null)
-            throw 'Card with name "$name" does not exist!';
+            error('Card with name "$name" does not exist!');
         
         var card = cardPrototype.clone();
         card.id = nextCardId++;
         return card;
+    }
+
+    static function error(s) {
+        trace(s);
+        throw s;
     }
 }
