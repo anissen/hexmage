@@ -28,34 +28,34 @@ class Test {
         trace(dummyEntity);
 
         var engine = new Engine();
-        engine.handle_actions(function(action, emit_event) {
+        engine.actions.on(function(action) {
             switch (action) {
                 case EndTurn: 
-                    emit_event(TurnEnded(0));
+                    engine.events.emit(TurnEnded(0));
                     trace('Doing some logic between TurnEnded and TurnStarted');
-                    emit_event(TurnStarted(1));
+                    engine.events.emit(TurnStarted(1));
                 case Effect(entity, tags):
                     trace('Action: Effect');
                     for (tag in tags.keys()) {
                         trace('Setting $tag to ${tags[tag]}');
                         entity.tags[tag] = tags[tag];
                     }
-                    emit_event(EffectTriggered(entity, tags));
+                    engine.events.emit(EffectTriggered(entity, tags));
             }
         });
-        engine.handle_events(function(event, do_action) {
+        engine.events.on(function(event) {
             switch (event) {
                 case TurnEnded(playerId): trace('Event: TurnEnded for player $playerId');
                 case TurnStarted(playerId):
                     trace('Event: TurnStarted for player $playerId');
                     trace('Fake an effect: Swap health/attack on entity...');
-                    do_action(Effect(dummyEntity, [ Health => dummyEntity.tags[Attack], Attack => dummyEntity.tags[Health] ]));
+                    engine.actions.emit(Effect(dummyEntity, [ Health => dummyEntity.tags[Attack], Attack => dummyEntity.tags[Health] ]));
                 case EffectTriggered(entity, tags): trace('Event: EffectTriggered');
                 case _: [];
             }
         });
 
-        engine.do_action(EndTurn);
+        engine.actions.emit(EndTurn);
 
         trace(dummyEntity);
     }
@@ -138,14 +138,14 @@ class Test {
                 .friendly(unicorn.tags[PlayerId]);
             return [ for (entity in nearby_friends) Effect(entity, [ Health => entity.tags[Health] + 1 ]) ];
         };
-        engine.handle_events(function(event, _) {
+        engine.events.on(function(event) {
            switch (event) {
                case TurnEnded(_): unicornFunc();
                case EffectTriggered(entity, tags): trace('EffectTriggered func!'); [];
                case _: [];
            }
         });
-        engine.do_action(EndTurn);
+        engine.actions.emit(EndTurn);
         trace('Bunny health: ${bunny.tags[Health]}');
     }
     

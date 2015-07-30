@@ -2,32 +2,28 @@ package ;
 
 import Events;
 
-typedef ActionListenerType = Action->(Event->Void)->Void;
-typedef EventListenerType = Event->(Action->Void)->Void;
-
-class Engine {
-    var action_listeners :Array<ActionListenerType>;
-    var event_listeners :Array<EventListenerType>;
+class MessageBus<T> {
+    var listeners :Array<T->Void>;
     
     public function new() {
-        action_listeners = [];
-        event_listeners = [];
+        listeners = [];
     }
     
-    public function do_action(action :Action) {
-        for (listener in action_listeners) listener(action, emit_event);
+    public function emit(action :T) {
+        for (listener in listeners) listener(action);
     }
 
-    public function handle_actions(func :ActionListenerType) {
-        action_listeners.push(func);
+    public function on(func :T->Void) {
+        listeners.push(func);
     }
-            
-    public function handle_events(func :EventListenerType) {
-        event_listeners.push(func);
-    }
+}
+
+class Engine {
+    public var actions :MessageBus<Action>;
+    public var events :MessageBus<Event>;
     
-    public function emit_event(event :Event) {
-        var actions = [];
-        for (listener in event_listeners) listener(event, do_action);
+    public function new() {
+        actions = new MessageBus();
+        events = new MessageBus();
     }
 }
