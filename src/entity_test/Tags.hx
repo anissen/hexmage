@@ -2,10 +2,10 @@ package ;
 
 import Tag;
 
-typedef TagMapType = Map<Tag, Int>;
+typedef TagsType = Map<Tag, Int>;
 
-abstract TagMap(TagMapType) from TagMapType to TagMapType {
-    public inline function new(tags :TagMapType) {
+abstract Tags(TagsType) from TagsType to TagsType {
+    public inline function new(tags :TagsType) {
         this = tags;
     }
     
