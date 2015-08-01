@@ -6,12 +6,13 @@ import core.Tag;
 import core.Tags.HasTags;
 import core.enums.Events;
 import core.enums.Commands;
+import core.Query.MinionQuery;
 
 typedef MinionOptions = {
     ?id :Int,
     name :String,
     tags :Tags,
-    ?on_event :Map<MinionEvent, Minion -> Commands>
+    ?on_event :Map<MinionEvent, MinionQuery->Commands>
 };
 
 class Minion implements HasTags {
@@ -31,6 +32,8 @@ class Minion implements HasTags {
     public var can_move (get, null) :Bool;
     public var can_attack (get, null) :Bool;
 
+    public var pos (get, set) :String;
+
     var default_tags = [
         BaseMoves => 1,
         BaseAttacks => 1,
@@ -40,7 +43,7 @@ class Minion implements HasTags {
         CanAttack => 1
     ];
 
-    public var on_event :Map<MinionEvent, Minion -> Commands>;
+    public var on_event :Map<MinionEvent, MinionQuery->Commands>;
 
     public function new(options :MinionOptions) {
         id       = options.id; // What if id is null??
@@ -49,13 +52,13 @@ class Minion implements HasTags {
         for (tag in options.tags.keys()) {
             tags[tag] = options.tags[tag];
         }
-        on_event = (options.on_event != null ? options.on_event : new Map<MinionEvent, Minion -> Commands>());
+        on_event = (options.on_event != null ? options.on_event : new Map<MinionEvent, MinionQuery->Commands>());
     }
 
     public function handle_event(event :MinionEvent) :Commands {
         var event_func = on_event.get(event);
         if (event_func == null) return [];
-        return event_func(this);
+        return event_func(new MinionQuery(game.states.PlayScreenState.game, this, game.states.PlayScreenState.game.minions()));
     }
 
     public function clone() :Minion {
@@ -86,6 +89,17 @@ class Minion implements HasTags {
 
     function set_life(v) {
         tags[Life] = v;
+        return v;
+    }
+
+    function get_pos() {
+        return tags[PosX] + ',' + tags[PosY];
+    }
+
+    function set_pos(v :String) {
+        var parts = v.split(',');
+        tags[PosX] = Std.parseInt(parts[0]);
+        tags[PosY] = Std.parseInt(parts[1]);
         return v;
     }
 

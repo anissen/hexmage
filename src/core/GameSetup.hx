@@ -22,6 +22,7 @@ import core.HexLibrary;
 
 import core.Query;
 using core.Query;
+using core.Query.MinionQuery;
 
 class GameSetup {
     static public function initialize() {
@@ -116,30 +117,28 @@ class GameSetup {
             ],
             on_event: [
                 // At the end of your turn give another random friendly minion +1 Health
-                Enter => function(self) {
-                    var the_game = game.states.PlayScreenState.game;
+                Enter => function(query /*query created from game, board */) {
+                    // var the_game = game.states.PlayScreenState.game;
                     // var tile = the_game.minion_pos(self);
-                    var affected = the_game.minions()
-                        .friendly(self.playerId);
-                        // .nearby(pos.x, pos.y); // self.tags[PosX], tags[PosY]
-                    return [ for (minion in affected) Effect({
-                                    minionId: minion.id, 
-                                    description: '+1 Attack',
-                                    tags: [ Attack => minion.attack + 1 ]
-                                }) ];
+                    // var affected = query.friendly(); //.nearby();
+                    // return query.effects(function(minion) { return { description: '+1 Attack', tags: [ Attack => minion.attack + 1 ] }});
+
+                    
+                    return query.friendly().buff(Attack, 1);
+                     //RANDOM_OTHER_FRIENDLY_MINION, Buff("NEW1_037e")
                 },
-                OwnTurnEnd => function(self) { 
-                    var the_game = game.states.PlayScreenState.game;
-                    // var pos = the_game.minion_pos(self);
-                    var affected = the_game.minions()
-                        .friendly(self.playerId);
-                        // .nearby(pos.x, pos.y); // self.tags[PosX], tags[PosY]
-                    return [ for (minion in affected) Effect({
-                                    minionId: minion.id, 
-                                    description: '+1 Health',
-                                    tags: [ Life => minion.life + 1 ]
-                                }) ];
-                }
+                // OwnTurnEnd => function(self) { 
+                //     var the_game = game.states.PlayScreenState.game;
+                //     // var pos = the_game.minion_pos(self);
+                //     var affected = the_game.minions()
+                //         .friendly(self.playerId)
+                //         .nearby(self.pos);
+                //     return [ for (minion in affected) Effect({
+                //                     minionId: minion.id, 
+                //                     description: '+1 Health',
+                //                     tags: [ Life => minion.life + 1 ]
+                //                 }) ];
+                // }
             ]
         }));
 
