@@ -324,14 +324,16 @@ class PlayScreenState extends State {
         var minionEntity = id_to_minion_entity(data.minionId);
         var toast = Notification.Toast({
             pos: minionEntity.pos.clone(),
-            text: 'Effect:\n${data.tags}',
+            text: data.description,
             color: new Color(0, 1, 1),
             randomRotation: 10,
-            duration: 2,
+            duration: 4,
             scene: scene
         });
         minionEntity.refresh();
-        return toast.get_promise();
+        return new Promise(function(resolve, reject) {
+            Luxe.timer.schedule(0.2, resolve);
+        });
     }
 
     function handle_tile_claimed(data :TileClaimedData) :Promise {

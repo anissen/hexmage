@@ -17,7 +17,7 @@ typedef CardPlayedData = { card :Card, player :Player };
 typedef ManaGainedData = { gained :Int, total :Int, tileId :TileId, player :Player };
 typedef ManaSpentData = { spent :Int, left :Int, tileId :TileId, player :Player };
 typedef TileClaimedData = { tileId :TileId, minion :Minion };
-typedef EffectTriggeredData = { minionId :Int, tags :Tags };
+typedef EffectTriggeredData = { minionId :Int, tags :Tags, description :String };
 
 enum Event {
     GameStarted;

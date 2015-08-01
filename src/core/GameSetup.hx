@@ -122,7 +122,11 @@ class GameSetup {
                     var affected = the_game.minions()
                         .friendly(self.playerId);
                         // .nearby(pos.x, pos.y); // self.tags[PosX], tags[PosY]
-                    return [ for (minion in affected) Effect(minion.id, [ Attack => minion.attack + 1 ]) ];
+                    return [ for (minion in affected) Effect({
+                                    minionId: minion.id, 
+                                    description: '+1 Attack',
+                                    tags: [ Attack => minion.attack + 1 ]
+                                }) ];
                 },
                 OwnTurnEnd => function(self) { 
                     var the_game = game.states.PlayScreenState.game;
@@ -130,7 +134,11 @@ class GameSetup {
                     var affected = the_game.minions()
                         .friendly(self.playerId);
                         // .nearby(pos.x, pos.y); // self.tags[PosX], tags[PosY]
-                    return [ for (minion in affected) Effect(minion.id, [ Life => minion.life + 1 ]) ];
+                    return [ for (minion in affected) Effect({
+                                    minionId: minion.id, 
+                                    description: '+1 Health',
+                                    tags: [ Life => minion.life + 1 ]
+                                }) ];
                 }
             ]
         }));

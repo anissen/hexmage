@@ -110,12 +110,12 @@ class Game {
                     }
                 case DrawCard:
                     draw_card(current_player);
-                case Effect(minionId, tags):
-                    var minion = minion(minionId);
-                    for (tag in tags.keys()) {
-                        minion.tags[tag] = tags[tag];
+                case Effect(data):
+                    var minion = minion(data.minionId);
+                    for (tag in data.tags.keys()) {
+                        minion.tags[tag] = data.tags[tag];
                     }
-                    emit(EffectTriggered({ minionId: minionId, tags: tags }));
+                    emit(EffectTriggered(data));
             }
         }
     }

@@ -1,10 +1,12 @@
 
 package core.enums;
 
+typedef EffectData = { minionId :Int, tags :Tags, description :String };
+
 enum Command {
     Damage(characterId :Int, amount :Int);
     DrawCard;
-    Effect(minionId :Int, tags :Tags);
+    Effect(data :EffectData);
     // Print(s :String);
 }
 
