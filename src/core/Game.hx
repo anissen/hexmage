@@ -53,6 +53,7 @@ class Game {
             emit(MinionEntered({ minion: minion.clone() }));
             handle_commands(minion.handle_event(MinionEvent.Enter));
             var pos = minion_pos(minion);
+            minion.pos = pos; // HACK
             claim_tile(pos, minion, minion.playerId);
         }
         for (player in players()) {
@@ -229,6 +230,7 @@ class Game {
         var toTile = state.board.tile(moveAction.tileId);
         toTile.minion = minion;
         minion.moves--;
+        minion.pos = moveAction.tileId;
         emit(MinionMoved({ minion: minion.clone(), from: currentPos, to: moveAction.tileId }));
         if (minion.hero) {
             claim_tile(moveAction.tileId, minion, minion.playerId);
@@ -317,6 +319,7 @@ class Game {
             case Tile(tile, _): 
                 var minion = minionLibrary.create(minionName, current_player);
                 state.board.tile(tile).minion = minion;
+                minion.pos = tile; // HACK
                 emit(MinionEntered({ minion: minion.clone() }));
                 handle_commands(minion.handle_event(MinionEvent.Enter));
             case _: throw 'Cannot play minion with this target: "$target"';
