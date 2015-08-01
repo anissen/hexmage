@@ -214,7 +214,7 @@ class Game {
 
     public function end_turn() :Void {
         for (minion in minions_for_player(current_player)) {
-            minion.handle_event(OwnTurnEnd);
+            handle_commands(minion.handle_event(OwnTurnEnd));
         }
         emit(TurnEnded({ player: current_player }));
         state.turn++;
