@@ -29,6 +29,7 @@ class Notification extends Text {
     var textShadow :Text;
     var promise :Promise;
     var promise_func :Void->Void;
+    var background :luxe.Sprite;
 
     public function new(options :NotificationOptions) {
         super(options);
@@ -38,6 +39,13 @@ class Notification extends Text {
         textShadow.color = new Color(0, 0, 0);
         textShadow.depth -= 1;
         duration = options.duration;
+        background = new luxe.Sprite({
+            color: new Color(1, 1, 1, 0.5),
+            size: new Vector(this.geom.text_width, this.geom.text_height),
+            depth: this.depth - 2,
+            parent: this,
+            scene: options.scene
+        });
         promise = new Promise(function(resolve, reject) {
             promise_func = resolve;
         });
@@ -45,6 +53,7 @@ class Notification extends Text {
 
     override function init() {
         Actuate.tween(color, duration, { a: 0 });
+        Actuate.tween(background.color, duration, { a: 0 });
         Actuate.tween(textShadow.color, duration, { a: 0 });
         Actuate.tween(textShadow.pos, duration, { y: pos.y - 100 });
         Actuate
