@@ -58,7 +58,7 @@ class Minion implements HasTags {
     public function handle_event(event :MinionEvent) :Commands {
         var event_func = on_event.get(event);
         if (event_func == null) return [];
-        return event_func(new MinionQuery(game.states.PlayScreenState.game, this, game.states.PlayScreenState.game.minions()));
+        return event_func(new MinionQuery(this, game.states.PlayScreenState.game.minions())); // HACK
     }
 
     public function clone() :Minion {

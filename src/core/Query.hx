@@ -6,38 +6,30 @@ import core.Tags.HasTags;
 
 using Lambda;
 
-// typedef EntityTypes = Array<T: HasTags>;
-//typedef EntityType = HasTags;
-
-
-// TODO: Create query object from game
 class MinionQuery {
-    var game :Game;
     var minion :Minion;
     var result :Array<Minion>;
 
-    public function new(game :Game, minion :Minion, result :Array<Minion>) {
-        this.game = game;
+    public function new(minion :Minion, result :Array<Minion>) {
         this.minion = minion;
         this.result = result;
     }
 
     function create(res :Array<Minion>) {
-        return new MinionQuery(game, minion, res);
+        return new MinionQuery(minion, res);
     }
 
     public function friendly() :MinionQuery {
-        return create(Query.friendly(game.minions(), minion.playerId));
-
+        return create(Query.friendly(result, minion.playerId));
     }
 
-    // public function nearby() :MinionQuery {
-    //     // return Query.nearby(game.minions(), minion.pos);
-    //     return create(game.minions().filter(function (entity) {
-    //         //if (!entity.tags.has(PosX) || !entity.tags.has(PosY)) return false;
-    //         return true;
-    //     });
-    // }
+    public function nearby() :MinionQuery {
+        return create(Query.nearby(result, minion.tags[PosX], minion.tags[PosY]));
+    }
+
+    public function random() :MinionQuery {
+        return create([result[Math.floor(result.length * Math.random())]]);
+    }
 
     public function create_effects(func :Minion->core.enums.Commands.PartialEffectData) :core.enums.Commands {
         return [ 
@@ -61,13 +53,7 @@ class MinionQuery {
             }
         };
     }
-
-    // public function minions() {
-    //     return result;
-    // }
 }
-
-// BETTER IDEA: Make game and board available from static contexts!!!
 
 class Query {
     static public function has<T:HasTags>(entities :Array<T>, tag :Tag) :Array<T> {
@@ -80,12 +66,13 @@ class Query {
         });
     }
     
-    // static public function nearby<T:HasTags>(entities :Array<T>, pos :String) :Array<T> {
-    //     return entities.filter(function (entity) {
-    //         //if (!entity.tags.has(PosX) || !entity.tags.has(PosY)) return false;
-    //         return (Math.abs(entity.tags[PosX] - x) +  Math.abs(entity.tags[PosY] - y)) == 1;
-    //     });
-    // }
+    static public function nearby<T:HasTags>(entities :Array<T>, x :Int, y :Int) :Array<T> {
+        return entities.filter(function (entity) {
+            if (!entity.tags.has(PosX) || !entity.tags.has(PosY)) return false;
+            // TODO: Should use Board.Distance(pos1, pos2)
+            return (Math.abs(entity.tags[PosX] - x) == 1) || (Math.abs(entity.tags[PosY] - y) == 1);
+        });
+    }
     
     static public function Has<T:HasTags>(tag :Tag) :T->Bool {
         return function(entity) {
