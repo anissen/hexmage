@@ -264,18 +264,18 @@ class PlayScreenState extends State {
 
                     update_move_indicator(minion);
 
-                    if (minion.name == 'Rat King') {
-                        var speechBubble = new game.entities.SpeechBubble({
-                            scene: this.scene,
-                            depth: 10,
-                            texts: ['I am the Rat King!\nHear me roar!', '*squeak squeak*'],
-                            duration: 4
-                        });
-                        minionEntity.add(speechBubble);
-                        speechBubble.get_promise().then(resolve);
-                    } else {
+                    // if (minion.name == 'Rat King') {
+                    //     var speechBubble = new game.entities.SpeechBubble({
+                    //         scene: this.scene,
+                    //         depth: 10,
+                    //         texts: ['I am the Rat King!\nHear me roar!', '*squeak squeak*'],
+                    //         duration: 4
+                    //     });
+                    //     minionEntity.add(speechBubble);
+                    //     speechBubble.get_promise().then(resolve);
+                    // } else {
                         resolve();
-                    }
+                    // }
                 });
         });
     }
