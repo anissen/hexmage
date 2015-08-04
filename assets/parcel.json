@@ -13,6 +13,10 @@
         { "id": "assets/images/footprint.png" },
         { "id": "assets/images/plain-arrow.png" }
     ],
+    "sounds": [
+        { "id": "assets/sounds/draw_card1.ogg", "name": "draw_card1", "is_stream": false },
+        { "id": "assets/sounds/draw_card2.ogg", "name": "draw_card2", "is_stream": false }
+    ],
     "shaders" : [
         { "id": "full", "frag_id": "assets/shaders/full.glsl", "vert_id": "default" },
         { "id": "tilt_shift", "frag_id": "assets/shaders/tilt_shift.glsl", "vert_id": "default" }

@@ -395,6 +395,7 @@ class PlayScreenState extends State {
     }
 
     function handle_card_drawn(data :CardDrawnData) :Promise {
+        Luxe.audio.play('draw_card${Luxe.utils.random.int(1, 3)}'); // draw_card1 or draw_card2
         if (data.player.name == 'Human Player') {
             return ownHand.add_card(data.card, game);
         } else {
