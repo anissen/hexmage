@@ -54,6 +54,9 @@ class Main extends luxe.Game {
             });
 
             parcel.load();
+        }).error(function(s) {
+            trace('Error $s');
+            throw s;
         });
 
         //because the text effects are set through shaders,
