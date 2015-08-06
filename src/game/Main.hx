@@ -32,7 +32,6 @@ class Main extends luxe.Game {
     override function config(config :luxe.AppConfig) {
         // if you have errors about the window being created, lower this to 2, or 0. it can also be 8
         config.render.antialiasing = 4;
-        config.window.fullscreen = true;
 
         return config;
     }

@@ -188,6 +188,7 @@ class PlayScreenState extends State {
 
     function handle_minion_moved(data :MinionMovedData) :Promise {
         return new Promise(function(resolve, reject) {
+            Luxe.audio.play('minion_move${Luxe.utils.random.int(1, 4)}'); // card_flip1 or card_flip2
             var minionEntity = id_to_minion_entity(data.minion.id);
             var newPos = game.tile_to_world(data.to); //data.to.tile_to_world();
             Actuate
@@ -246,6 +247,7 @@ class PlayScreenState extends State {
 
     function handle_minion_entered(data :MinionEnteredData) :Promise {
         return new Promise(function(resolve, reject) {
+            Luxe.audio.play('minion_enter1'); // minion_enter1
             var minion = game.minion(data.minion.id);
             var pos = game.minion_pos(minion);
             var minionEntity = new MinionEntity({
@@ -281,6 +283,11 @@ class PlayScreenState extends State {
     }
 
     function handle_turn_started(data :TurnStartedData) :Promise {
+        if (data.player.ai) {
+            Luxe.audio.play('enemy_turn_start');
+        } else {
+            Luxe.audio.play('own_turn_start');
+        }
         for (minion in game.minions_for_player(game.current_player)) {
             update_move_indicator(minion);
         }
@@ -365,6 +372,7 @@ class PlayScreenState extends State {
     }
 
     function handle_minion_damaged(data :MinionDamagedData) :Promise {
+        Luxe.audio.play('minion_damage1'); // minion_damage1
         var minionEntity = id_to_minion_entity(data.minion.id);
         Notification.Toast({
             pos: minionEntity.pos.clone(),
@@ -395,7 +403,7 @@ class PlayScreenState extends State {
     }
 
     function handle_card_drawn(data :CardDrawnData) :Promise {
-        Luxe.audio.play('draw_card${Luxe.utils.random.int(1, 3)}'); // draw_card1 or draw_card2
+        Luxe.audio.play('card_draw${Luxe.utils.random.int(1, 3)}'); // card_draw1 or card_draw2
         if (data.player.name == 'Human Player') {
             return ownHand.add_card(data.card, game);
         } else {
@@ -404,6 +412,7 @@ class PlayScreenState extends State {
     }
 
     function handle_card_played(data :CardPlayedData) :Promise {
+        Luxe.audio.play('card_flip${Luxe.utils.random.int(1, 3)}'); // minion_move1 ... minion_move3
         if (data.player.name == 'Human Player') {
             return ownHand.play_card(data.card);
         } else {
