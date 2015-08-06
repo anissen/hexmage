@@ -18,13 +18,17 @@
         { "id": "assets/sounds/card_draw2.ogg", "name": "card_draw2", "is_stream": false },
         { "id": "assets/sounds/card_flip1.wav", "name": "card_flip1", "is_stream": false },
         { "id": "assets/sounds/card_flip2.wav", "name": "card_flip2", "is_stream": false },
+        { "id": "assets/sounds/card_cast1.wav", "name": "card_cast1", "is_stream": false },
         { "id": "assets/sounds/minion_move1.mp3", "name": "minion_move1", "is_stream": false },
         { "id": "assets/sounds/minion_move2.mp3", "name": "minion_move2", "is_stream": false },
         { "id": "assets/sounds/minion_move3.mp3", "name": "minion_move3", "is_stream": false },
+        { "id": "assets/sounds/minion_enter1.wav", "name": "minion_enter1", "is_stream": false },
+        { "id": "assets/sounds/minion_enter2.wav", "name": "minion_enter2", "is_stream": false },
+        { "id": "assets/sounds/minion_enter3.wav", "name": "minion_enter3", "is_stream": false },
+        { "id": "assets/sounds/minion_attack1.wav", "name": "minion_attack1", "is_stream": false },
         { "id": "assets/sounds/minion_damage1.wav", "name": "minion_damage1", "is_stream": false },
         { "id": "assets/sounds/own_turn_start.wav", "name": "own_turn_start", "is_stream": false },
-        { "id": "assets/sounds/enemy_turn_start.wav", "name": "enemy_turn_start", "is_stream": false },
-        { "id": "assets/sounds/minion_enter1.mp3", "name": "minion_enter1", "is_stream": false }
+        { "id": "assets/sounds/enemy_turn_start.wav", "name": "enemy_turn_start", "is_stream": false }
     ],
     "shaders" : [
         { "id": "full", "frag_id": "assets/shaders/full.glsl", "vert_id": "default" },

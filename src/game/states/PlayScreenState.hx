@@ -188,7 +188,7 @@ class PlayScreenState extends State {
 
     function handle_minion_moved(data :MinionMovedData) :Promise {
         return new Promise(function(resolve, reject) {
-            Luxe.audio.play('minion_move${Luxe.utils.random.int(1, 4)}'); // card_flip1 or card_flip2
+            Luxe.audio.play('minion_move${Luxe.utils.random.int(1, 4)}'); // minion_move1...3
             var minionEntity = id_to_minion_entity(data.minion.id);
             var newPos = game.tile_to_world(data.to); //data.to.tile_to_world();
             Actuate
@@ -202,6 +202,7 @@ class PlayScreenState extends State {
 
     function handle_minion_attacked(data :MinionAttackedData) :Promise {
         return new Promise(function(resolve, reject) {
+            Luxe.audio.play('minion_attack1');
             var minionEntity = id_to_minion_entity(data.minion.id);
             var minionPos = minionEntity.pos.clone();
             var victimEntityPos = id_to_minion_entity(data.victim.id).pos;
@@ -247,7 +248,8 @@ class PlayScreenState extends State {
 
     function handle_minion_entered(data :MinionEnteredData) :Promise {
         return new Promise(function(resolve, reject) {
-            Luxe.audio.play('minion_enter1'); // minion_enter1
+            // Luxe.audio.play('minion_enter4');
+            Luxe.audio.play('minion_enter${Luxe.utils.random.int(1, 4)}'); // minion_enter1...3
             var minion = game.minion(data.minion.id);
             var pos = game.minion_pos(minion);
             var minionEntity = new MinionEntity({
@@ -403,7 +405,7 @@ class PlayScreenState extends State {
     }
 
     function handle_card_drawn(data :CardDrawnData) :Promise {
-        Luxe.audio.play('card_draw${Luxe.utils.random.int(1, 3)}'); // card_draw1 or card_draw2
+        Luxe.audio.play('card_draw${Luxe.utils.random.int(1, 3)}');
         if (data.player.name == 'Human Player') {
             return ownHand.add_card(data.card, game);
         } else {
@@ -412,7 +414,8 @@ class PlayScreenState extends State {
     }
 
     function handle_card_played(data :CardPlayedData) :Promise {
-        Luxe.audio.play('card_flip${Luxe.utils.random.int(1, 3)}'); // minion_move1 ... minion_move3
+        Luxe.audio.play('card_flip${Luxe.utils.random.int(1, 3)}');
+        Luxe.audio.play('card_cast1');
         if (data.player.name == 'Human Player') {
             return ownHand.play_card(data.card);
         } else {
