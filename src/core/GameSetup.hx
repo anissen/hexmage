@@ -256,6 +256,7 @@ class GameSetup {
 
         var map = new Map<TileId, Tile>();
         for (hex in create_hexagon_map()) {
+            if (hex.key == '0,0') continue; // HACK to create a hole in the middle of the map
             map[hex.key] = { hex: hex, mana: 1 };
         }
         var board = new Board(map);

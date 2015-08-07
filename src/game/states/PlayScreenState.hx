@@ -479,6 +479,7 @@ class PlayScreenState extends State {
 
         var map_radius :Int = 3;
         for (hex in create_hexagon_map(map_radius)) {
+            if (hex.key == '0,0') continue; // HACK to create a hole in the middle of the map
             var pos = Layout.hexToPixel(layout, hex);
             var tile = new HexTile({
                 pos: new Vector(pos.x, pos.y),
