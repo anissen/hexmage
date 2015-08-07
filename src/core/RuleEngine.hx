@@ -9,6 +9,7 @@ import core.Card;
 import core.HexLibrary;
 
 using core.HexLibrary.HexTools;
+using Lambda;
 
 class RuleEngine {
     static public function available_actions(state :GameState, player :Player) :Array<Action> {
@@ -72,20 +73,38 @@ class RuleEngine {
         if (board.mana_for_player(player.id) < card.cost) return [];
 
         function minion_card_targets() {
-            var tiles_targets = []; 
-            board.each_tile(function(tile) {
-                if (tile.claimed != null) return;
-                if (tile.minion != null) return;
+            var heroes = board.minions_for_player(player.id).filter(function(minion) {
+                return minion.hero;
+            });
+            var tiles_targets = [];
+            for (hero in heroes) {
+                var pos = board.minion_pos(hero);
+                var tile = board.tile(pos);
                 for (neighbor in tile.hex.neighbors()) {
                     var neighborId = neighbor.key;
                     if (board.tile(neighborId) == null) continue;
-                    if (board.tile(neighborId).claimed == player.id) {
-                        tiles_targets.push(Target.Tile(tile.id, neighborId));
-                    }
+                    if (board.tile(neighborId).minion != null) continue;
+                    tiles_targets.push(Target.Tile(neighborId, pos));
                 }
-            });
+            }
             return tiles_targets;
         }
+        // Cast minion besides claimed tiles
+        // function minion_card_targets() {
+        //     var tiles_targets = []; 
+        //     board.each_tile(function(tile) {
+        //         if (tile.claimed != null) return;
+        //         if (tile.minion != null) return;
+        //         for (neighbor in tile.hex.neighbors()) {
+        //             var neighborId = neighbor.key;
+        //             if (board.tile(neighborId) == null) continue;
+        //             if (board.tile(neighborId).claimed == player.id) {
+        //                 tiles_targets.push(Target.Tile(tile.id, neighborId));
+        //             }
+        //         }
+        //     });
+        //     return tiles_targets;
+        // }
 
         function spell_card_targets() {
             return switch card.targetType {
