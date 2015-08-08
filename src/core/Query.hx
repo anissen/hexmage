@@ -10,13 +10,13 @@ class MinionQuery {
     var minion :Minion;
     var result :Array<Minion>;
 
-    public function new(minion :Minion, result :Array<Minion>) {
-        this.minion = minion;
-        this.result = result;
+    public function new(_minion :Minion, _result :Array<Minion>) {
+        minion = _minion;
+        result = _result;
     }
 
-    function create(res :Array<Minion>) {
-        return new MinionQuery(minion, res);
+    function create(_result :Array<Minion>) :MinionQuery {
+        return new MinionQuery(minion, _result);
     }
 
     public function friendly() :MinionQuery {
@@ -41,7 +41,7 @@ class MinionQuery {
         ];
     }
 
-    public function buff(tag :Tag, value :Int = 1) {
+    public function buff(tag :Tag, value :Int = 1) :core.enums.Commands {
         return create_effects(create_buff_effect(tag, value));
     }
 

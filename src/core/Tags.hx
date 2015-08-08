@@ -15,7 +15,7 @@ abstract Tags(TagsType) from TagsType to TagsType {
     }
     
     @:arrayAccess
-    public inline function get(tag :Tag) {
+    public inline function get(tag :Tag) :Int {
         return this.get(tag);
     }
     
@@ -25,19 +25,19 @@ abstract Tags(TagsType) from TagsType to TagsType {
         return value;
     }
     
-    public inline function has(tag :Tag) {
+    public inline function has(tag :Tag) :Bool {
         return this.exists(tag);
     }
     
-    public inline function enabled(tag :Tag) {
+    public inline function enabled(tag :Tag) :Bool {
         return this[tag] > 0;
     }
     
-    public inline function enable(tag :Tag) {
+    public inline function enable(tag :Tag) :Void {
         this[tag] = 1;
     }
     
-    public inline function disable(tag :Tag) {
+    public inline function disable(tag :Tag) :Void {
         this[tag] = 0;
     }
 
