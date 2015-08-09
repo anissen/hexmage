@@ -91,7 +91,7 @@ class PlayScreenState extends State {
         transformGesture = new TransformGesture();
         transformGesture.events.listen(GestureEvent.GESTURE_BEGAN, onTransformGesture);
         transformGesture.events.listen(GestureEvent.GESTURE_CHANGED, onTransformGesture);
-        transformGesture.events.listen(GestureEvent.GESTURE_ENDED, onTransformGesture);
+        transformGesture.events.listen(GestureEvent.GESTURE_ENDED, onTransformGestureEnded);
 
         Luxe.events.listen('card_clicked', function(data :{ entity :CardEntity, card :Card }) {
             if (!Main.states.enabled(PlayCardState.StateId)) {
