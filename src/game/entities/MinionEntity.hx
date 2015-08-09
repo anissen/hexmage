@@ -14,18 +14,18 @@ import game.components.OnClick;
 import snow.api.Promise;
 
 typedef MinionOptions = {
-    minion :core.Minion,
+    minion :core.Card,
     pos :Vector,
     scene :Scene
 }
 
 typedef ClickedEventData = {
     entity :MinionEntity,
-    minion :core.Minion
+    minion :core.Card
 }
 
 class MinionEntity extends Visual {
-    var minion :core.Minion;
+    var minion :core.Card;
     var text :Text;
     var attack :Sprite;
     var attackText :Text;

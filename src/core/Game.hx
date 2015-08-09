@@ -2,7 +2,6 @@
 package core;
 
 import core.CardLibrary;
-import core.MinionLibrary;
 import core.Player;
 import core.enums.Actions;
 import core.enums.Events;
@@ -10,11 +9,14 @@ import core.enums.Commands;
 import core.Card;
 import core.HexLibrary; // TODO: This should not be here!
 
+using Lambda;
+using core.Query;
+
 typedef GameState = {
     var board :Board;
     var players :Players; // includes deck
+    var cards :Array<Card>; // maybe change to Map<Int, Minion>
     @:optional var cardIdCounter :Int;
-    @:optional var minionIdCounter :Int;
     @:optional var turn :Int;
 };
 
@@ -27,7 +29,6 @@ class Game {
     static public var Id :Int = 0;
 
     var cardLibrary :CardLibrary;
-    var minionLibrary :MinionLibrary;
 
     public var current_player (get, null) :Player;
 
@@ -36,9 +37,6 @@ class Game {
     public function new(_state :GameState) {
         state = _state;
         
-        var nextMinionId = (_state.minionIdCounter != null ? _state.minionIdCounter : 0);
-        minionLibrary = new MinionLibrary(nextMinionId);
-
         var nextCardId = (_state.cardIdCounter != null ? _state.cardIdCounter : 0);
         cardLibrary = new CardLibrary(nextCardId);
         
@@ -70,7 +68,7 @@ class Game {
     }
 
     function reset_minion_stats() :Void {
-        for (minion in state.board.minions_for_player(current_player.id)) {
+        for (minion in state.cards.player(current_player.id)) {
             minion.moves = minion.baseMoves;
             minion.attacks = minion.baseAttacks;
         }
@@ -127,7 +125,7 @@ class Game {
         }
     }
 
-    public function actions_for_minion(minion :Minion) :Array<Action> {
+    public function actions_for_minion(minion :Card) :Array<Action> {
         return RuleEngine.available_actions_for_minion(state, minion);
     }
 
@@ -144,8 +142,8 @@ class Game {
             board: state.board.clone_board(),
             players: clone_players(),
             turn: state.turn,
-            cardIdCounter: cardLibrary.nextCardId,
-            minionIdCounter: minionLibrary.nextMinionId
+            cards: state.cards, // TODO: Clone??
+            cardIdCounter: cardLibrary.nextCardId
         });
     }
 
@@ -170,7 +168,7 @@ class Game {
     }
 
     public function has_lost(player :Player) :Bool {
-        for (minion in minions_for_player(player)) {
+        for (minion in state.cards.player(player.id)) {
             if (minion.hero) return false;
         }
         return true;
@@ -214,7 +212,7 @@ class Game {
     }
 
     public function end_turn() :Void {
-        for (minion in minions_for_player(current_player)) {
+        for (minion in state.cards.player(current_player.id)) {
             handle_commands(minion.handle_event(OwnTurnEnd));
         }
         emit(TurnEnded({ player: current_player }));
@@ -224,8 +222,8 @@ class Game {
     }
 
     function move(moveAction :MoveActionData) {
-        var minion = state.board.minion(moveAction.minionId);
-        var currentPos = state.board.minion_pos(minion);
+        var minion = minion(moveAction.minionId);
+        var currentPos = minion.pos;
         state.board.tile(currentPos).minion = null;
         var toTile = state.board.tile(moveAction.tileId);
         toTile.minion = minion;
@@ -237,7 +235,7 @@ class Game {
         }
     }
 
-    function claim_tile(tileId :TileId, minion :Minion, playerId :Int) {
+    function claim_tile(tileId :TileId, minion :Card, playerId :Int) {
         var tile = state.board.tile(tileId);
         if (tile.claimed == null) {
             emit(TileClaimed({ tileId: tileId, minion: minion.clone() }));
@@ -250,8 +248,8 @@ class Game {
     }
 
     function attack(attackAction :AttackActionData) {
-        var minion = state.board.minion(attackAction.minionId);
-        var victim = state.board.minion(attackAction.victimId);
+        var minion = this.minion(attackAction.minionId);
+        var victim = this.minion(attackAction.victimId);
 
         minion.attacks--;
         
@@ -309,7 +307,7 @@ class Game {
 
         // handle
         switch (playCardAction.card.type) {
-            case MinionCard(minionName): playMinion(minionName, playCardAction.target);
+            case MinionCard: playMinion(playCardAction.card.name /* HACK */, playCardAction.target);
             case SpellCard(castFunc): playSpell(castFunc, playCardAction.target);
         }
     }
@@ -317,7 +315,7 @@ class Game {
     function playMinion(minionName :String, target :Target) {
         switch target {
             case Tile(tile, _): 
-                var minion = minionLibrary.create(minionName, current_player);
+                var minion = cardLibrary.create(minionName, current_player.id);
                 state.board.tile(tile).minion = minion;
                 minion.pos = tile; // HACK
                 emit(MinionEntered({ minion: minion.clone() }));
@@ -334,20 +332,22 @@ class Game {
         listeners.add(func);
     }
 
-    public function minions_for_player(player :Player) :Array<Minion> {
-        return state.board.minions_for_player(player.id);
+    public function minion_pos(m :Card) :TileId {
+        return m.pos;
     }
 
-    public function minion_pos(m :Minion) :TileId {
-        return state.board.minion_pos(m);
+    public function minion(id :Int) :Null<Card> {
+        return state.cards.find(function(minion) {
+            return minion.id == id;
+        });
     }
 
-    public function minion(id :Int) :Null<Minion> {
-        return state.board.minion(id);
+    public function minions() :Array<Card> {
+        return state.cards;
     }
 
-    public function minions() :Array<Minion> {
-        return state.board.minions();
+    public function cards() :Array<Card> {
+        return state.cards;
     }
 
     public function tile_to_world(tileId :TileId) :luxe.Vector {

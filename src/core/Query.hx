@@ -7,15 +7,15 @@ import core.Tags.HasTags;
 using Lambda;
 
 class MinionQuery {
-    var minion :Minion;
-    var result :Array<Minion>;
+    var minion :Card;
+    var result :Array<Card>;
 
-    public function new(_minion :Minion, _result :Array<Minion>) {
+    public function new(_minion :Card, _result :Array<Card>) {
         minion = _minion;
         result = _result;
     }
 
-    function create(_result :Array<Minion>) :MinionQuery {
+    function create(_result :Array<Card>) :MinionQuery {
         return new MinionQuery(minion, _result);
     }
 
@@ -31,7 +31,7 @@ class MinionQuery {
         return create([result[Math.floor(result.length * Math.random())]]);
     }
 
-    public function create_effects(func :Minion->core.enums.Commands.PartialEffectData) :core.enums.Commands {
+    public function create_effects(func :Card->core.enums.Commands.PartialEffectData) :core.enums.Commands {
         return [ 
             for (entity in result) {
                 var effectData :core.enums.Commands.EffectData = cast func(entity);
@@ -46,7 +46,7 @@ class MinionQuery {
     }
 
     function create_buff_effect(tag :Tag, value :Int = 1) {
-        return function(minion :Minion) { 
+        return function(minion :Card) { 
             return {
                 description: (value > 0 ? '+' : '') + value + ' ' + tag.getName(), 
                 tags: [ tag => minion.tags[tag] + value ]

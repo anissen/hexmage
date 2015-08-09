@@ -4,6 +4,8 @@ package core;
 import core.Game;
 import core.enums.Actions;
 
+using core.Query;
+
 typedef BestActionsResult = { 
     score :Int,
     actions :Array<Action> 
@@ -253,7 +255,7 @@ class Minimax {
             var minionAttackScore = 1;
             var minionLifeScore = 1;
             var heroLifeScore = 3;
-            for (minion in game.minions_for_player(p)) {
+            for (minion in game.cards().player(p.id)) {
                 var minionScore = intrinsicMinionScore + 
                     Math.max(minion.attack, 0) * minionAttackScore + 
                     Math.max(minion.life, 0) * (minion.hero ? heroLifeScore : minionLifeScore);

@@ -2,7 +2,6 @@
 package core;
 
 import core.Game;
-import core.Minion;
 import core.Board;
 import core.RuleEngine;
 import core.enums.Actions;
@@ -13,7 +12,6 @@ import core.Player;
 import core.Minimax;
 import core.Deck;
 import core.CardLibrary;
-import core.MinionLibrary;
 import cards.*;
 
 import core.Tag;
@@ -26,7 +24,7 @@ using core.Query.MinionQuery;
 
 class GameSetup {
     static public function initialize() {
-        MinionLibrary.Add(new Minion({
+        CardLibrary.add(new Card({
             name: 'Rat King',
             tags: [
                 Attack => 3,
@@ -41,7 +39,7 @@ class GameSetup {
             // ]
         }));
 
-        MinionLibrary.Add(new Minion({
+        CardLibrary.add(new Card({
             name: 'Princess',
             tags: [
                 Attack => 1,
@@ -51,16 +49,18 @@ class GameSetup {
         }));
 
         // ---------
-        MinionLibrary.Add(new Minion({
+        CardLibrary.add(new Card({
             name: 'Rat',
+            cost: 2,
             tags: [
                 Attack => 1,
                 Life => 2
             ]
         }));
 
-        MinionLibrary.Add(new Minion({
+        CardLibrary.add(new Card({
             name: 'Fetid Rat',
+            cost: 3,
             tags: [
                 Attack => 2,
                 Life => 2
@@ -72,24 +72,28 @@ class GameSetup {
             // ]
         }));
 
-        MinionLibrary.Add(new Minion({
+        CardLibrary.add(new Card({
             name: 'Tyrannosaurus Rat',
+            cost: 4,
             tags: [
                 Attack => 5,
                 Life => 3
             ]
         }));
 
-        MinionLibrary.Add(new Minion({
+        CardLibrary.add(new Card({
             name: 'Radioactive Rat',
+            cost: 5,
             tags: [
                 Attack => 2,
                 Life => 4
             ]
         }));
 
-        MinionLibrary.Add(new Minion({
+        CardLibrary.add(new Card({
             name: 'Teddybear',
+            cost: 2,
+            description: 'Attack: 2\nLife: 2\n\nDraw card when dies',
             tags: [
                 Attack => 2,
                 Life => 2
@@ -99,8 +103,10 @@ class GameSetup {
             ]
         }));
 
-        MinionLibrary.Add(new Minion({
+        CardLibrary.add(new Card({
             name: 'Bunny',
+            cost: 1,
+            description: 'Attack: 1\nLife: 1\n\nCan move and attack immediately',
             tags: [
                 Attack => 1,
                 Life => 1,
@@ -109,8 +115,10 @@ class GameSetup {
             ]
         }));
 
-        MinionLibrary.Add(new Minion({
+        CardLibrary.add(new Card({
             name: 'Unicorn',
+            cost: 1,
+            description: 'Attack: 1\nLife: 2',
             tags: [
                 Attack => 1,
                 Life => 2
@@ -125,45 +133,6 @@ class GameSetup {
                     return query.friendly().nearby().random().buff(Life, 1);
                 }
             ]
-        }));
-
-        CardLibrary.add(new core.Card({ 
-            name: 'Unicorn',
-            cost: 1,
-            type: MinionCard('Unicorn'),
-            description: 'Attack: 1\nLife: 2'
-        }));
-        CardLibrary.add(new core.Card({ 
-            name: 'Rapid Bunny',
-            cost: 1,
-            type: MinionCard('Bunny'),
-            description: 'Attack: 1\nLife: 1\n\nCan move and attack immediately'
-        }));
-        CardLibrary.add(new core.Card({ 
-            name: 'Teddybear',
-            cost: 2,
-            type: MinionCard('Teddybear'),
-            description: 'Attack: 2\nLife: 2\n\nDraw card when dies'
-        }));
-        CardLibrary.add(new core.Card({ 
-            name: 'Rat',
-            cost: 2,
-            type: MinionCard('Rat')
-        }));
-        CardLibrary.add(new core.Card({ 
-            name: 'Fetid Rat',
-            cost: 3,
-            type: MinionCard('Fetid Rat')
-        }));
-        CardLibrary.add(new core.Card({ 
-            name: 'Tyrannosaurus Rat',
-            cost: 4,
-            type: MinionCard('Tyrannosaurus Rat')
-        }));
-        CardLibrary.add(new core.Card({ 
-            name: 'Radioactive Rat',
-            cost: 5,
-            type: MinionCard('Radioactive Rat')
         }));
 
         function ouchFunction(target :Target) :Array<Command> {
@@ -206,7 +175,6 @@ class GameSetup {
 
     static public function create_game() :Game {
         var cardLibrary   = new CardLibrary(0);
-        var minionLibrary = new MinionLibrary(0);
 
         var human_player = new Player({
             name: 'Human Player',
@@ -214,18 +182,18 @@ class GameSetup {
             deck: new Deck({
                 name: 'Test Deck',
                 cards: [
-                    cardLibrary.create('Rapid Bunny'),
-                    cardLibrary.create('Rapid Bunny'),
-                    cardLibrary.create('Rapid Bunny'),
-                    cardLibrary.create('Teddybear'),
-                    cardLibrary.create('Teddybear'),
-                    cardLibrary.create('Teddybear'),
-                    cardLibrary.create('Unicorn'),
-                    cardLibrary.create('Unicorn'),
-                    cardLibrary.create('Unicorn'),
-                    cardLibrary.create('Unicorn'),
-                    cardLibrary.create('Ouch'),
-                    cardLibrary.create('It\'s Raining Cards!')
+                    cardLibrary.create('Bunny', 0),
+                    cardLibrary.create('Bunny', 0),
+                    cardLibrary.create('Bunny', 0),
+                    cardLibrary.create('Teddybear', 0),
+                    cardLibrary.create('Teddybear', 0),
+                    cardLibrary.create('Teddybear', 0),
+                    cardLibrary.create('Unicorn', 0),
+                    cardLibrary.create('Unicorn', 0),
+                    cardLibrary.create('Unicorn', 0),
+                    cardLibrary.create('Unicorn', 0),
+                    cardLibrary.create('Ouch', 0),
+                    cardLibrary.create('It\'s Raining Cards!', 0)
                 ]
             }),
             ai: false,
@@ -238,16 +206,16 @@ class GameSetup {
             deck: new Deck({
                 name: 'The Rat King',
                 cards: [
-                    cardLibrary.create('Rat'),
-                    cardLibrary.create('Rat'),
-                    cardLibrary.create('Rat'),
-                    cardLibrary.create('Rat'),
-                    cardLibrary.create('Fetid Rat'),
-                    cardLibrary.create('Fetid Rat'),
-                    cardLibrary.create('Fetid Rat'),
-                    cardLibrary.create('Tyrannosaurus Rat'),
-                    cardLibrary.create('Tyrannosaurus Rat'),
-                    cardLibrary.create('Radioactive Rat')
+                    cardLibrary.create('Rat', 1),
+                    cardLibrary.create('Rat', 1),
+                    cardLibrary.create('Rat', 1),
+                    cardLibrary.create('Rat', 1),
+                    cardLibrary.create('Fetid Rat', 1),
+                    cardLibrary.create('Fetid Rat', 1),
+                    cardLibrary.create('Fetid Rat', 1),
+                    cardLibrary.create('Tyrannosaurus Rat', 1),
+                    cardLibrary.create('Tyrannosaurus Rat', 1),
+                    cardLibrary.create('Radioactive Rat', 1)
                 ]
             }),
             ai: true,
@@ -262,13 +230,13 @@ class GameSetup {
         var board = new Board(map);
         var orcTile = new Hex(1, -2, 0);
         var princessTile = new Hex(-1, 2, 0);
-        board.tile(orcTile.key).minion = minionLibrary.create('Rat King', ai_player);
-        board.tile(princessTile.key).minion = minionLibrary.create('Princess', human_player);
+        board.tile(orcTile.key).minion = cardLibrary.create('Rat King', ai_player.id);
+        board.tile(princessTile.key).minion = cardLibrary.create('Princess', human_player.id);
         var gameState = {
             board: board,
             players: [human_player, ai_player],
             cardIdCounter: cardLibrary.nextCardId,
-            minionIdCounter: minionLibrary.nextMinionId
+            cards: []
         };
         return new Game(gameState);
     }

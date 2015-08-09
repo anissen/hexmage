@@ -1,16 +1,18 @@
 
 package core;
 
-import core.Minion;
 import core.enums.Actions;
 import core.HexLibrary;
 import core.TileId;
 
-typedef Tile = { hex :Hex, ?claimed :Int, mana :Int, ?minion :Minion };
+typedef Tile = { hex :Hex, ?claimed :Int, mana :Int, ?minion :Card };
 typedef PositionedTile = {
     > Tile,
     id: TileId,
 }
+
+// Board consists of Tiles
+// Tile: Key (hex)
 
 class Board {
     var tiles :Map<TileId, Tile>;
@@ -66,6 +68,7 @@ class Board {
         return mana;
     }
 
+    /*
     public function minions() :Array<Minion> {
         var minions = [];
         for (tile in tiles) {
@@ -99,4 +102,5 @@ class Board {
         }
         throw 'Minion not found on board!';
     }
+    */
 }

@@ -10,6 +10,7 @@ import core.HexLibrary;
 
 using core.HexLibrary.HexTools;
 using Lambda;
+using core.Query;
 
 class RuleEngine {
     static public function available_actions(state :GameState, player :Player) :Array<Action> {
@@ -21,13 +22,13 @@ class RuleEngine {
         for (card in player.hand) {
             add_actions(available_actions_for_card(state, player, card));
         }
-        for (minion in board.minions_for_player(player.id)) {
+        for (minion in state.cards.player(player.id)) {
             add_actions(available_actions_for_minion(state, minion));
         }
         return actions;
     }
 
-    static public function available_actions_for_minion(state :GameState, minion :Minion) :Array<Action> {
+    static public function available_actions_for_minion(state :GameState, minion :Card) :Array<Action> {
         var board = state.board;
         var actions = [];
         actions = actions.concat(attacks_for_minion(board, minion));
@@ -35,10 +36,10 @@ class RuleEngine {
         return actions;
     }
 
-    static function moves_for_minion(board :Board, minion :Minion) :Array<Action> {
+    static function moves_for_minion(board :Board, minion :Card) :Array<Action> {
         if (minion == null || !minion.can_move || minion.moves <= 0) return [];
 
-        var pos = board.minion_pos(minion);
+        var pos = minion.pos;
         var hex = board.tile(pos).hex;
         var moves = [];
         for (neighbor in hex.neighbors()) {
@@ -51,10 +52,10 @@ class RuleEngine {
         return moves;
     }
 
-    static function attacks_for_minion(board :Board, minion :Minion) :Array<Action> {
+    static function attacks_for_minion(board :Board, minion :Card) :Array<Action> {
         if (minion == null || !minion.can_attack || minion.attacks <= 0 || minion.attack <= 0) return [];
 
-        var pos = board.minion_pos(minion);
+        var pos = minion.pos;
         var hex = board.tile(pos).hex;
         var attacks = [];
         for (neighbor in hex.neighbors()) {
@@ -73,12 +74,12 @@ class RuleEngine {
         if (board.mana_for_player(player.id) < card.cost) return [];
 
         function minion_card_targets() {
-            var heroes = board.minions_for_player(player.id).filter(function(minion) {
-                return minion.hero;
+            var heroes = state.cards.filter(function(minion) {
+                return minion.playerId == player.id && minion.hero;
             });
             var tiles_targets = [];
             for (hero in heroes) {
-                var pos = board.minion_pos(hero);
+                var pos = hero.pos;
                 var tile = board.tile(pos);
                 for (neighbor in tile.hex.neighbors()) {
                     var neighborId = neighbor.key;
@@ -109,7 +110,7 @@ class RuleEngine {
         function spell_card_targets() {
             return switch card.targetType {
                 case Minion: 
-                    [ for (minion in board.minions()) Target.Character(minion.id) ];
+                    [ for (minion in state.cards) Target.Character(minion.id) ];
                 case Tile:
                     var empty_tiles = board.filter_tiles(function(tile) {
                         return (tile.minion == null);
@@ -121,7 +122,7 @@ class RuleEngine {
         }
 
         var targets = switch card.type {
-            case MinionCard(_): minion_card_targets();
+            case MinionCard: minion_card_targets();
             case SpellCard(_): spell_card_targets();
         };
 

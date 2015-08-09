@@ -35,7 +35,7 @@ class CardEntity extends Sprite {
 
     public function new(options :CardOptions) {
         var baseHue = switch (options.card.type) {
-            case MinionCard(_): 250;
+            case MinionCard: 250;
             case SpellCard(_): 340;
         };
         var colorHue = baseHue + Math.random() * 50;
@@ -71,7 +71,7 @@ class CardEntity extends Sprite {
         });
 
         var is_minion_card = switch (options.card.type) {
-            case MinionCard(_): true;
+            case MinionCard: true;
             case _: false;
         };
         if (is_minion_card) {

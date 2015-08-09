@@ -37,6 +37,7 @@ import org.gesluxe.events.GestureEvent;
 import org.gesluxe.gestures.TransformGesture;
 
 using core.HexLibrary.HexTools;
+using core.Query;
 
 class PlayScreenState extends State {
     static public var StateId = 'PlayScreenState';
@@ -290,7 +291,7 @@ class PlayScreenState extends State {
         } else {
             Luxe.audio.play('own_turn_start');
         }
-        for (minion in game.minions_for_player(game.current_player)) {
+        for (minion in game.cards().player(game.current_player.id)) {
             update_move_indicator(minion);
         }
 
@@ -388,7 +389,7 @@ class PlayScreenState extends State {
 
     function handle_turn_ended(data :TurnEndedData) :Promise {
         return new Promise(function(resolve, reject) {
-            for (minion in game.minions_for_player(data.player)) {
+            for (minion in game.cards().player(data.player.id)) {
                 var minionEntity = minionMap[minion.id];
                 if (minionEntity.has('MoveIndicator')) {
                     minionEntity.remove('MoveIndicator');
@@ -423,7 +424,7 @@ class PlayScreenState extends State {
         }
     }
 
-    function update_move_indicator(minion :core.Minion) {
+    function update_move_indicator(minion :core.Card) {
         if (minion == null) return;
 
         var minionEntity = minionMap[minion.id];
