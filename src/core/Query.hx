@@ -20,7 +20,7 @@ class MinionQuery {
     }
 
     public function friendly() :MinionQuery {
-        return create(Query.friendly(result, minion.playerId));
+        return create(Query.player(result, minion.playerId));
     }
 
     public function nearby() :MinionQuery {
@@ -57,10 +57,12 @@ class MinionQuery {
 
 class Query {
     static public function has<T:HasTags>(entities :Array<T>, tag :Tag) :Array<T> {
-        return entities.filter(Has(tag));
+        return entities.filter(function(entity) {
+            return entity.tags.has(tag);
+        });
     }
-    
-    static public function friendly<T:HasTags>(entities :Array<T>, playerId :Int) :Array<T> {
+
+    static public function player<T:HasTags>(entities :Array<T>, playerId :Int) :Array<T> {
         return entities.filter(function (entity) {
             return entity.tags[PlayerId] == playerId;
         });
@@ -74,9 +76,9 @@ class Query {
         });
     }
     
-    static public function Has<T:HasTags>(tag :Tag) :T->Bool {
-        return function(entity) {
-            return entity.tags.has(tag);
-        };
-    }
+    // static public function Has<T:HasTags>(tag :Tag) :T->Bool {
+    //     return function(entity) {
+    //         return entity.tags.has(tag);
+    //     };
+    // }
 }
