@@ -252,10 +252,10 @@ class PlayScreenState extends State {
             // Luxe.audio.play('minion_enter4');
             Luxe.audio.play('minion_enter${Luxe.utils.random.int(1, 4)}'); // minion_enter1...3
             var minion = game.get_minion(data.minion.id);
-            var pos = game.minion_pos(minion);
+            // var pos = game.minion_pos(minion);
             var minionEntity = new MinionEntity({
                 minion: minion,
-                pos: game.tile_to_world(pos),
+                pos: game.tile_to_world(minion.pos),
                 scene: scene
             });
             minionMap[minion.id] = minionEntity;

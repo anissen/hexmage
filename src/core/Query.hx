@@ -82,3 +82,17 @@ class Query {
     //     };
     // }
 }
+
+class CardQuery {
+    static public function zone<T:Card>(entities :Array<T>, zone :core.Card.ZoneType) :Array<T> {
+        return entities.filter(function (entity) {
+            return entity.zone == zone;
+        });
+    }
+
+    static public function pos<T:Card>(entities :Array<T>, pos :String) :Null<T> {
+        return entities.filter(function (entity) {
+            return entity.pos == pos;
+        }).shift();
+    }
+}

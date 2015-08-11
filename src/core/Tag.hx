@@ -15,4 +15,5 @@ enum Tag {
     CanAttack;           
     PosX;
     PosY;
+    Zone;
 }

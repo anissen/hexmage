@@ -230,15 +230,17 @@ class GameSetup {
         var board = new Board(map);
         var orcTile = new Hex(1, -2, 0);
         var princessTile = new Hex(-1, 2, 0);
-        board.tile(orcTile.key).minion = cardLibrary.create('Rat King', ai_player.id);
-        board.tile(orcTile.key).minion.pos = orcTile.key;
-        board.tile(princessTile.key).minion = cardLibrary.create('Princess', human_player.id);
-        board.tile(princessTile.key).minion.pos = princessTile.key;
+        var ratKing = cardLibrary.create('Rat King', ai_player.id);
+        ratKing.pos = orcTile.key;
+        ratKing.zone = Board;
+        var princess = cardLibrary.create('Princess', human_player.id);
+        princess.pos = princessTile.key;
+        ratKing.zone = Board;
         var gameState = {
             board: board,
             players: [human_player, ai_player],
             cardIdCounter: cardLibrary.nextCardId,
-            cards: [board.tile(orcTile.key).minion, board.tile(princessTile.key).minion]
+            cards: [ratKing, princess]
         };
         return new Game(gameState);
     }

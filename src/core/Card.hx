@@ -32,6 +32,16 @@ enum Target {
     Global;
 }
 
+// @:enum
+// abstract Zone(Int) {
+enum ZoneType {
+    Library;
+    Deck;
+    Hand;
+    Board;
+    Graveyard;
+}
+
 typedef CardOptions = { 
     ?id: Int,
     name :String,
@@ -62,6 +72,7 @@ class Card implements HasTags {
     public var can_move (get, null) :Bool;
     public var can_attack (get, null) :Bool;
     public var pos (get, set) :String;
+    public var zone (get, set) :ZoneType;
 
     public var cost :Int;
     public var type :CardType;
@@ -76,7 +87,8 @@ class Card implements HasTags {
         Moves => 0,
         Attacks => 0,
         CanMove => 1,
-        CanAttack => 1
+        CanAttack => 1,
+        Zone => Deck.getIndex()
     ];
 
     public function new(options :CardOptions) {
@@ -145,6 +157,15 @@ class Card implements HasTags {
         var parts = v.split(',');
         tags[PosX] = Std.parseInt(parts[0]);
         tags[PosY] = Std.parseInt(parts[1]);
+        return v;
+    }
+
+    function get_zone() :ZoneType {
+        return ZoneType.createByIndex(tags[Zone]);
+    }
+
+    function set_zone(v :ZoneType) :ZoneType {
+        tags[Zone] = v.getIndex();
         return v;
     }
 

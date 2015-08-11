@@ -5,7 +5,7 @@ import core.enums.Actions;
 import core.HexLibrary;
 import core.TileId;
 
-typedef Tile = { hex :Hex, ?claimed :Int, mana :Int, ?minion :Card };
+typedef Tile = { hex :Hex, ?claimed :Int, mana :Int /*, ?minion :Card */ };
 typedef PositionedTile = {
     > Tile,
     id: TileId,
@@ -25,7 +25,7 @@ class Board {
         var newTiles = new Map<TileId, Tile>();
         for (key in tiles.keys()) {
             var tile = tiles[key];
-            newTiles[key] = { hex: tile.hex, claimed: tile.claimed, mana: tile.mana, minion: (tile.minion != null ? tile.minion.clone() : null) };
+            newTiles[key] = { hex: tile.hex, claimed: tile.claimed, mana: tile.mana /*, minion: (tile.minion != null ? tile.minion.clone() : null) */ };
         }
         return new Board(newTiles);
     }
@@ -68,7 +68,7 @@ class Board {
         return mana;
     }
 
-    
+    /*
     public function minions() :Array<Card> {
         var minions = [];
         for (tile in tiles) {
@@ -77,7 +77,7 @@ class Board {
         return minions;
     }
     
-    /*
+    
     public function minions_for_player(playerId :Int) :Array<Minion> {
         var minions = [];
         for (tile in tiles) {

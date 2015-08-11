@@ -11,6 +11,7 @@ import core.HexLibrary;
 using core.HexLibrary.HexTools;
 using Lambda;
 using core.Query;
+using core.Query.CardQuery;
 
 class RuleEngine {
     static public function available_actions(state :GameState, player :Player) :Array<Action> {
@@ -22,46 +23,46 @@ class RuleEngine {
         for (card in player.hand) {
             add_actions(available_actions_for_card(state, player, card));
         }
-        for (minion in state.board.minions().player(player.id)) {
+        for (minion in state.cards.zone(Board).player(player.id)) {
             add_actions(available_actions_for_minion(state, minion));
         }
         return actions;
     }
 
     static public function available_actions_for_minion(state :GameState, minion :Card) :Array<Action> {
-        var board = state.board;
         var actions = [];
-        actions = actions.concat(attacks_for_minion(board, minion));
-        actions = actions.concat(moves_for_minion(board, minion));
+        actions = actions.concat(attacks_for_minion(state, minion));
+        actions = actions.concat(moves_for_minion(state, minion));
         return actions;
     }
 
-    static function moves_for_minion(board :Board, minion :Card) :Array<Action> {
+    static function moves_for_minion(state :GameState, minion :Card) :Array<Action> {
         if (minion == null || !minion.can_move || minion.moves <= 0) return [];
 
         var pos = minion.pos;
-        var hex = board.tile(pos).hex;
+        var hex = state.board.tile(pos).hex;
         var moves = [];
         for (neighbor in hex.neighbors()) {
             var tileId = neighbor.key;
-            if (board.tile(tileId) == null) continue;
-            if (board.tile(tileId).minion != null) continue;
+            if (state.board.tile(tileId) == null) continue;
+            if (state.cards.pos(tileId) != null) continue;
+            //if (board.tile(tileId).minion != null) continue;
             moves.push(MoveAction({ minionId: minion.id, tileId: tileId }));
         }
         
         return moves;
     }
 
-    static function attacks_for_minion(board :Board, minion :Card) :Array<Action> {
+    static function attacks_for_minion(state :GameState, minion :Card) :Array<Action> {
         if (minion == null || !minion.can_attack || minion.attacks <= 0 || minion.attack <= 0) return [];
 
         var pos = minion.pos;
-        var hex = board.tile(pos).hex;
+        var hex = state.board.tile(pos).hex;
         var attacks = [];
         for (neighbor in hex.neighbors()) {
             var tileId = neighbor.key;
-            if (board.tile(tileId) == null) continue;
-            var other = board.tile(tileId).minion;
+            if (state.board.tile(tileId) == null) continue;
+            var other = state.cards.pos(tileId);
             if (other == null || other.playerId == minion.playerId) continue;
             attacks.push(AttackAction({ minionId: minion.id, victimId: other.id }));
         }
@@ -74,9 +75,7 @@ class RuleEngine {
         if (board.mana_for_player(player.id) < card.cost) return [];
 
         function minion_card_targets() {
-            var heroes = /* state.cards */ state.board.minions().filter(function(minion) {
-                return minion.playerId == player.id && minion.hero;
-            });
+            var heroes = state.cards.player(player.id).has(Hero);
             var tiles_targets = [];
             for (hero in heroes) {
                 var pos = hero.pos;
@@ -84,7 +83,8 @@ class RuleEngine {
                 for (neighbor in tile.hex.neighbors()) {
                     var neighborId = neighbor.key;
                     if (board.tile(neighborId) == null) continue;
-                    if (board.tile(neighborId).minion != null) continue;
+                    if (state.cards.pos(neighborId) != null) continue;
+                    // if (board.tile(neighborId).minion != null) continue;
                     tiles_targets.push(Target.Tile(neighborId, pos));
                 }
             }
@@ -110,11 +110,11 @@ class RuleEngine {
         function spell_card_targets() {
             return switch card.targetType {
                 case Minion: 
-                    [ for (minion in state.board.minions()) Target.Character(minion.id) ];
+                    [ for (minion in state.cards) Target.Character(minion.id) ];
                 case Tile:
-                    var empty_tiles = board.filter_tiles(function(tile) {
+                    var empty_tiles = []; /* board.filter_tiles(function(tile) {
                         return (tile.minion == null);
-                    });
+                    }); */
                     [ for (tile in empty_tiles) Target.Tile(tile.id) ];
                 case Global:
                     [ Target.Global ];

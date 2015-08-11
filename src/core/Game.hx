@@ -47,13 +47,13 @@ class Game {
 
     public function start() {
         state.turn = 0;
-        for (minion in state.board.minions()) {
+        for (minion in minions()) {
             emit(MinionEntered({ minion: minion.clone() }));
             handle_commands(minion.handle_event(MinionEvent.Enter));
-            var pos = minion.pos;
-            state.board.tile(pos).minion = minion;
+            //var pos = minion.pos;
+            //state.board.tile(pos).minion = minion;
             // minion.pos = pos; // HACK
-            claim_tile(pos, minion, minion.playerId);
+            claim_tile(minion.pos, minion, minion.playerId);
         }
         for (player in players()) {
             for (card in player.hand) {
@@ -105,8 +105,9 @@ class Game {
                     if (minion.life <= 0) {
                         emit(MinionDied({ minion: minion.clone() }));
                         handle_commands(minion.handle_event(MinionEvent.Dies));
-                        var pos = minion_pos(minion);
-                        state.board.tile(pos).minion = null;
+                        // var pos = minion_pos(minion);
+                        // state.board.tile(pos).minion = null;
+                        minion.zone = Graveyard;
                     }
                 case DrawCard:
                     draw_card(current_player);
@@ -169,7 +170,7 @@ class Game {
     }
 
     public function has_lost(player :Player) :Bool {
-        for (minion in /* state.cards */ state.board.minions().player(player.id)) {
+        for (minion in minions().player(player.id)) {
             if (minion.hero) return false;
         }
         return true;
@@ -225,11 +226,11 @@ class Game {
     function move(moveAction :MoveActionData) {
         var minion = get_minion(moveAction.minionId);
         var currentPos = minion.pos;
-        state.board.tile(currentPos).minion = null;
-        var toTile = state.board.tile(moveAction.tileId);
-        toTile.minion = minion;
-        minion.moves--;
+        //state.board.tile(currentPos).minion = null;
+        // var toTile = state.board.tile(moveAction.tileId);
+        // toTile.minion = minion;
         minion.pos = moveAction.tileId;
+        minion.moves--;
         emit(MinionMoved({ minion: minion.clone(), from: currentPos, to: moveAction.tileId }));
         if (minion.hero) {
             claim_tile(moveAction.tileId, minion, minion.playerId);
@@ -267,14 +268,16 @@ class Game {
         if (victim.life <= 0) {
             emit(MinionDied({ minion: victim.clone() })); // temp!
             handle_commands(victim.handle_event(MinionEvent.Dies));
-            var pos = minion_pos(victim);
-            state.board.tile(pos).minion = null;
+            // var pos = minion_pos(victim);
+            // state.board.tile(pos).minion = null;
+            victim.zone = Graveyard;
         }
         if (minion.life <= 0) {
             emit(MinionDied({ minion: minion.clone() })); // temp!
             handle_commands(minion.handle_event(MinionEvent.Dies));
-            var pos = minion_pos(minion);
-            state.board.tile(pos).minion = null;
+            // var pos = minion_pos(minion);
+            // state.board.tile(pos).minion = null;
+            minion.zone = Graveyard;
         }
     }
 
@@ -317,8 +320,9 @@ class Game {
         switch target {
             case Tile(tile, _): 
                 var minion = cardLibrary.create(minionName, current_player.id);
-                state.board.tile(tile).minion = minion;
-                minion.pos = tile; // HACK
+                //state.board.tile(tile).minion = minion;
+                minion.pos = tile;
+                minion.zone = Board;
                 emit(MinionEntered({ minion: minion.clone() }));
                 handle_commands(minion.handle_event(MinionEvent.Enter));
             case _: throw 'Cannot play minion with this target: "$target"';
@@ -333,18 +337,14 @@ class Game {
         listeners.add(func);
     }
 
-    public function minion_pos(m :Card) :TileId {
-        return m.pos;
-    }
-
     public function get_minion(id :Int) :Null<Card> {
-        return state.board.minions().find(function(minion) {
+        return minions().find(function(minion) {
             return minion.id == id;
         });
     }
 
     public function minions() :Array<Card> {
-        return  state.board.minions() /* state.cards.zone(Board) */;
+        return state.cards.zone(Board);
     }
 
     /*
