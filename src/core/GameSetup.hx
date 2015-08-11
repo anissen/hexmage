@@ -231,12 +231,14 @@ class GameSetup {
         var orcTile = new Hex(1, -2, 0);
         var princessTile = new Hex(-1, 2, 0);
         board.tile(orcTile.key).minion = cardLibrary.create('Rat King', ai_player.id);
+        board.tile(orcTile.key).minion.pos = orcTile.key;
         board.tile(princessTile.key).minion = cardLibrary.create('Princess', human_player.id);
+        board.tile(princessTile.key).minion.pos = princessTile.key;
         var gameState = {
             board: board,
             players: [human_player, ai_player],
             cardIdCounter: cardLibrary.nextCardId,
-            cards: []
+            cards: [board.tile(orcTile.key).minion, board.tile(princessTile.key).minion]
         };
         return new Game(gameState);
     }

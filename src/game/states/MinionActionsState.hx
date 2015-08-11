@@ -27,7 +27,7 @@ class MinionActionsState extends State {
     }
 
     function minion_can_move_to(data :MoveActionData, game :Game, count :Int) {
-        var minionPos = game.minion_pos(game.minion(data.minionId));
+        var minionPos = game.get_minion(data.minionId).pos;
         var from = game.tile_to_world(minionPos);
         var to = game.tile_to_world(data.tileId);
 
@@ -81,8 +81,8 @@ class MinionActionsState extends State {
     }
 
     function minion_can_attack(data :AttackActionData, game :Game, count :Int) {
-        var minionPos = game.minion_pos(game.minion(data.minionId));
-        var victimPos = game.minion_pos(game.minion(data.victimId));
+        var minionPos = game.get_minion(data.minionId).pos;
+        var victimPos = game.get_minion(data.victimId).pos;
         var from = game.tile_to_world(minionPos);
         var to = game.tile_to_world(victimPos);
 
@@ -144,7 +144,7 @@ class MinionActionsState extends State {
         // });
 
         var data :{ game :Game, minionId :Int } = cast _value;
-        var minion = data.game.minion(data.minionId);
+        var minion = data.game.get_minion(data.minionId);
         var minion_actions = data.game.actions_for_minion(minion);
         var count = 0;
         for (action in minion_actions) {

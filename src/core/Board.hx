@@ -68,15 +68,16 @@ class Board {
         return mana;
     }
 
-    /*
-    public function minions() :Array<Minion> {
+    
+    public function minions() :Array<Card> {
         var minions = [];
         for (tile in tiles) {
             if (tile.minion != null) minions.push(tile.minion);
         }
         return minions;
     }
-        
+    
+    /*
     public function minions_for_player(playerId :Int) :Array<Minion> {
         var minions = [];
         for (tile in tiles) {

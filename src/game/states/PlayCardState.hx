@@ -28,7 +28,7 @@ class PlayCardState extends State {
     function can_play_at(data :PlayCardActionData, game :Game, count :Int) {
         var playAtDot = switch (data.target) {
             case Character(characterId): 
-                var pos = game.minion_pos(game.minion(characterId));
+                var pos = game.get_minion(characterId).pos;
                 new Sprite({
                     pos: game.tile_to_world(pos),
                     color: new Color(1, 1, 1),

@@ -195,7 +195,7 @@ class PlayScreenState extends State {
             Actuate
                 .tween(minionEntity.pos, 0.6 * Settings.TweenFactor, { x: newPos.x, y: newPos.y })
                 .onComplete(function() {
-                    update_move_indicator(game.minion(data.minion.id));
+                    update_move_indicator(game.get_minion(data.minion.id));
                     resolve();
                 });
         });
@@ -213,7 +213,7 @@ class PlayScreenState extends State {
                     Actuate
                         .tween(minionEntity.pos, 0.2 * Settings.TweenFactor, { x: minionPos.x, y: minionPos.y })
                         .onComplete(function() {
-                            update_move_indicator(game.minion(data.minion.id));
+                            update_move_indicator(game.get_minion(data.minion.id));
                             resolve();
                         });
                 });
@@ -251,7 +251,7 @@ class PlayScreenState extends State {
         return new Promise(function(resolve, reject) {
             // Luxe.audio.play('minion_enter4');
             Luxe.audio.play('minion_enter${Luxe.utils.random.int(1, 4)}'); // minion_enter1...3
-            var minion = game.minion(data.minion.id);
+            var minion = game.get_minion(data.minion.id);
             var pos = game.minion_pos(minion);
             var minionEntity = new MinionEntity({
                 minion: minion,

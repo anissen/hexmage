@@ -47,11 +47,12 @@ class Game {
 
     public function start() {
         state.turn = 0;
-        for (minion in minions()) {
+        for (minion in state.board.minions()) {
             emit(MinionEntered({ minion: minion.clone() }));
             handle_commands(minion.handle_event(MinionEvent.Enter));
-            var pos = minion_pos(minion);
-            minion.pos = pos; // HACK
+            var pos = minion.pos;
+            state.board.tile(pos).minion = minion;
+            // minion.pos = pos; // HACK
             claim_tile(pos, minion, minion.playerId);
         }
         for (player in players()) {
@@ -98,7 +99,7 @@ class Game {
         for (command in commands) {
             switch (command) {
                 case Damage(id, amount):
-                    var minion = minion(id);
+                    var minion = get_minion(id);
                     minion.life -= amount;
                     emit(MinionDamaged({ minion: minion.clone(), damage: amount }));
                     if (minion.life <= 0) {
@@ -110,7 +111,7 @@ class Game {
                 case DrawCard:
                     draw_card(current_player);
                 case Effect(data):
-                    var minion = minion(data.minionId);
+                    var minion = get_minion(data.minionId);
                     for (tag in data.tags.keys()) {
                         minion.tags[tag] = data.tags[tag];
                     }
@@ -222,7 +223,7 @@ class Game {
     }
 
     function move(moveAction :MoveActionData) {
-        var minion = minion(moveAction.minionId);
+        var minion = get_minion(moveAction.minionId);
         var currentPos = minion.pos;
         state.board.tile(currentPos).minion = null;
         var toTile = state.board.tile(moveAction.tileId);
@@ -248,8 +249,8 @@ class Game {
     }
 
     function attack(attackAction :AttackActionData) {
-        var minion = this.minion(attackAction.minionId);
-        var victim = this.minion(attackAction.victimId);
+        var minion = get_minion(attackAction.minionId);
+        var victim = get_minion(attackAction.victimId);
 
         minion.attacks--;
         
@@ -336,14 +337,14 @@ class Game {
         return m.pos;
     }
 
-    public function minion(id :Int) :Null<Card> {
-        return state.cards.find(function(minion) {
+    public function get_minion(id :Int) :Null<Card> {
+        return state.board.minions().find(function(minion) {
             return minion.id == id;
         });
     }
 
     public function minions() :Array<Card> {
-        return state.cards;
+        return state.cards /*.zone(Board) */;
     }
 
     public function cards() :Array<Card> {
