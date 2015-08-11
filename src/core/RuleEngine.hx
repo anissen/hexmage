@@ -22,7 +22,7 @@ class RuleEngine {
         for (card in player.hand) {
             add_actions(available_actions_for_card(state, player, card));
         }
-        for (minion in state.cards.player(player.id)) {
+        for (minion in state.board.minions().player(player.id)) {
             add_actions(available_actions_for_minion(state, minion));
         }
         return actions;
@@ -74,7 +74,7 @@ class RuleEngine {
         if (board.mana_for_player(player.id) < card.cost) return [];
 
         function minion_card_targets() {
-            var heroes = state.cards.filter(function(minion) {
+            var heroes = /* state.cards */ state.board.minions().filter(function(minion) {
                 return minion.playerId == player.id && minion.hero;
             });
             var tiles_targets = [];
@@ -110,7 +110,7 @@ class RuleEngine {
         function spell_card_targets() {
             return switch card.targetType {
                 case Minion: 
-                    [ for (minion in state.cards) Target.Character(minion.id) ];
+                    [ for (minion in state.board.minions()) Target.Character(minion.id) ];
                 case Tile:
                     var empty_tiles = board.filter_tiles(function(tile) {
                         return (tile.minion == null);

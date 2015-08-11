@@ -291,7 +291,7 @@ class PlayScreenState extends State {
         } else {
             Luxe.audio.play('own_turn_start');
         }
-        for (minion in game.cards().player(game.current_player.id)) {
+        for (minion in /* game.cards() */ game.minions().player(game.current_player.id)) {
             update_move_indicator(minion);
         }
 
@@ -389,7 +389,7 @@ class PlayScreenState extends State {
 
     function handle_turn_ended(data :TurnEndedData) :Promise {
         return new Promise(function(resolve, reject) {
-            for (minion in game.cards().player(data.player.id)) {
+            for (minion in /* game.cards() */ game.minions().player(data.player.id)) {
                 var minionEntity = minionMap[minion.id];
                 if (minionEntity.has('MoveIndicator')) {
                     minionEntity.remove('MoveIndicator');

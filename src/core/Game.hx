@@ -69,7 +69,7 @@ class Game {
     }
 
     function reset_minion_stats() :Void {
-        for (minion in state.cards.player(current_player.id)) {
+        for (minion in /* state.cards */ minions().player(current_player.id)) {
             minion.moves = minion.baseMoves;
             minion.attacks = minion.baseAttacks;
         }
@@ -169,7 +169,7 @@ class Game {
     }
 
     public function has_lost(player :Player) :Bool {
-        for (minion in state.cards.player(player.id)) {
+        for (minion in /* state.cards */ state.board.minions().player(player.id)) {
             if (minion.hero) return false;
         }
         return true;
@@ -213,7 +213,7 @@ class Game {
     }
 
     public function end_turn() :Void {
-        for (minion in state.cards.player(current_player.id)) {
+        for (minion in /* state.cards*/ minions().player(current_player.id)) {
             handle_commands(minion.handle_event(OwnTurnEnd));
         }
         emit(TurnEnded({ player: current_player }));
@@ -344,12 +344,14 @@ class Game {
     }
 
     public function minions() :Array<Card> {
-        return state.cards /*.zone(Board) */;
+        return  state.board.minions() /* state.cards.zone(Board) */;
     }
 
+    /*
     public function cards() :Array<Card> {
         return state.cards;
     }
+    */
 
     public function tile_to_world(tileId :TileId) :luxe.Vector {
         // GIANT HACK!!!

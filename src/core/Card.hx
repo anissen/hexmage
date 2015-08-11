@@ -70,7 +70,7 @@ class Card implements HasTags {
 
     public var on_event :Map<MinionEvent, MinionQuery->Commands>;
 
-    var default_tags = [
+    var default_tags :Tags = [
         BaseMoves => 1,
         BaseAttacks => 1,
         Moves => 0,
@@ -87,7 +87,7 @@ class Card implements HasTags {
         targetType = (options.targetType != null ? options.targetType : TargetType.Tile);
         description = (options.description != null ? options.description : '');
 
-        tags     = default_tags;
+        tags = default_tags;
         if (options.tags != null) {
             for (tag in options.tags.keys()) {
                 tags[tag] = options.tags[tag];
@@ -104,8 +104,8 @@ class Card implements HasTags {
             type: type,
             targetType : targetType,
             description: description,
-            tags: this.tags, //.clone(),
-            on_event: this.on_event // TODO: Not cloned!
+            tags: tags, //.clone(),
+            on_event: on_event // TODO: Not cloned!
         });
     }
 
