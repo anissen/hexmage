@@ -235,12 +235,13 @@ class GameSetup {
         ratKing.zone = Board;
         var princess = cardLibrary.create('Princess', human_player.id);
         princess.pos = princessTile.key;
-        ratKing.zone = Board;
+        princess.zone = Board;
+
         var gameState = {
             board: board,
             players: [human_player, ai_player],
             cardIdCounter: cardLibrary.nextCardId,
-            cards: [ratKing, princess]
+            cards: [ratKing, princess] // TODO: Supposed to be *ALL* cards
         };
         return new Game(gameState);
     }
