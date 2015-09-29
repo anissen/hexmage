@@ -232,16 +232,33 @@ class GameSetup {
         var princessTile = new Hex(-1, 2, 0);
         var ratKing = cardLibrary.create('Rat King', ai_player.id);
         ratKing.pos = orcTile.key;
-        ratKing.zone = Board;
         var princess = cardLibrary.create('Princess', human_player.id);
         princess.pos = princessTile.key;
-        princess.zone = Board;
+
+        var cards_in_decks = []
+            .concat(human_player.deck.get_cards())
+            .concat(ai_player.deck.get_cards());
+
+        var cards_in_hands = []
+            .concat(human_player.hand)
+            .concat(ai_player.hand);
+
+        var cards_on_board = [ratKing, princess];
+
+        for (card in cards_in_decks) card.zone = Deck;
+        for (card in cards_in_hands) card.zone = Hand;
+        for (card in cards_on_board) card.zone = Board;
+
+        var cards = []
+            .concat(cards_in_decks)
+            .concat(cards_in_hands)
+            .concat(cards_on_board);
 
         var gameState = {
             board: board,
             players: [human_player, ai_player],
             cardIdCounter: cardLibrary.nextCardId,
-            cards: [ratKing, princess] // TODO: Supposed to be *ALL* cards
+            cards: cards
         };
         return new Game(gameState);
     }

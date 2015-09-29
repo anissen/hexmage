@@ -311,15 +311,16 @@ class Game {
 
         // handle
         switch (playCardAction.card.type) {
-            case MinionCard: playMinion(playCardAction.card.name /* HACK */, playCardAction.target);
+            case MinionCard: playMinion(playCardAction.card.id /* HACK */, playCardAction.target);
             case SpellCard(castFunc): playSpell(castFunc, playCardAction.target);
         }
     }
 
-    function playMinion(minionName :String, target :Target) {
+    function playMinion(id :Int, target :Target) {
         switch target {
             case Tile(tile, _): 
-                var minion = cardLibrary.create(minionName, current_player.id);
+                // TODO: This probably doesn't work!
+                var minion = get_card(id); //cardLibrary.create(minionName, current_player.id);
                 //state.board.tile(tile).minion = minion;
                 minion.pos = tile;
                 minion.zone = Board;
@@ -343,15 +344,19 @@ class Game {
         });
     }
 
-    public function minions() :Array<Card> {
-        return state.cards.zone(Board);
+    public function get_card(id :Int) :Null<Card> {
+        return cards().find(function(card) {
+            return card.id == id;
+        });
     }
 
-    /*
-    public function cards() :Array<Card> {
+    public inline function minions() :Array<Card> {
+        return cards().zone(Board);
+    }
+
+    public inline function cards() :Array<Card> {
         return state.cards;
     }
-    */
 
     public function tile_to_world(tileId :TileId) :luxe.Vector {
         // GIANT HACK!!!

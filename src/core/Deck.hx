@@ -50,6 +50,10 @@ class Deck {
         return cards.length;
     }
 
+    public function get_cards() {
+        return cards;
+    }
+
     function clone_cards()  :Array<Card> {
         return [ for (card in cards) card.clone() ];
     }
